@@ -1,0 +1,40 @@
+# ==============================================================================
+# GOGIGANET BROADBAND - LINUX SYSTEMD SERVICE UNIT FILE
+# File: /etc/systemd/system/gogiga-isp.service
+# ==============================================================================
+
+[Unit]
+Description=GOGIGANET ISP Onboarding & Multi-Tenant Gateway Service
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/isp
+ExecStart=/var/www/isp/onboarding
+Restart=always
+RestartSec=5s
+
+# Environment Variables
+Environment="PORT=8081"
+Environment="DB_PATH=/var/www/isp/onboarding.db"
+Environment="ENV=production"
+
+# Resource & File Descriptor Limits
+LimitNOFILE=65535
+
+# Systemd Security Hardening Sandboxing
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+# Standard Logging ke Journald (bisa dilihat via: journalctl -u gogiga-isp -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gogiga-isp
+
+[Install]
+WantedBy=multi-user.target

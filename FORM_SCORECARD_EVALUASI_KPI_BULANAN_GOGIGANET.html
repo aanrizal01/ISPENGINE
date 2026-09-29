@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>FORM SCORECARD EVALUASI & PENILAIAN KPI BULANAN</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+            @bottom-right {
+                content: "Hal " counter(page);
+                font-size: 9pt;
+                color: #64748b;
+            }
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+            font-size: 10pt;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-size: 17pt;
+            color: #0f172a;
+            border-bottom: 2.5px solid #2563eb;
+            padding-bottom: 6px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 13pt;
+            color: #1e3a8a;
+            border-bottom: 1.5px solid #cbd5e1;
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 11pt;
+            color: #0369a1;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            page-break-after: avoid;
+        }
+        p, li {
+            color: #334155;
+            text-align: justify;
+        }
+        ul, ol {
+            margin-top: 4px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 9pt;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+            text-align: center;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        code {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 8.5pt;
+            border: 1px solid #e2e8f0;
+        }
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 8pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            border: none;
+            padding: 0;
+        }
+        .header-box {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+        .header-box h1 {
+            color: #ffffff;
+            border-bottom: 2px solid #38bdf8;
+            margin: 0 0 8px 0;
+            font-size: 15pt;
+        }
+        .header-box p {
+            color: #cbd5e1;
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #059669;
+            color: #ffffff;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-box">
+        <span class="badge">OFFICIAL HR & EVALUATION FORM</span>
+        <h1>FORM SCORECARD EVALUASI & PENILAIAN KPI BULANAN</h1>
+        <p style="font-size: 10.5pt; color: #93c5fd; font-weight: bold;">STANDAR KINERJA SDM PT GOGIGA MEDIA TEKNOLOGI</p>
+        <p><strong>PT GOGIGA MEDIA TEKNOLOGI — GOGIGANET FIBER BROADBAND</strong></p>
+    </div>
+    <h1>FORM SCORECARD EVALUASI &amp; PENILAIAN KPI BULANAN</h1>
+<h2>STANDAR KINERJA SDM PT GOGIGA MEDIA TEKNOLOGI</h2>
+<p><strong>Dokumen Resmi Evaluasi Kinerja Karyawan &amp; Insentif Prestasi</strong></p>
+<ul>
+<li><strong>Nomor Formulir</strong>: <code>GMT/HRD-KPI/FORM/2026/09</code></li>
+<li><strong>Periode Penilaian</strong>: Bulan: <strong><em>_</em></strong><strong><em>_</em></strong>______ Tahun: 2026</li>
+<li><strong>Tanggal Evaluasi</strong>: <strong><em>_</em></strong><strong><em>_</em></strong>______</li>
+<li><strong>Disahkan Oleh</strong>: <strong>Aan Rizal S.Kom (Direktur Utama / Owner)</strong></li>
+</ul>
+<hr />
+<h2>PANDUAN PENGISIAN &amp; SKEMA PEMBOBOTAN</h2>
+<ol>
+<li><strong>Metrik Kuantitatif / Sistem (Bobot 70%)</strong>:</li>
+<li>Data ditarik langsung dari database operasional GOGIGANET (tabel <code>work_orders</code>, <code>bast_reports</code>, dan <code>registrations</code>).</li>
+<li>Nilai dihitung proporsional terhadap target bulanan yang telah ditetapkan.</li>
+<li><strong>Metrik Kualitatif / Observasi Lapangan (Bobot 30%)</strong>:</li>
+<li>Dinilai langsung oleh atasan langsung (Kepala NOC / Direktur Utama).</li>
+<li>Meliputi kepatuhan K3, kedisiplinan kerja, kejujuran, dan keramahan terhadap pelanggan.</li>
+<li><strong>Kategori Predikat Akhir</strong>:</li>
+<li><strong>Skor 90 – 100 (Predikat A - Sangat Baik)</strong> : Komisi Penuh + Insentif Prestasi / Karyawan Terbaik.</li>
+<li><strong>Skor 75 – 89 (Predikat B - Baik / Standar)</strong> : Komisi Penuh sesuai ketentuan SOP.</li>
+<li><strong>Skor 60 – 74 (Predikat C - Cukup)</strong> : Sesi pembinaan &amp; evaluasi khusus.</li>
+<li><strong>Skor &lt; 60 (Predikat D - Kurang)</strong> : Surat Peringatan (SP) dan peninjauan penugasan.</li>
+</ol>
+<hr />
+<h2>1. FORMULIR PENILAIAN: REGU TEKNISI LAPANGAN</h2>
+<p><strong>Nama Teknisi</strong>: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong> &nbsp;&nbsp;&nbsp;&nbsp; <strong>ID Staf</strong>: <strong><em>_</em></strong><strong><em>_</em></strong>___<br />
+<strong>Jabatan</strong>: Teknisi Instalasi &amp; Maintenance Lapangan &nbsp;&nbsp;&nbsp;&nbsp; <strong>Penilai</strong>: Nando Azkia Putra / Aan Rizal</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">No</th>
+<th style="text-align: left;">Indikator Kinerja Utama (KPI)</th>
+<th style="text-align: center;">Sumber Data</th>
+<th style="text-align: center;">Target Bulanan</th>
+<th style="text-align: center;">Bobot</th>
+<th style="text-align: center;">Realisasi</th>
+<th style="text-align: center;">Nilai (Bobot x Realisasi/Target)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>A</strong></td>
+<td style="text-align: left;"><strong>KINERJA TEKNIS &amp; PRODUKTIVITAS (70%)</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Jumlah SPK Pasang Baru Selesai (<em>Completed</em>)</td>
+<td style="text-align: center;">Portal Teknisi</td>
+<td style="text-align: center;">$\ge 20$ SPK</td>
+<td style="text-align: center;"><strong>30%</strong></td>
+<td style="text-align: center;">______ SPK</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Kualitas Redaman BAST ($\le -23.0\text{ dBm}$)</td>
+<td style="text-align: center;">BAST Digital</td>
+<td style="text-align: center;">100% Bagus</td>
+<td style="text-align: center;"><strong>25%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Kecepatan Penanganan Tiket Gangguan ($\le 4$ Jam)</td>
+<td style="text-align: center;">Laporan NOC</td>
+<td style="text-align: center;">$\ge 90\%$</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>B</strong></td>
+<td style="text-align: left;"><strong>DISIPLIN, K3 &amp; PERILAKU KERJA (30%)</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Kepatuhan K3 (Helm, Rompi, Sabuk Pengaman Tiang)</td>
+<td style="text-align: center;">Observasi Lapangan</td>
+<td style="text-align: center;">100% Tertib</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Presensi, Kehadiran Tepat Waktu &amp; Sikap Pelanggan</td>
+<td style="text-align: center;">Absensi &amp; Kasir</td>
+<td style="text-align: center;">Nihil Komplain</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>TOTAL</strong></td>
+<td style="text-align: left;"><strong>SKOR AKHIR KINERJA TEKNISI BULANAN</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>100%</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong><strong><em>_</em>_ (Predikat: </strong>___)</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Catatan Khusus / Rekomendasi Atasan</strong>:  </p>
+<hr />
+<hr />
+<hr />
+<h2>2. FORMULIR PENILAIAN: ACCOUNT EXECUTIVE / SALES MARKETING</h2>
+<p><strong>Nama Staf Sales</strong>: <strong>Fajar Malem Sitepu</strong> &nbsp;&nbsp;&nbsp;&nbsp; <strong>ID Staf</strong>: <code>fajar</code> (<code>FAJAR-PYK</code>)<br />
+<strong>Jabatan</strong>: Account Executive / Koordinator Penjualan &nbsp;&nbsp;&nbsp;&nbsp; <strong>Penilai</strong>: Aan Rizal S.Kom</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">No</th>
+<th style="text-align: left;">Indikator Kinerja Utama (KPI)</th>
+<th style="text-align: center;">Sumber Data</th>
+<th style="text-align: center;">Target Bulanan</th>
+<th style="text-align: center;">Bobot</th>
+<th style="text-align: center;">Realisasi</th>
+<th style="text-align: center;">Nilai (Bobot x Realisasi/Target)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>A</strong></td>
+<td style="text-align: left;"><strong>KINERJA PENJUALAN &amp; OMSET (70%)</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Pencapaian Pelanggan Baru Aktif (<em>Active</em>)</td>
+<td style="text-align: center;">Portal Sales</td>
+<td style="text-align: center;">30 Pelanggan</td>
+<td style="text-align: center;"><strong>45%</strong></td>
+<td style="text-align: center;">______ Plg</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Rasio Konversi Prospek ke Pelanggan Aktif</td>
+<td style="text-align: center;">Sistem ISP</td>
+<td style="text-align: center;">$\ge 80\%$</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Follow-Up Calon Pelanggan <em>Overdistance</em></td>
+<td style="text-align: center;">Laporan Survei</td>
+<td style="text-align: center;">$\ge 90\%$ Disurvei</td>
+<td style="text-align: center;"><strong>10%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>B</strong></td>
+<td style="text-align: left;"><strong>TATA KELOLA &amp; KOORDINASI TIM (30%)</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Kecepatan Input Data Calon Pelanggan ke Portal</td>
+<td style="text-align: center;">Database</td>
+<td style="text-align: center;">$\le 2\text{ Jam}$</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Laporan Pipeline Mingguan &amp; Kepatuhan SOP Sales</td>
+<td style="text-align: center;">Administrasi</td>
+<td style="text-align: center;">100% Disiplin</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>TOTAL</strong></td>
+<td style="text-align: left;"><strong>SKOR AKHIR KINERJA SALES BULANAN</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>100%</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong><strong><em>_</em>_ (Predikat: </strong>___)</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kalkulasi Hak Komisi Penjualan</strong>:<br />
+<em> Total Pelanggan Aktif Terpasang: <strong><em>_</em>_ Pelanggan $\times\text{ Rp 50.000,-} = \text{Rp }$</strong><strong><em>_</em></strong><strong><em>_</em></strong>____<br />
+</em> Bonus Prestasi (Jika Predikat A): $\text{Rp }$<strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_<br />
+<em> </em><em>Total Hak Pencairan Dana</em>*: $\text{Rp }$</strong><strong><em>_</em></strong><strong><em>_</em></strong>____  </p>
+<hr />
+<h2>3. FORMULIR PENILAIAN: KEPALA NOC &amp; CORE NETWORK</h2>
+<p><strong>Nama Staf NOC</strong>: <strong>Nando Azkia Putra S.Kom</strong> &nbsp;&nbsp;&nbsp;&nbsp; <strong>ID Staf</strong>: <code>nando_noc</code><br />
+<strong>Jabatan</strong>: Kepala NOC &amp; Core Fiber Optic &nbsp;&nbsp;&nbsp;&nbsp; <strong>Penilai</strong>: Aan Rizal S.Kom</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">No</th>
+<th style="text-align: left;">Indikator Kinerja Utama (KPI)</th>
+<th style="text-align: center;">Sumber Data</th>
+<th style="text-align: center;">Target Bulanan</th>
+<th style="text-align: center;">Bobot</th>
+<th style="text-align: center;">Realisasi</th>
+<th style="text-align: center;">Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Uptime Jaringan &amp; Router MikroTik Gateway</td>
+<td style="text-align: center;">Sistem Monitoring</td>
+<td style="text-align: center;">$\ge 99.5\%$</td>
+<td style="text-align: center;"><strong>30%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Kecepatan Verifikasi Pendaftaran &amp; Terbit SPK</td>
+<td style="text-align: center;">Log NOC</td>
+<td style="text-align: center;">$\le 2\text{ Jam}$</td>
+<td style="text-align: center;"><strong>20%</strong></td>
+<td style="text-align: center;">______ Jam</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Penyelesaian Gangguan Severity 1 &amp; 2 (SLA)</td>
+<td style="text-align: center;">Tiket Insiden</td>
+<td style="text-align: center;">$\le 3\text{ Jam}$</td>
+<td style="text-align: center;"><strong>20%</strong></td>
+<td style="text-align: center;">______ Jam</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Kerapian Pemeliharaan Data ODP GIS &amp; Kabel Optik</td>
+<td style="text-align: center;">FTTX Command</td>
+<td style="text-align: center;">100% Akurat</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Manajemen Koordinasi Tim Teknisi Lapangan</td>
+<td style="text-align: center;">Evaluasi Direksi</td>
+<td style="text-align: center;">Efektif</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>TOTAL</strong></td>
+<td style="text-align: left;"><strong>SKOR AKHIR KINERJA KEPALA NOC</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>100%</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong><strong><em>_</em>_ (Predikat: </strong>___)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. FORMULIR PENILAIAN: STAF KEUANGAN &amp; BILLING (FINANCE)</h2>
+<p><strong>Nama Staf</strong>: <strong>Staf Keuangan &amp; Kasir</strong> &nbsp;&nbsp;&nbsp;&nbsp; <strong>ID Staf</strong>: <code>finance</code><br />
+<strong>Jabatan</strong>: Finance &amp; Billing Administrator &nbsp;&nbsp;&nbsp;&nbsp; <strong>Penilai</strong>: Aan Rizal S.Kom</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">No</th>
+<th style="text-align: left;">Indikator Kinerja Utama (KPI)</th>
+<th style="text-align: center;">Sumber Data</th>
+<th style="text-align: center;">Target Bulanan</th>
+<th style="text-align: center;">Bobot</th>
+<th style="text-align: center;">Realisasi</th>
+<th style="text-align: center;">Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;"><em>Collection Rate</em> Tagihan (Terbayar s/d Tgl 20)</td>
+<td style="text-align: center;">GOGIGABILL</td>
+<td style="text-align: center;">$\ge 95\%$</td>
+<td style="text-align: center;"><strong>35%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Ketepatan Waktu Penerbitan Invoice (Tgl 1)</td>
+<td style="text-align: center;">Log Worker</td>
+<td style="text-align: center;">100% Tepat</td>
+<td style="text-align: center;"><strong>20%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Kecepatan Entri Pembayaran Tunai Kasir</td>
+<td style="text-align: center;">Log Billing</td>
+<td style="text-align: center;">$\le 1\text{ Jam}$</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Ketepatan Rekonsiliasi Kas &amp; Mutasi Bank / Tripay</td>
+<td style="text-align: center;">Pembukuan</td>
+<td style="text-align: center;">Nol Selisih</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Kerapian Pengarsipan Faktur Pajak PPh 23 &amp; PPN</td>
+<td style="text-align: center;">Arsip Keuangan</td>
+<td style="text-align: center;">100% Tertib</td>
+<td style="text-align: center;"><strong>15%</strong></td>
+<td style="text-align: center;">______ %</td>
+<td style="text-align: center;">______ %</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>TOTAL</strong></td>
+<td style="text-align: left;"><strong>SKOR AKHIR KINERJA STAF KEUANGAN</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>100%</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong><strong><em>_</em>_ (Predikat: </strong>___)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>LEMBAR PENGESAHAN PENILAIAN BULANAN</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Disusun Oleh Karyawan,</th>
+<th style="text-align: center;">Diperiksa Oleh Atasan Langsung,</th>
+<th style="text-align: center;">Disetujui &amp; Disahkan Oleh,</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><br><br><br><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>______<br>Nama Staf yang Dinilai</td>
+<td style="text-align: center;"><br><br><br><strong>Nando Azkia Putra S.Kom</strong><br>Kepala NOC &amp; Koordinator</td>
+<td style="text-align: center;"><br><br><br><strong>Aan Rizal S.Kom</strong><br>Direktur Utama / Owner</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

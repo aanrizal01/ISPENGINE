@@ -1,0 +1,226 @@
+================================================================================
+                    PT GOGIGA MEDIA TEKNOLOGI
+                  GOGIGANET FIBER BROADBAND
+        BUKU PANDUAN STANDAR OPERASIONAL PROSEDUR (SOP) RESMI
+================================================================================
+Nomor Dokumen : GMT/SOP-OPS/2026/09/001
+Alamat Kantor : Depan kantor Wali, Jalan Pulutan, Koto Tuo, Kec. Harau, 
+                Kabupaten Lima Puluh Kota, Sumatera Barat 26271
+Revisi        : 1.0 (Final Operasional)
+Tanggal Rilis : 23 September 2026
+Disahkan Oleh : Aan Rizal S.Kom (Direktur Utama / Owner PT GOGIGA MEDIA TEKNOLOGI)
+Penanggung Jwb: Nando Azkia Putra S.Kom (Kepala NOC & Core FO)
+Wilayah Kerja : Kota Payakumbuh, Kab. Lima Puluh Kota, & Sumatera Barat
+================================================================================
+
+
+DAFTAR ISI:
+--------------------------------------------------------------------------------
+SOP-01 : STANDAR OPERASIONAL REGISTRASI & ONBOARDING PELANGGAN (CUSTOMER)
+SOP-02 : STANDAR OPERASIONAL TIM SALES & ACCOUNT EXECUTIVE (MARKETING)
+SOP-03 : STANDAR OPERASIONAL NETWORK OPERATIONS CENTER (NOC) & DISPATCH
+SOP-04 : STANDAR OPERASIONAL INSTALASI DROPCORE & TEKNISI LAPANGAN
+SOP-05 : STANDAR PENGUKURAN REDAMAN OPTIK (OPM) & PENERBITAN BAST DIGITAL
+SOP-06 : STANDAR PENANGANAN GANGGUAN / TIKET REPAIR (TROUBLESHOOTING)
+SOP-07 : STANDAR KEMITRAAN PENYELENGGARA JARTAPLOK (WHOLESALE B2B)
+SOP-08 : STANDAR PENGAWASAN EKSEKUTIF & KEBIJAKAN SUPER USER (OWNER)
+================================================================================
+
+
+================================================================================
+[ SOP-01: REGISTRASI & ONBOARDING PELANGGAN ]
+================================================================================
+1. TUJUAN:
+   Memastikan calon pelanggan mendapatkan kepastian jangkauan (coverage),
+   kontrak transparan, dan jadwal instalasi tanpa penundaan.
+
+2. PROSEDUR PENDAFTARAN MANDIRI (PORTAL):
+   a. Calon pelanggan mengakses https://portal.gogiga.net.id
+   b. Melakukan pin-point lokasi pemasangan pada peta digital.
+   c. Sistem otomatis menghitung jarak ke ODP terdekat:
+      - Jarak <= 250 Meter : Status "IN_COVERAGE", langsung pilih paket reguler.
+      - Jarak > 250 Meter  : Status "PENDING_SURVEY_OVERDISTANCE", dialihkan ke 
+                             antrean survei khusus teknisi/sales.
+      - Di luar klaster    : Status "UNCOVERED_WISHLIST", tercatat untuk rencana 
+                             ekspansi tiang berikutnya.
+   d. Pelanggan melengkapi identitas:
+      - Nama Lengkap sesuai KTP.
+      - Nomor WhatsApp aktif (untuk notifikasi tracking & tagihan).
+      - Foto identitas (KTP) dan foto fasad rumah.
+      - Kontak PIC di lokasi (jika pemohon berbeda dengan penghuni).
+   e. Pelanggan menandatangani Kontrak Berlangganan Digital secara langsung di layar.
+   f. Sistem menerbitkan Nomor Registrasi (contoh: REG-202609-XXXX).
+
+
+================================================================================
+[ SOP-02: TIM SALES & ACCOUNT EXECUTIVE ]
+================================================================================
+1. TUJUAN:
+   Standarisasi proses perolehan pelanggan baru, transparansi komisi,
+   serta penanganan prospek pelanggan korporat (Dedicated Enterprise).
+
+2. TATA KELOLA KREDENSIAL & REFERRAL:
+   a. Sales masuk melalui: https://sales.gogiga.net.id
+      - Akun: Username & Password masing-masing (contoh: fajar - Fajar Malem Sitepu).
+   b. Setiap sales memiliki kode referral resmi (contoh: FAJAR-PYK).
+   c. Link referral wajib disebarkan ke calon pelanggan:
+      https://portal.gogiga.net.id/?ref=FAJAR-PYK
+   d. Setiap pelanggan yang mendaftar melalui link referral akan terkunci otomatis
+      ke ID sales yang bersangkutan.
+
+3. STRUKTUR KOMISI PENJUALAN:
+   a. Paket Retail / Home BroadBand: Rp 50.000 per pelanggan aktif terpasang.
+   b. Insentif dibayarkan setelah status registrasi menjadi "ACTIVE" dan BAST
+      ditandatangani oleh pelanggan.
+   c. Lead Korporat / Dedicated: Komisi proporsional berdasarkan nilai kontrak BoQ 
+      yang disetujui Direktur Utama.
+
+4. PENANGANAN LEADS BISNIS / ENTERPRISE (CUSTOM BOQ):
+   a. Untuk permintaan > 100 Mbps atau kantor instansi/perusahaan (PT/CV):
+   b. Sales wajib melakukan profiling kebutuhan:
+      - Bandwidth symetris 1:1, alokasi IP Publik Static, kebutuhan backup link.
+   c. Menghubungi pelanggan dalam waktu maksimal 2 x 24 jam dengan format penawaran 
+      resmi GOGIGANET.
+
+
+================================================================================
+[ SOP-03: NETWORK OPERATIONS CENTER (NOC) & DISPATCH ]
+================================================================================
+1. TUJUAN:
+   Menjamin validitas data teknis, ketersediaan port ODP, integrasi core billing, 
+   serta penerbitan Surat Perintah Kerja (SPK) yang tertib.
+
+2. VERIFIKASI PERMOHONAN MASUK:
+   a. Tim NOC mengakses: https://noc-fo.gogiga.net.id
+   b. Memeriksa tab "Permohonan Registrasi".
+   c. Memastikan kelengkapan data KTP, tanda tangan kontrak, dan lokasi GPS.
+   d. Memeriksa ketersediaan port pada ODP tujuan (maksimal 8 port per ODP box):
+      - Jika port masih tersedia (used_ports < 8): Terbitkan SPK Instalasi.
+      - Jika port penuh (used_ports = 8): Jadwalkan pemasangan splitter baru atau 
+        alihkan ke ODP alternatif terdekat.
+
+3. PENERBITAN SPK (SURAT PERINTAH KERJA):
+   a. Pilih nama teknisi yang bertugas (Nando, Ricci, Zikka, atau Egi).
+   b. Tentukan tanggal & jam instalasi.
+   c. Masukkan catatan teknis (nomor tiang, arah tarikan kabel, catatan lokasi).
+   d. Klik "Terbitkan SPK Teknisi" -> Status registrasi berubah menjadi 
+      "INSTALLATION_SCHEDULED".
+
+
+================================================================================
+[ SOP-04: INSTALASI DROPCORE & TEKNISI LAPANGAN ]
+================================================================================
+1. TUJUAN:
+   Memastikan proses penarikan kabel fiber optik dropcore rapi, aman,
+   memenuhi standar estetika tata kota, dan tidak rentan putus/bending.
+
+2. PERLENGKAPAN KESELAMATAN & PERALATAN WAJIB (K3):
+   a. Helm safety pelindung kepala, rompi safety reflektif, sabuk pengaman tiang.
+   b. Tangga fiber / telescopic terisolasi listrik.
+   c. Peralatan optik: Optical Power Meter (OPM), Visual Fault Locator (VFL/Laser),
+      Fiber Cleaver, Miller Stripper, dan Fusion Splicer (atau Fast Connector SC/UPC).
+
+3. ATURAN PENARIKAN KABEL DROPCORE (LAST-MILE):
+   a. Kabel yang digunakan adalah 1 Core G.657A (tahan tekukan).
+   b. Batas tarikan maksimal: 250 Meter dari ODP ke rumah pelanggan.
+   c. Wajib menggunakan klem gantung (S-Clamp / Dead-end clamp) di setiap tiang tumpu.
+   d. Kabel melintasi jalan raya wajib berada pada ketinggian minimal 5,5 Meter 
+      untuk menghindari tersangkut kendaraan tinggi.
+   e. Jalur masuk ke rumah pelanggan wajib menggunakan proteksi pipa spiral/roset 
+      dan diberi tetesan loop (drip loop) agar air hujan tidak mengalir ke dalam rumah.
+
+
+================================================================================
+[ SOP-05: PENGUKURAN REDAMAN OPTIK (OPM) & BAST DIGITAL ]
+================================================================================
+1. STANDAR BATAS REDAMAN SINYAL (OPTICAL POWER BUDGET):
+   - Standar Layak Operasional GOGIGANET : -16.00 dBm s/d -24.00 dBm
+   - Nilai Redaman Ideal / Target       : -18.00 dBm s/d -20.00 dBm
+   - Batas Peringatan (Warning)         : -24.01 dBm s/d -26.00 dBm (Wajib recleave)
+   - Kritis / DILARANG AKTIVASI         : > -26.00 dBm (Koneksi pasti sering RTO/LOS)
+
+2. LANGKAH VALIDASI PERANGKAT ONT:
+   a. Hubungkan pigtail SC/UPC ke port PON ONT/Modem.
+   b. Catat nomor Serial Number (SN) dan MAC Address modem pada portal teknisi.
+   c. Pastikan lampu indikator PON menyala hijau stabil (tidak berkedip merah/LOS).
+   d. Lakukan uji kecepatan (Speedtest) minimal 90% dari kuota paket berlangganan.
+   e. Lakukan uji Ping ke Gateway NOC (< 5 ms) dan ke DNS 8.8.8.8 (< 15 ms).
+
+3. PENYELESAIAN BAST DIGITAL DI LOKASI:
+   a. Buka https://teknisi.gogiga.net.id pada smartphone teknisi.
+   b. Pilih SPK pelanggan yang bersangkutan.
+   c. Input: Nilai redaman OPM (dBm), SN Modem, MAC Address, dan panjang kabel.
+   d. Unggah foto fasad rumah, foto redaman OPM, dan foto instalasi ONT rapi.
+   e. Mintakan tanda tangan digital pelanggan di layar HP.
+   f. Klik "Kirim BAST & Selesaikan Tugas".
+   g. Sistem otomatis mengubah status pelanggan menjadi "ACTIVE", menambah hitungan
+      port ODP terpakai, dan menyinkronkan tagihan bulanan.
+
+
+================================================================================
+[ SOP-06: PENANGANAN GANGGUAN / TROUBLESHOOTING ]
+================================================================================
+1. TINGKAT PRIORITAS GANGGUAN (SLA):
+   - Prioritas 1 (Kabel Core Putus / ODP Down / Gangguan Massal) : Maks. 2 Jam
+   - Prioritas 2 (Pelanggan Korporat / Dedicated Link Down)       : Maks. 3 Jam
+   - Prioritas 3 (Pelanggan Residensial LOS / Redaman Drop)       : Maks. 6 Jam
+
+2. ALUR PENANGANAN GANGGUAN INDIVIDUAL (LOS / REDAMAN MERAH):
+   a. Pelanggan melapor melalui WhatsApp Layanan / NOC mendeteksi status offline.
+   b. NOC memeriksa OLT: apakah 1 ODP mati bersamaan atau hanya 1 pelanggan.
+   c. Jika hanya 1 pelanggan:
+      - Tugaskan teknisi terdekat dengan SPK Perbaikan (*Trouble Ticket*).
+      - Teknisi memeriksa sambungan adaptor roset dan konektor SC/UPC di ODP.
+      - Uji kabel dengan VFL Laser merah untuk mendeteksi kabel terjepit/patah.
+      - Lakukan penyambungan ulang (*re-splice*) jika redaman memburuk.
+   d. Uji kembali redaman OPM hingga mencapai standar (-18 dBm s/d -22 dBm).
+   e. Konfirmasi ke pelanggan bahwa internet telah pulih normal.
+
+
+================================================================================
+[ SOP-07: KEMITRAAN PENYELENGGARA JARTAPLOK (WHOLESALE B2B) ]
+================================================================================
+1. PRINSIP KERJASAMA JARINGAN TETAP LOKAL:
+   PT GOGIGA MEDIA TEKNOLOGI bekerjasama dengan pemilik infrastruktur lokal
+   (contoh: PT GNET BIARO AKSES) untuk penyewaan tiang, kabel distribusi, dan ODP.
+
+2. TARIF SEWA PORT BULANAN (FLAT RATE LAST-MILE):
+   - Paket 20 Mbps - 50 Mbps   : Rp  50.000 / Port Aktif / Bulan
+   - Paket 100 Mbps            : Rp  90.000 / Port Aktif / Bulan
+   - Paket 150 Mbps            : Rp 135.000 / Port Aktif / Bulan
+   - Paket 200 Mbps            : Rp 180.000 / Port Aktif / Bulan
+   - Paket 300 Mbps (Corporate): Rp 270.000 / Port Aktif / Bulan
+   - Biaya Pasang Baru (OTC)   : Rp 150.000 / Penarikan Baru
+
+3. TATA KELOLA REKONSILIASI BULANAN:
+   a. Mitra mengakses: https://rekan.gogiga.net.id
+      - Akun: Username `gnet_biaro` & Password `Gnet@Biaro2026!`
+   b. Sistem ISP secara otomatis merekapitulasi jumlah port aktif per ODP.
+   c. Pada akhir periode pemakaian, sistem menerbitkan Berita Acara Rekonsiliasi 
+      Penggunaan Port sebagai DATA PEMBANDING AUDIT ISP (cross-check data riil).
+   d. Pihak Penyelenggara JARTAPLOK mencocokkan data pembanding tersebut sebelum 
+      menerbitkan Invoice tagihan resmi kepada PT GOGIGA MEDIA TEKNOLOGI.
+   e. Pelanggan yang berstatus isolir (*SUSPENDED*) tidak dikenakan tarif sewa port 
+      (kebijakan *Waiver on Suspension*).
+
+
+
+================================================================================
+[ SOP-08: PENGAWASAN EKSEKUTIF & KEBIJAKAN SUPER USER ]
+================================================================================
+1. HAK OTORITAS DIREKTUR UTAMA / OWNER (AKUN: `owner`):
+   a. Memiliki wewenang mutlak untuk mengubah struktur harga paket dan tarif rekanan.
+   b. Menyetujui atau menolak permohonan survei khusus (*Overdistance*).
+   c. Mengaktifkan, mengisolir (*suspend*), atau membatalkan langganan pelanggan.
+   d. Mengelola seluruh akun staf (NOC, Sales, Teknisi, Rekanan Jartaplok).
+   e. Mengunduh laporan keuangan, laba bersih operasional, dan BoQ korporat.
+
+2. KEBIJAKAN INTEGRITAS DATA:
+   a. Dilarang membagikan username & password kepada pihak luar tanpa izin direksi.
+   b. Seluruh aktivitas perubahan status pelanggan, tarif, dan mutasi port tercatat
+      dalam audit trail sistem secara permanen.
+
+================================================================================
+           DOKUMEN INI BERLAKU SEJAK TANGGAL DITETAPKAN DAN MENJADI
+           PEDOMAN BAKU BAGI SELURUH KARYAWAN PT GOGIGA MEDIA TEKNOLOGI
+================================================================================

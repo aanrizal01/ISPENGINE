@@ -1,0 +1,334 @@
+================================================================================
+                    PT GOGIGA MEDIA TEKNOLOGI
+                  GOGIGANET BROADBAND INTERNET
+================================================================================
+         STANDAR OPERASIONAL PROSEDUR (SOP) RESMI PERUSAHAAN
+              PROSEDUR PENDAFTARAN PELANGGAN BARU (ONBOARDING)
+================================================================================
+Nomor Dokumen   : GMT-SOP-REG-2026-001
+Alamat Kantor   : Depan kantor Wali, Jalan Pulutan, Koto Tuo, Kec. Harau, 
+                  Kabupaten Lima Puluh Kota, Sumatera Barat 26271
+Tanggal Berlaku : 23 September 2026
+Revisi          : 1.0 (Produksi)
+Klasifikasi     : Pedoman Operasional Internal & Pelayanan Pelanggan
+Disahkan Oleh   : Aan Rizal S.Kom (Direktur Utama / Owner PT GOGIGA MEDIA TEKNOLOGI)
+Penanggung Jawab: Nando Azkia Putra S.Kom (Kepala NOC) & Tim Operasional
+================================================================================
+
+
+1. MAKSUD DAN TUJUAN
+--------------------------------------------------------------------------------
+1.1. Menetapkan alur kerja standar baku, cepat, dan transparan dalam melayani
+     calon pelanggan baru GOGIGANET mulai dari tahapan prospek/pendaftaran,
+     pengecekan radius ODP fiber optic, verifikasi e-KTP, tanda tangan digital
+     kontrak berlangganan, penerbitan SPK, instalasi kabel dropcore, hingga
+     layanan internet aktif dan serah terima berita acara (BAST).
+1.2. Menjamin akurasi data teknis lapangan, menjaga kualitas redaman optik 
+     sesuai standar industri (-16 s/d -24 dBm), serta memastikan transparansi
+     komisi tim sales dan akuntabilitas pekerjaan teknisi.
+1.3. Memenuhi ketentuan regulasi telekomunikasi nasional (Kominfo) terkait
+     keabsahan identitas pelanggan (Know Your Customer / KYC).
+
+
+2. RUANG LINGKUP & PIHAK TERKAIT (RACI)
+--------------------------------------------------------------------------------
+Prosedur ini berlaku untuk seluruh pendaftaran pelanggan baru tipe Home/Retail,
+Small Office Home Office (SOHO), serta Bisnis/Enterprise Dedicated di seluruh
+wilayah jangkauan jaringan fiber optik PT GOGIGA MEDIA TEKNOLOGI.
+
+Pihak yang terlibat:
+- Calon Pelanggan / Pelanggan Baru : Pemohon layanan dan penandatangan kontrak
+- Tim Sales & Marketing (fajar)     : Fajar Malem Sitepu (Akuisisi prospek & bimbingan pendaftaran)
+- Kepala NOC & Core FO (nando_noc)  : Nando Azkia Putra S.Kom (Verifikasi ODP/port, KYC, & SPK)
+- Tim Teknisi Lapangan             : Nando, Ricci, Zikka, Egi (Instalasi fisik)
+- Super User / Direktur (owner)     : Approval khusus overdistance & BoQ dedicated
+
+
+================================================================================
+           DIAGRAM ALUR PROSEDUR PENDAFTARAN PELANGGAN BARU
+================================================================================
+
+  [ CALON PELANGGAN / SALES ]
+              │
+              ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 1: Akses Portal & Pengecekan Geolocation ODP          │
+  │ • Buka https://portal.gogiga.net.id (?ref=KODE_SALES)      │
+  │ • Deteksi koordinat GPS rumah via browser / pin point peta  │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                 ┌───────────────┴───────────────┐
+                 │ Apakah Jarak ke ODP <= 250m?  │
+                 └───────┬───────────────┬───────┘
+                         │               │
+                  YA (Covered)      TIDAK (> 250m / Overdistance)
+                         │               │
+                         │               ▼
+                         │   ┌─────────────────────────────────────────┐
+                         │   │ Status: PENDING_SURVEY_OVERDISTANCE     │
+                         │   │ • Tiket diteruskan ke Tim Sales & NOC   │
+                         │   │ • Survei rute tiang tambahan / BoQ FO   │
+                         │   │ • Approval Direktur Utama jika ada biaya│
+                         │   └───────────────────┬─────────────────────┘
+                         │                       │ (Setelah disetujui)
+                         ▼                       ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 2: Pemilihan Paket Layanan Internet                   │
+  │ • Home Retail: 30 Mbps, 50 Mbps, 100 Mbps (1:1 Simetris)    │
+  │ • Custom Enterprise: Bandwidth khusus, IP Statis, SLA 99.5% │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 3: Pengisian Data Identitas & Berkas KYC             │
+  │ • Nama Lengkap sesuai e-KTP, No WhatsApp aktif, Email       │
+  │ • Alamat lengkap pemasangan + NIK KTP (16 Digit) & NPWP     │
+  │ • Unggah Foto e-KTP dan Foto Fasad Depan Rumah              │
+  │ • Kontak PIC di lokasi (jika pemohon berbeda dg penghuni)   │
+  │ • Sistem memvalidasi anti-duplikasi NIK & Nomor HP          │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 4: Tanda Tangan Kontrak Berlangganan Digital (e-Sign)│
+  │ • Pelanggan membaca ringkasan hak, kewajiban, dan biaya     │
+  │ • Tanda tangan langsung pada canvas digital di layar HP/PC  │
+  │ • Klik "AJUKAN PEMASANGAN BARU"                             │
+  │ • Nomor Registrasi terbit otomatis (REG-202609-XXXX)        │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 5: Verifikasi NOC & Penerbitan SPK Teknisi            │
+  │ • NOC login di https://noc-fo.gogiga.net.id                 │
+  │ • Verifikasi e-KTP dan ketersediaan port ODP (maks 8 port)  │
+  │ • Menunjuk teknisi pelaksana (Nando / Ricci / Zikka / Egi)  │
+  │ • Menetapkan jadwal pemasangan & catatan rute FO            │
+  │ • Status berubah: INSTALLATION_SCHEDULED                    │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 6: Eksekusi Instalasi Lapangan oleh Teknisi           │
+  │ • Teknisi login di https://teknisi.gogiga.net.id            │
+  │ • Penarikan kabel dropcore G.657A (maks 250m, tinggi 5,5m)  │
+  │ • Splicing fiber optic ke port adapter ODP & roset ONT      │
+  │ • Pengukuran redaman OPM: Standar WAJIB -16 s/d -24 dBm     │
+  │ • Konfigurasi ONT modem, Wi-Fi SSID, & speedtest (>90%)     │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 7: Penyusunan BAST Digital & Serah Terima Layanan     │
+  │ • Teknisi input SN ONT, MAC Address, dBm, panjang kabel     │
+  │ • Unggah foto redaman OPM dan foto modem menyala normal     │
+  │ • Pelanggan menandatangani BAST digital di aplikasi teknisi │
+  │ • Klik "SUBMIT BAST & SELESAIKAN INSTALASI"                 │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ TAHAP 8: Aktivasi Billing & Penyelesaian Administrasi       │
+  │ • Status registrasi otomatis berubah menjadi "ACTIVE"       │
+  │ • Sinkronisasi otomatis ke core billing (GigaBill)          │
+  │ • Komisi sales (FAJAR-PYK Rp 50.000) otomatis tercatat      │
+  │ • Pelanggan menerima WhatsApp notifikasi resmi aktivasi     │
+  └─────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+              RINCIAN LANGKAH KERJA SETIAP TAHAPAN OPERASIONAL
+================================================================================
+
+--------------------------------------------------------------------------------
+TAHAP 1: PENGECEKAN RADIUS JANGKAUAN ODP (GEOLOCATION CHECK)
+--------------------------------------------------------------------------------
+1. Calon pelanggan dapat mendaftar mandiri via https://portal.gogiga.net.id atau
+   didampingi oleh staf sales melalui link referral resmi:
+   https://portal.gogiga.net.id/?ref=FAJAR-PYK
+2. Calon pelanggan menekan tombol "Gunakan Lokasi Saya Saat Ini" atau menggeser
+   pin penanda pada peta digital tepat di atas atap rumah lokasi pemasangan.
+3. Algoritma backend (Haversine Formula) secara otomatis menghitung jarak lurus
+   ke tiang ODP (Optical Distribution Point) terdekat:
+   a. Jarak <= 250 Meter (COVERED):
+      - Indikator berwarna HIJAU bertuliskan "LOKASI ANDA TERCOVER".
+      - Informasi ODP terdekat ditampilkan (Kode ODP, Jarak dalam meter,
+        dan Sisa Port Tersedia).
+      - Calon pelanggan dapat langsung lanjut ke langkah pemilihan paket.
+   b. Jarak > 250 Meter (OVERDISTANCE):
+      - Indikator berwarna KUNING/ORANYE bertuliskan "SURVEI KHUSUS DIPERLUKAN".
+      - Calon pelanggan tetap dapat mengajukan pendaftaran, data akan masuk ke
+        antrean khusus "PENDING_SURVEY_OVERDISTANCE" untuk ditindaklanjuti tim.
+
+--------------------------------------------------------------------------------
+TAHAP 2: PEMILIHAN PAKET INTERNET RESMI
+--------------------------------------------------------------------------------
+1. Calon pelanggan memilih salah satu paket internet yang tersedia:
+   a. GOGIGA HOME 30  : 30 Mbps Simetris 1:1, Tanpa FUP, Rp 175.000 / bulan
+   b. GOGIGA HOME 50  : 50 Mbps Simetris 1:1, Tanpa FUP, Rp 225.000 / bulan
+   c. GOGIGA HOME 100 : 100 Mbps Simetris 1:1, Tanpa FUP, Rp 325.000 / bulan
+   d. CUSTOM ENTERPRISE: Bandwidth custom (Dedicated), opsi IP Publik Statis,
+      SLA 99.5%, peruntukan kantor instansi, perhotelan, atau sekolah.
+2. Setiap paket retail telah mencakup:
+   - Gratis peminjaman modem ONT Dual Band (2.4 GHz & 5.0 GHz).
+   - Kabel dropcore fiber optik hingga 250 meter.
+   - Dukungan bantuan teknis 24/7 dari tim NOC Payakumbuh.
+
+--------------------------------------------------------------------------------
+TAHAP 3: PENGISIAN DATA IDENTITAS & SYARAT ADMINISTRASI (KYC)
+--------------------------------------------------------------------------------
+1. Calon pelanggan mengisi formulir pendaftaran secara lengkap dan benar:
+   a. Nama Lengkap      : Wajib sesuai dengan Kartu Tanda Penduduk (e-KTP).
+   b. Nomor WhatsApp    : Wajib aktif untuk pengiriman kode OTP, jadwal pasang,
+                          link lacak pesanan, serta tagihan iuran bulanan.
+   c. Alamat Email      : Opsional untuk pengiriman invoice dan salinan kontrak.
+   d. NIK e-KTP         : 16 digit angka valid. Sistem secara otomatis menolak
+                          jika NIK sudah terdaftar aktif (anti-duplikasi).
+   e. Nomor NPWP        : Diisi khusus pelanggan badan usaha / kantor (opsional).
+   f. Alamat Pemasangan : Alamat lengkap (Nama jalan, nomor rumah, RT/RW,
+                          kelurahan/nagari, kecamatan, patokan lokasi).
+   g. Foto e-KTP Asli   : Diunggah jelas, terbaca, tidak terpotong, dan tidak silau.
+   h. Foto Rumah Depan  : Foto tampak depan rumah/bangunan untuk memudahkan teknisi.
+   i. PIC Lapangan      : Jika pemohon tidak berada di rumah saat jam kerja,
+                          wajib mengisi nama dan nomor WhatsApp kontak penghuni.
+2. Kolom Kode Referral:
+   - Jika calon pelanggan membuka link sales, kode referral (contoh: FAJAR-PYK)
+     akan terkunci otomatis.
+   - Calon pelanggan juga dapat memasukkan kode referral teknisi (contoh: NANDO-TECH).
+
+--------------------------------------------------------------------------------
+TAHAP 4: PENANDATANGANAN KONTRAK DIGITAL & TERBIT NOMOR REGISTRASI
+--------------------------------------------------------------------------------
+1. Calon pelanggan membaca ikhtisar Perjanjian Berlangganan Layanan Internet (PBLI):
+   - Ketentuan masa sewa perangkat modem (milik PT GOGIGA MEDIA TEKNOLOGI).
+   - Ketentuan tanggal jatuh tempo pembayaran tagihan bulanan.
+   - Ketentuan isolir sementara jika terjadi keterlambatan pembayaran.
+2. Calon pelanggan membubuhkan tanda tangan digital pada kotak canvas e-Signature.
+3. Calon pelanggan menekan tombol "AJUKAN PEMASANGAN BARU".
+4. Sistem memproses pendaftaran dan menampilkan Nomor Registrasi Resmi:
+   - Format: REG-202609-XXXX (contoh: REG-202609-0012).
+5. Calon pelanggan menerima notifikasi sukses dan dapat langsung memantau status
+   pesanan melalui menu "Lacak Status Registrasi".
+
+--------------------------------------------------------------------------------
+TAHAP 5: VERIFIKASI NETWORK OPERATIONS CENTER (NOC) & DISPATCH SPK
+--------------------------------------------------------------------------------
+1. Kepala NOC & Core FO (Nando Azkia Putra S.Kom / nando_noc) membuka portal internal:
+   https://noc-fo.gogiga.net.id
+2. NOC memeriksa daftar permohonan baru pada menu "Registrasi Pelanggan":
+   a. Memvalidasi kejelasan foto e-KTP dan kesesuaian data NIK.
+   b. Memeriksa titik koordinat GPS pada peta ODP.
+   c. Memeriksa utilisasi port ODP tujuan:
+      - Standar: Maksimal 8 port per box ODP.
+      - Jika used_ports < 8: Status AMAN untuk diterbitkan SPK.
+      - Jika used_ports = 8: ODP PENUH. NOC wajib menjadwalkan pemasangan
+        splitter baru atau mengarahkan ke ODP terdekat lainnya.
+3. Penerbitan Surat Perintah Kerja (SPK):
+   a. NOC memilih teknisi yang bertugas: Nando, Ricci, Zikka, atau Egi.
+   b. NOC menentukan tanggal dan sesi jam pengerjaan (Pagi / Siang / Sore).
+   c. NOC menuliskan instruksi khusus (misal: "Gunakan tiang PLN nomor 12,
+      lintasi kabel lewat gang sebelah masjid").
+   d. Klik "Terbitkan SPK Teknisi". Status registrasi otomatis diperbarui
+      menjadi "INSTALLATION_SCHEDULED".
+
+--------------------------------------------------------------------------------
+TAHAP 6: PELAKSANAAN INSTALASI FISIK OLEH TEKNISI LAPANGAN
+--------------------------------------------------------------------------------
+1. Teknisi bertugas (Nando / Ricci / Zikka / Egi) login di smartphone:
+   https://teknisi.gogiga.net.id
+2. Teknisi membuka detail SPK dan menekan tombol navigasi Google Maps menuju
+   koordinat rumah pelanggan.
+3. Kepatuhan K3 & Penarikan Kabel:
+   a. Teknisi wajib menggunakan APD (Helm keselamatan, Rompi reflektif, Sabuk).
+   b. Penarikan kabel dropcore fiber optik G.657A tahan lekukan:
+      - Melintasi jalan raya wajib memiliki tinggi gantung minimal 5,5 meter.
+      - Setiap tiang wajib dipasang klem pengaman (S-Clamp) dan kabel slack.
+      - Masuk ke dinding rumah wajib dipasang pelindung spiral & drip loop
+        (lengkungan tetesan air agar air hujan tidak merembes ke dalam rumah).
+4. Terminasi & Pengukuran Optical Power Meter (OPM):
+   a. Splicing ujung kabel pada adapter pigtail di box ODP.
+   b. Splicing ujung kabel pada roset optik di dalam ruangan rumah.
+   c. Pengukuran redaman menggunakan OPM (panjang gelombang 1490nm / 1310nm):
+      - STANDAR WAJIB DITERIMA : -16.0 dBm s/d -24.0 dBm
+      - NILAI REDAMAN IDEAL   : -18.0 dBm s/d -20.0 dBm
+      - REDAMAN BURUK / KRITIS: Lebih tinggi dari -25.0 dBm (WAJIB RE-SPLICE!)
+5. Konfigurasi Perangkat ONT Modem:
+   a. Hubungkan patchcord SC-UPC dari roset ke port PON modem ONT.
+   b. Setting nama Wi-Fi (SSID) dan password sesuai permintaan pelanggan.
+   c. Uji koneksi internet (Speedtest) minimal mencapai 90% dari kuota paket.
+   d. Uji latensi ping ke gateway core lokal < 5 ms, tidak ada packet loss.
+
+--------------------------------------------------------------------------------
+TAHAP 7: PENGISIAN BAST DIGITAL & SERAH TERIMA
+--------------------------------------------------------------------------------
+1. Teknisi membuka form "BAST Digital" pada aplikasi portal teknisi:
+   a. Masukkan nilai redaman optik terukur (dBm).
+   b. Masukkan nomor seri modem (Serial Number / SN ONT).
+   c. Masukkan MAC Address modem.
+   d. Masukkan estimasi panjang kabel dropcore yang terpakai (meter).
+   e. Masukkan hasil speedtest download & upload (Mbps).
+   f. Unggah foto layar OPM yang menunjukkan angka redaman valid.
+   g. Unggah foto posisi modem terpasang rapi dengan lampu indikator PON hijau.
+2. Edukasi Pelanggan:
+   - Teknisi mendemonstrasikan koneksi internet di smartphone pelanggan.
+   - Memberikan informasi nomor layanan bantuan CS/NOC GOGIGANET.
+3. Pelanggan memeriksa hasil pekerjaan dan menandatangani BAST Digital langsung
+   pada layar smartphone teknisi.
+4. Teknisi menekan tombol "SUBMIT BAST & AKTIFKAN LAYANAN".
+
+--------------------------------------------------------------------------------
+TAHAP 8: AKTIVASI SISTEM, BILLING, & KOMISI SALES
+--------------------------------------------------------------------------------
+1. Server secara otomatis memproses BAST:
+   a. Status registrasi berubah dari INSTALLATION_SCHEDULED menjadi "ACTIVE".
+   b. Port ODP terpakai (used_ports) bertambah +1 secara otomatis.
+   c. Akun pelanggan tercatat aktif pada sistem core billing (GigaBill).
+2. Sistem Komisi Sales:
+   a. Jika pelanggan mendaftar melalui referral sales (FAJAR-PYK), hak komisi
+      sebesar Rp 50.000 otomatis tercatat dan bertambah di saldo portal Sales.
+   b. Jika pelanggan mendaftar melalui referral teknisi, insentif referral
+      tercatat pada rekap bulanan teknisi bersangkutan.
+3. Notifikasi Pelanggan:
+   - Sistem mengirimkan pesan WhatsApp ucapan selamat datang resmi dari GOGIGANET,
+     lengkap dengan ringkasan paket, tanggal cetak tagihan, dan nomor registrasi.
+
+
+================================================================================
+                    PENANGANAN KONDISI KHUSUS (EXCEPTIONS)
+================================================================================
+
+1. KASUS JARAK ODP MELEBIHI 250 METER (OVERDISTANCE):
+   - Tim Sales wajib menghubungi calon pelanggan dalam waktu maksimal 1x24 jam.
+   - NOC dan Teknisi melakukan survei rute apakah memungkinkan tarikan tiang sisip
+     atau penambahan tiang swadaya.
+   - Jika membutuhkan penambahan tiang atau kabel > 250m, dibuatkan Rincian BoQ.
+   - Jika disetujui Direktur Utama dan disepakati pelanggan, registrasi dilanjutkan.
+   - Jika tidak memungkinkan secara teknis, status diubah menjadi UNCOVERED_WISHLIST
+     dan calon pelanggan diberikan penjelasan secara santun.
+
+2. KASUS ODP PENUH (PORT FULL 8/8):
+   - Teknisi TIDAK DIIZINKAN mencabut kabel pelanggan lain tanpa izin NOC.
+   - NOC segera menerbitkan SPK pekerjaan penambahan splitter modular (1:8 baru)
+     atau menarik feeder ke tiang sebelah dalam kurun waktu maksimal 2 x 24 jam.
+
+3. KASUS REDAMAN BURUK (> -25 dBm):
+   - Teknisi DILARANG KERAS memaksa menyerahkan layanan jika redaman > -25 dBm.
+   - Teknisi wajib membersihkan konektor dengan optik cleaner atau melakukan
+     re-splicing (sambung ulang) hingga redaman mencapai standar aman (<= -24 dBm).
+
+4. KASUS PEMBATALAN PEMASANGAN OLEH PELANGGAN:
+   - Jika saat teknisi tiba pelanggan membatalkan sepihak, teknisi mencatat alasan
+     pembatalan di aplikasi dan melapor ke NOC.
+   - Status registrasi diubah menjadi "CANCELLED" dan perangkat ditarik kembali ke gudang.
+
+
+================================================================================
+                           STANDAR WAKTU LAYANAN (SLA)
+================================================================================
+1. Verifikasi Data Registrasi oleh NOC    : Maksimal 2 Jam setelah pendaftaran
+2. Penerbitan Jadwal & SPK Pemasangan     : Maksimal 4 Jam setelah verifikasi
+3. Durasi Pemasangan Fisik oleh Teknisi   : Rata-rata 1,5 s/d 2,5 Jam per lokasi
+4. Total Waktu dari Daftar hingga Aktif   : Maksimal 1 x 24 Jam (Hari Kerja Normal)
+================================================================================
+               DOKUMEN INI BERLAKU SEJAK TANGGAL DITETAPKAN
+================================================================================

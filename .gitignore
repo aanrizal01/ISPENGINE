@@ -1,0 +1,39 @@
+# Binaries & Executables
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+onboarding-linux*
+gogiga-isp-linux*
+isp-api-linux*
+
+# Local Databases
+*.db
+*.sqlite
+*.sqlite3
+onboarding.db
+
+# Sensitive credentials & environment files
+.env
+.env.*
+!.env.example
+KREDENSIAL_*.txt
+*.pem
+*.key
+*.pfx
+
+# Large binary / document export outputs (keep source code / templates)
+*.pdf
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
