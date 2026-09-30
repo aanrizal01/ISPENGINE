@@ -275,6 +275,20 @@ func (s *PostgresStorage) initSchema(ctx context.Context) error {
 		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_serial_number VARCHAR(64) DEFAULT '';`,
 		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_optical_power DOUBLE PRECISION DEFAULT 0;`,
 		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_status VARCHAR(64) DEFAULT '';`,
+		`CREATE TABLE IF NOT EXISTS cluster_smartolt_configs (
+			id VARCHAR(64) PRIMARY KEY,
+			cluster_name VARCHAR(100) UNIQUE NOT NULL,
+			provider_id VARCHAR(64) NOT NULL DEFAULT '',
+			integration_type VARCHAR(32) NOT NULL DEFAULT 'SMARTOLT',
+			smartolt_url TEXT NOT NULL DEFAULT '',
+			smartolt_api_key TEXT NOT NULL DEFAULT '',
+			olt_id VARCHAR(64) NOT NULL DEFAULT '',
+			zone_id VARCHAR(64) NOT NULL DEFAULT '',
+			zone_name VARCHAR(100) NOT NULL DEFAULT '',
+			is_active BOOLEAN NOT NULL DEFAULT TRUE,
+			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+		);`,
 	}
 
 	for _, q := range queries {
@@ -327,6 +341,18 @@ func (s *PostgresStorage) seedDefaultData(ctx context.Context) error {
 			) ON CONFLICT (code) DO NOTHING;
 		`)
 	}
+
+	// Seed default Cluster SmartOLT Configs
+	_, _ = s.db.ExecContext(ctx, `
+		INSERT INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active)
+		VALUES ('cfg-payakumbuh-001', 'Golden Payakumbuh', 'GNET-BIARO', 'SMARTOLT', 'https://gnet-biaro.smartolt.com', 'b71455fab579457d98d8f4b6d28cfdff', '4', '122', 'GOGIGA', TRUE)
+		ON CONFLICT (cluster_name) DO NOTHING;
+	`)
+	_, _ = s.db.ExecContext(ctx, `
+		INSERT INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active)
+		VALUES ('cfg-biaro-002', 'Golden Net Biaro', 'GNET-BIARO', 'SMARTOLT', 'https://gnet-biaro.smartolt.com', 'b71455fab579457d98d8f4b6d28cfdff', '', '', 'GOGIGA', TRUE)
+		ON CONFLICT (cluster_name) DO NOTHING;
+	`)
 
 	// Seed default superuser and staff multi-role accounts
 	hashOwner, _ := bcrypt.GenerateFromPassword([]byte("Owner@GoGiga2026!"), bcrypt.DefaultCost)
@@ -3097,5 +3123,72 @@ func (s *PostgresStorage) GetBranchByCode(ctx context.Context, code string) (*do
 		return nil, err
 	}
 	return &b, nil
+}
+
+func (s *PostgresStorage) ListClusterSmartOLTConfigs(ctx context.Context) ([]domain.ClusterSmartOLTConfig, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at
+		FROM cluster_smartolt_configs
+		ORDER BY cluster_name ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []domain.ClusterSmartOLTConfig
+	for rows.Next() {
+		var c domain.ClusterSmartOLTConfig
+		if err := rows.Scan(&c.ID, &c.ClusterName, &c.ProviderID, &c.IntegrationType, &c.SmartOLTURL, &c.SmartOLTKey, &c.OLTID, &c.ZoneID, &c.ZoneName, &c.IsActive, &c.CreatedAt, &c.UpdatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, c)
+	}
+	return list, nil
+}
+
+func (s *PostgresStorage) GetClusterSmartOLTConfig(ctx context.Context, clusterName string) (*domain.ClusterSmartOLTConfig, error) {
+	var c domain.ClusterSmartOLTConfig
+	err := s.db.QueryRowContext(ctx, `
+		SELECT id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at
+		FROM cluster_smartolt_configs
+		WHERE LOWER(cluster_name) = LOWER($1)
+		LIMIT 1
+	`, strings.TrimSpace(clusterName)).Scan(
+		&c.ID, &c.ClusterName, &c.ProviderID, &c.IntegrationType, &c.SmartOLTURL, &c.SmartOLTKey, &c.OLTID, &c.ZoneID, &c.ZoneName, &c.IsActive, &c.CreatedAt, &c.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (s *PostgresStorage) SaveClusterSmartOLTConfig(ctx context.Context, cfg *domain.ClusterSmartOLTConfig) error {
+	if cfg.ID == "" {
+		cfg.ID = uuid.NewString()
+	}
+	now := time.Now()
+	_, err := s.db.ExecContext(ctx, `
+		INSERT INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		ON CONFLICT(cluster_name) DO UPDATE SET
+			provider_id = EXCLUDED.provider_id,
+			integration_type = EXCLUDED.integration_type,
+			smartolt_url = EXCLUDED.smartolt_url,
+			smartolt_api_key = EXCLUDED.smartolt_api_key,
+			olt_id = EXCLUDED.olt_id,
+			zone_id = EXCLUDED.zone_id,
+			zone_name = EXCLUDED.zone_name,
+			is_active = EXCLUDED.is_active,
+			updated_at = EXCLUDED.updated_at
+	`, cfg.ID, strings.TrimSpace(cfg.ClusterName), strings.TrimSpace(cfg.ProviderID), cfg.IntegrationType,
+		strings.TrimSpace(cfg.SmartOLTURL), strings.TrimSpace(cfg.SmartOLTKey), strings.TrimSpace(cfg.OLTID),
+		strings.TrimSpace(cfg.ZoneID), strings.TrimSpace(cfg.ZoneName), cfg.IsActive, now, now)
+	return err
+}
+
+func (s *PostgresStorage) DeleteClusterSmartOLTConfig(ctx context.Context, clusterName string) error {
+	_, err := s.db.ExecContext(ctx, `DELETE FROM cluster_smartolt_configs WHERE LOWER(cluster_name) = LOWER($1)`, strings.TrimSpace(clusterName))
+	return err
 }
 

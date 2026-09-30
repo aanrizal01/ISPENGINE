@@ -608,5 +608,28 @@ type ReferralCheckResult struct {
 	CommissionRate float64 `json:"commission_rate,omitempty"`
 }
 
+// ClusterSmartOLTConfig merepresentasikan konfigurasi SmartOLT atau FTTX per wilayah cluster
+type ClusterSmartOLTConfig struct {
+	ID              string    `json:"id"`
+	ClusterName     string    `json:"cluster_name"`
+	ProviderID      string    `json:"provider_id"`       // GNET-BIARO, TELKO-PYK, GOGIGA
+	IntegrationType string    `json:"integration_type"` // SMARTOLT atau FTTX_INTERNAL
+	SmartOLTURL     string    `json:"smartolt_url"`
+	SmartOLTKey     string    `json:"smartolt_api_key"`
+	OLTID           string    `json:"olt_id"`            // OLT ID di SmartOLT (misal "4")
+	ZoneID          string    `json:"zone_id"`           // Zone ID di SmartOLT (misal "122")
+	ZoneName        string    `json:"zone_name"`         // Nama Zone (misal "GOGIGA")
+	IsActive        bool      `json:"is_active"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type TestSmartOLTRequest struct {
+	BaseURL     string `json:"base_url"`
+	SmartOLTURL string `json:"smartolt_url,omitempty"`
+	APIKey      string `json:"api_key"`
+	APIToken    string `json:"api_token,omitempty"`
+}
+
 
 

@@ -114,6 +114,12 @@ type Storage interface {
 	// Staff KPI & Performance
 	GetStaffKPISummary(ctx context.Context, branchCode string) (*domain.StaffKPISummary, error)
 
+	// Cluster SmartOLT Operations
+	ListClusterSmartOLTConfigs(ctx context.Context) ([]domain.ClusterSmartOLTConfig, error)
+	GetClusterSmartOLTConfig(ctx context.Context, clusterName string) (*domain.ClusterSmartOLTConfig, error)
+	SaveClusterSmartOLTConfig(ctx context.Context, cfg *domain.ClusterSmartOLTConfig) error
+	DeleteClusterSmartOLTConfig(ctx context.Context, clusterName string) error
+
 	Close() error
 }
 
@@ -307,6 +313,24 @@ func (s *SQLiteStorage) initSchema() error {
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`)
 	_, _ = s.db.Exec(`CREATE INDEX IF NOT EXISTS idx_customer_otps_phone ON customer_otps(phone);`)
+	_, _ = s.db.Exec(`CREATE TABLE IF NOT EXISTS cluster_smartolt_configs (
+		id TEXT PRIMARY KEY,
+		cluster_name TEXT UNIQUE NOT NULL,
+		provider_id TEXT NOT NULL DEFAULT '',
+		integration_type TEXT NOT NULL DEFAULT 'SMARTOLT',
+		smartolt_url TEXT NOT NULL DEFAULT '',
+		smartolt_api_key TEXT NOT NULL DEFAULT '',
+		olt_id TEXT NOT NULL DEFAULT '',
+		zone_id TEXT NOT NULL DEFAULT '',
+		zone_name TEXT NOT NULL DEFAULT '',
+		is_active INTEGER NOT NULL DEFAULT 1,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);`)
+	_, _ = s.db.Exec(`INSERT OR IGNORE INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active)
+		VALUES ('cfg-payakumbuh-001', 'Golden Payakumbuh', 'GNET-BIARO', 'SMARTOLT', 'https://gnet-biaro.smartolt.com', 'b71455fab579457d98d8f4b6d28cfdff', '4', '122', 'GOGIGA', 1);`)
+	_, _ = s.db.Exec(`INSERT OR IGNORE INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active)
+		VALUES ('cfg-biaro-002', 'Golden Net Biaro', 'GNET-BIARO', 'SMARTOLT', 'https://gnet-biaro.smartolt.com', 'b71455fab579457d98d8f4b6d28cfdff', '', '', 'GOGIGA', 1);`)
 	_, _ = s.db.Exec(`UPDATE registrations SET activated_at = created_at WHERE activated_at IS NULL AND (status = 'ACTIVE' OR status = 'SUSPENDED');`)
 	_, _ = s.db.Exec(`ALTER TABLE odp_nodes ADD COLUMN provider_id TEXT DEFAULT 'GNET-BIARO';`)
 	_, _ = s.db.Exec(`ALTER TABLE odp_nodes ADD COLUMN provider_name TEXT DEFAULT 'PT. GNET BIARO AKSES';`)
@@ -3344,5 +3368,80 @@ func (s *SQLiteStorage) GetBranchByCode(ctx context.Context, code string) (*doma
 		}
 	}
 	return nil, sql.ErrNoRows
+}
+
+func (s *SQLiteStorage) ListClusterSmartOLTConfigs(ctx context.Context) ([]domain.ClusterSmartOLTConfig, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at
+		FROM cluster_smartolt_configs
+		ORDER BY cluster_name ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []domain.ClusterSmartOLTConfig
+	for rows.Next() {
+		var c domain.ClusterSmartOLTConfig
+		var isActiveInt int
+		if err := rows.Scan(&c.ID, &c.ClusterName, &c.ProviderID, &c.IntegrationType, &c.SmartOLTURL, &c.SmartOLTKey, &c.OLTID, &c.ZoneID, &c.ZoneName, &isActiveInt, &c.CreatedAt, &c.UpdatedAt); err != nil {
+			return nil, err
+		}
+		c.IsActive = isActiveInt == 1
+		list = append(list, c)
+	}
+	return list, nil
+}
+
+func (s *SQLiteStorage) GetClusterSmartOLTConfig(ctx context.Context, clusterName string) (*domain.ClusterSmartOLTConfig, error) {
+	var c domain.ClusterSmartOLTConfig
+	var isActiveInt int
+	err := s.db.QueryRowContext(ctx, `
+		SELECT id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at
+		FROM cluster_smartolt_configs
+		WHERE LOWER(cluster_name) = LOWER(?)
+		LIMIT 1
+	`, strings.TrimSpace(clusterName)).Scan(
+		&c.ID, &c.ClusterName, &c.ProviderID, &c.IntegrationType, &c.SmartOLTURL, &c.SmartOLTKey, &c.OLTID, &c.ZoneID, &c.ZoneName, &isActiveInt, &c.CreatedAt, &c.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	c.IsActive = isActiveInt == 1
+	return &c, nil
+}
+
+func (s *SQLiteStorage) SaveClusterSmartOLTConfig(ctx context.Context, cfg *domain.ClusterSmartOLTConfig) error {
+	if cfg.ID == "" {
+		cfg.ID = uuid.NewString()
+	}
+	activeInt := 0
+	if cfg.IsActive {
+		activeInt = 1
+	}
+	now := time.Now()
+	_, err := s.db.ExecContext(ctx, `
+		INSERT INTO cluster_smartolt_configs (id, cluster_name, provider_id, integration_type, smartolt_url, smartolt_api_key, olt_id, zone_id, zone_name, is_active, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(cluster_name) DO UPDATE SET
+			provider_id = excluded.provider_id,
+			integration_type = excluded.integration_type,
+			smartolt_url = excluded.smartolt_url,
+			smartolt_api_key = excluded.smartolt_api_key,
+			olt_id = excluded.olt_id,
+			zone_id = excluded.zone_id,
+			zone_name = excluded.zone_name,
+			is_active = excluded.is_active,
+			updated_at = excluded.updated_at
+	`, cfg.ID, strings.TrimSpace(cfg.ClusterName), strings.TrimSpace(cfg.ProviderID), cfg.IntegrationType,
+		strings.TrimSpace(cfg.SmartOLTURL), strings.TrimSpace(cfg.SmartOLTKey), strings.TrimSpace(cfg.OLTID),
+		strings.TrimSpace(cfg.ZoneID), strings.TrimSpace(cfg.ZoneName), activeInt, now, now)
+	return err
+}
+
+func (s *SQLiteStorage) DeleteClusterSmartOLTConfig(ctx context.Context, clusterName string) error {
+	_, err := s.db.ExecContext(ctx, `DELETE FROM cluster_smartolt_configs WHERE LOWER(cluster_name) = LOWER(?)`, strings.TrimSpace(clusterName))
+	return err
 }
 
