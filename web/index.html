@@ -1701,11 +1701,25 @@
                 </div>
               </div>
 
-              <button type="submit" id="btn-save-cust-wifi" class="w-full py-2.5 px-4 rounded-xl text-xs font-mono font-bold text-white bg-purple-600 hover:bg-purple-700 shadow-sm transition flex items-center justify-center gap-2 active:scale-98 mt-2">
+              <button type="submit" id="btn-save-cust-wifi" class="w-full py-2.5 px-4 rounded-md text-xs font-mono font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs transition flex items-center justify-center gap-2 active:scale-98 mt-2 cursor-pointer">
                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
-                <span>SIMPAN PERUBAHAN WIFI (TR-069)</span>
+                <span>SIMPAN PERUBAHAN WIFI</span>
               </button>
             </form>
+
+            <!-- Baris Bawah: Perangkat Terhubung (Connected Devices) -->
+            <div class="col-span-1 lg:col-span-2 bg-slate-50/70 p-4 rounded-lg border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-mono uppercase font-bold text-slate-600 flex items-center gap-1.5">
+                  <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-600"></i>
+                  <span>Perangkat Terhubung ke Modem (Host Wi-Fi &amp; LAN)</span>
+                </span>
+                <span id="cust-ont-devices-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 text-slate-700">0 Perangkat</span>
+              </div>
+              <div id="cust-ont-devices-content" class="text-xs">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
           </div>
         </div>
 
@@ -11277,35 +11291,7 @@
         return;
       }
 
-      // ── CHECK INFRASTRUCTURE / FTTX INTEGRATION STATUS ──
-      // If network segment does NOT have direct self-service FTTX integration (e.g. GNET Biaro 1):
-      // Keep 100% white-label: Inform that modem & Wi-Fi settings are managed centrally via Customer Care & NOC
-      if (!reg.has_fttx_integration) {
-        if (ontBadge) {
-          ontBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wide bg-blue-100 text-blue-800 border border-blue-200";
-          ontBadge.innerText = "CUSTOMER CARE & NOC";
-        }
-        if (nocBox) nocBox.classList.remove('hidden');
-        if (pendingBox) pendingBox.classList.add('hidden');
-        if (activeBox) activeBox.classList.add('hidden');
-        if (rebootBtn) rebootBtn.classList.add('hidden');
-
-        const odpEl = document.getElementById('cust-ont-noc-odp');
-        if (odpEl) odpEl.innerText = reg.nearest_odp_code || '-';
-
-        const waBtn = document.getElementById('btn-cust-ont-wa-care');
-        if (waBtn) {
-          const text = `Halo Customer Care GOGIGANET, saya ${reg.full_name || 'Pelanggan'} (${reg.registration_no || ''}). Saya ingin memohon bantuan pengaturan nama/kata sandi Wi-Fi untuk layanan saya.`;
-          waBtn.href = `https://wa.me/628116666755?text=${encodeURIComponent(text)}`;
-        }
-        if (window.lucide) lucide.createIcons();
-        return;
-      }
-
-      // ── IF FTTX COMMAND CENTER INTEGRATED (e.g. GNET2) ──
-      if (nocBox) nocBox.classList.add('hidden');
-      if (rebootBtn) rebootBtn.classList.remove('hidden');
-
+      // ── QUERY LIVE ONT STATUS (SMARTOLT / FTTX ACS) ──
       try {
         const ontRes = await fetch(`/api/v1/public/customer/ont/${encodeURIComponent(reg.registration_no)}`);
         const ontJson = await ontRes.json();
@@ -11314,13 +11300,18 @@
           const ont = ontJson.data;
           currentCustomerONT = ont;
 
+          if (nocBox) nocBox.classList.add('hidden');
           if (pendingBox) pendingBox.classList.add('hidden');
           if (activeBox) activeBox.classList.remove('hidden');
-          if (rebootBtn) rebootBtn.disabled = false;
+          if (rebootBtn) {
+            rebootBtn.classList.remove('hidden');
+            rebootBtn.disabled = false;
+          }
 
           if (ontBadge) {
+            const isSmart = ont.source && ont.source.includes('SmartOLT');
             ontBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200";
-            ontBadge.innerText = "ONLINE (TR-069 AKTIF)";
+            ontBadge.innerText = isSmart ? `ONLINE (${ont.status || 'SMARTOLT'})` : "ONLINE (TR-069 AKTIF)";
           }
 
           const snEl = document.getElementById('cust-ont-sn');
@@ -11358,22 +11349,99 @@
             ipUptimeEl.innerText = `${ont.ip_address || '100.64.x.x'} • Aktif ${days > 0 ? days + ' Hari' : '1 Jam'}`;
           }
 
-          if (ssidInput) ssidInput.value = ont.wifi_ssid || 'GigaNet-Home';
-          if (passInput) passInput.value = ont.wifi_password || '';
+          if (ssidInput && !ssidInput.value) ssidInput.value = ont.wifi_ssid || 'GigaNet-Home';
+          if (passInput && !passInput.value) passInput.value = ont.wifi_password || '';
 
-        } else {
-          // No ONT found in FTTX or in provisioning queue
-          if (bast && bast.ont_serial_number) {
-            showPendingONTBox(
-              "Modem ONT Terpasang Lapangan",
-              `Perangkat ONT ${bast.ont_serial_number} telah dipasang oleh teknisi. Redaman optik terukur: ${bast.optical_power_dbm || '-'} dBm. Sinkronisasi TR-069 FTTX Command Center dalam proses antrean aktivasi.`
-            );
-          } else {
-            showPendingONTBox(
-              "Menunggu Pemasangan Modem ONT oleh Teknisi",
-              "Pengaturan WiFi mandiri dan pemantauan sinyal optik TR-069 akan otomatis aktif di sini segera setelah teknisi menyelesaikan pemasangan modem di lokasi Anda."
-            );
+          // Render Connected Devices Section
+          const devBadge = document.getElementById('cust-ont-devices-badge');
+          const devContent = document.getElementById('cust-ont-devices-content');
+          if (devContent) {
+            if (Array.isArray(ont.connected_devices) && ont.connected_devices.length > 0) {
+              if (devBadge) devBadge.textContent = `${ont.connected_devices.length} Perangkat`;
+              devContent.innerHTML = `
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left font-mono text-[11px]">
+                    <thead class="bg-white text-slate-500 uppercase border-b border-slate-200">
+                      <tr>
+                        <th class="py-2 px-3">Nama Perangkat</th>
+                        <th class="py-2 px-3">IP Address</th>
+                        <th class="py-2 px-3">MAC Address</th>
+                        <th class="py-2 px-3">Interface</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                      ${ont.connected_devices.map(d => `
+                        <tr class="hover:bg-slate-50">
+                          <td class="py-2 px-3 font-bold text-slate-800">${d.hostname || d.name || 'Perangkat Tanpa Nama'}</td>
+                          <td class="py-2 px-3 text-blue-700 font-mono">${d.ip_address || '-'}</td>
+                          <td class="py-2 px-3 text-slate-500 font-mono">${d.mac_address || '-'}</td>
+                          <td class="py-2 px-3"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px]">${d.interface || 'Wi-Fi / LAN'}</span></td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            } else if (ont.connected_devices_notice) {
+              if (devBadge) devBadge.textContent = "Status TR-069";
+              devContent.innerHTML = `
+                <div class="p-3 bg-white rounded-lg border border-slate-200 space-y-1 font-sans">
+                  <div class="flex items-center gap-2 text-slate-800 font-semibold text-xs">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
+                    <span>Informasi Pembacaan Daftar Perangkat</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 leading-relaxed">
+                    Pengaturan nama Wi-Fi dan kata sandi di atas dapat Anda ubah secara langsung. Untuk menampilkan rincian nama HP/laptop yang tersambung, sistem OLT memerlukan profil TR-069 aktif pada perangkat modem ini.
+                  </p>
+                </div>
+              `;
+            } else {
+              if (devBadge) devBadge.textContent = "0 Perangkat";
+              devContent.innerHTML = `
+                <div class="py-3 text-center text-slate-400 font-mono text-[11px]">
+                  Belum ada riwayat perangkat yang terdeteksi.
+                </div>
+              `;
+            }
           }
+          if (window.lucide) lucide.createIcons();
+          return;
+        }
+
+        // If network segment does NOT have direct self-service FTTX integration
+        if (ontJson.data && (ontJson.data.has_fttx_integration === false || ontJson.data.status === 'CUSTOMER_CARE_MANAGED')) {
+          if (ontBadge) {
+            ontBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wide bg-blue-100 text-blue-800 border border-blue-200";
+            ontBadge.innerText = "CUSTOMER CARE & NOC";
+          }
+          if (nocBox) nocBox.classList.remove('hidden');
+          if (pendingBox) pendingBox.classList.add('hidden');
+          if (activeBox) activeBox.classList.add('hidden');
+          if (rebootBtn) rebootBtn.classList.add('hidden');
+
+          const odpEl = document.getElementById('cust-ont-noc-odp');
+          if (odpEl) odpEl.innerText = reg.nearest_odp_code || '-';
+
+          const waBtn = document.getElementById('btn-cust-ont-wa-care');
+          if (waBtn) {
+            const text = `Halo Customer Care GOGIGANET, saya ${reg.full_name || 'Pelanggan'} (${reg.registration_no || ''}). Saya ingin memohon bantuan pengaturan nama/kata sandi Wi-Fi untuk layanan saya.`;
+            waBtn.href = `https://wa.me/628116666755?text=${encodeURIComponent(text)}`;
+          }
+          if (window.lucide) lucide.createIcons();
+          return;
+        }
+
+        // No ONT found in FTTX or in provisioning queue
+        if (bast && bast.ont_serial_number) {
+          showPendingONTBox(
+            "Modem ONT Terpasang Lapangan",
+            `Perangkat ONT ${bast.ont_serial_number} telah dipasang oleh teknisi. Redaman optik terukur: ${bast.optical_power_dbm || '-'} dBm. Sinkronisasi TR-069 FTTX Command Center dalam proses antrean aktivasi.`
+          );
+        } else {
+          showPendingONTBox(
+            "Menunggu Pemasangan Modem ONT oleh Teknisi",
+            "Pengaturan WiFi mandiri dan pemantauan sinyal optik TR-069 akan otomatis aktif di sini segera setelah teknisi menyelesaikan pemasangan modem di lokasi Anda."
+          );
         }
       } catch (err) {
         console.error("Failed to load ONT details:", err);
@@ -11554,8 +11622,8 @@
     async function handleSaveCustomerWiFi(e) {
       if (e) e.preventDefault();
       const reg = currentCustomerPortalData ? currentCustomerPortalData.registration : null;
-      if (!reg || (!reg.has_fttx_integration && !currentCustomerONT)) {
-        alert('Pengaturan Wi-Fi mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.');
+      if (!reg || !currentCustomerONT) {
+        alert('Data modem ONT belum siap atau belum terdeteksi. Silakan coba sesaat lagi.');
         return;
       }
 
@@ -11608,8 +11676,8 @@
 
     async function rebootCustomerModem() {
       const reg = currentCustomerPortalData ? currentCustomerPortalData.registration : null;
-      if (!reg || (!reg.has_fttx_integration && !currentCustomerONT)) {
-        alert('Reboot modem mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.');
+      if (!reg || !currentCustomerONT) {
+        alert('Data modem ONT belum siap atau belum terdeteksi. Silakan coba sesaat lagi.');
         return;
       }
 

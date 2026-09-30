@@ -510,12 +510,23 @@ func (s *OnboardingService) enrichRegistrationProvider(ctx context.Context, reg 
 		return
 	}
 	reg.HasFTTXIntegration = false
+	if reg.ONTSerialNumber != "" {
+		reg.HasFTTXIntegration = true
+		return
+	}
 	if reg.NearestODPCode != nil && *reg.NearestODPCode != "" {
 		if odp, err := s.repo.GetODPByCode(ctx, *reg.NearestODPCode); err == nil && odp != nil {
 			pID := strings.ToUpper(strings.TrimSpace(odp.ProviderID))
 			pName := strings.ToUpper(strings.TrimSpace(odp.ProviderName))
 			if pID == "GNET2" || strings.Contains(pName, "(2)") || strings.Contains(pID, "GNET-2") {
 				reg.HasFTTXIntegration = true
+				return
+			}
+			if odp.ClusterArea != "" {
+				if cfg, err := s.repo.GetClusterSmartOLTConfig(ctx, odp.ClusterArea); err == nil && cfg != nil && cfg.IsActive {
+					reg.HasFTTXIntegration = true
+					return
+				}
 			}
 		}
 	}
