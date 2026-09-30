@@ -7071,6 +7071,78 @@
           </div>
         </div>
 
+        <!-- KREDENSIAL PPPOE UNTUK SETTING MODEM ONT DI LOKASI -->
+        <div class="border border-slate-800 bg-slate-900 text-white rounded-md p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="key" class="w-4 h-4 text-blue-400"></i>
+              <span>Kredensial Dial PPPoE Modem ONT</span>
+            </span>
+            <span id="bast-badge-service-type" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
+              GOGIGANET FTTH
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            Gunakan akun di bawah ini untuk konfigurasi koneksi WAN PPPoE pada modem ONT pelanggan.
+          </p>
+
+          <!-- Upstream Dial (Khusus Jartup) -->
+          <div id="bast-upstream-display-card" class="hidden p-2.5 bg-purple-950/40 rounded border border-purple-800/40 space-y-1.5">
+            <div class="flex items-center justify-between text-[10px] font-mono text-purple-300">
+              <span class="font-bold">Dial Upstream Jartup (<span id="bast-upstream-partner-label">Mitra</span>):</span>
+              <span class="text-[9px] text-slate-400">Wajib di WAN ONT</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <div class="bg-black/50 px-2.5 py-1.5 rounded flex items-center justify-between border border-white/10">
+                <div class="truncate mr-1">
+                  <span class="text-[9px] text-slate-400 block font-sans">User Upstream:</span>
+                  <span id="bast-pppoe-upstream-user-val" class="text-white select-all font-bold break-all">-</span>
+                </div>
+                <button type="button" onclick="copyToClipboard(document.getElementById('bast-pppoe-upstream-user-val').innerText, 'Username Upstream disalin!')" title="Salin" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+              <div class="bg-black/50 px-2.5 py-1.5 rounded flex items-center justify-between border border-white/10">
+                <div class="truncate mr-1">
+                  <span class="text-[9px] text-slate-400 block font-sans">Pass Upstream:</span>
+                  <span id="bast-pppoe-upstream-pass-val" class="text-amber-300 select-all font-bold">-</span>
+                </div>
+                <button type="button" onclick="copyToClipboard(document.getElementById('bast-pppoe-upstream-pass-val').innerText, 'Password Upstream disalin!')" title="Salin" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GoGiga PPPoE Card -->
+          <div class="p-2.5 bg-slate-800/80 rounded border border-slate-700 space-y-1.5">
+            <div class="flex items-center justify-between text-[10px] font-mono text-slate-300">
+              <span id="bast-gogiga-pppoe-label" class="font-bold">Akun Dial WAN ONT (GoGiga FTTH):</span>
+              <span class="text-[9px] text-slate-400">Server FreeRADIUS BNG</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <div class="bg-slate-900/90 px-2.5 py-1.5 rounded flex items-center justify-between border border-slate-700">
+                <div class="truncate mr-1">
+                  <span class="text-[9px] text-slate-400 block font-sans">Username PPPoE:</span>
+                  <span id="bast-pppoe-user-val" class="text-emerald-400 select-all font-bold break-all">-</span>
+                </div>
+                <button type="button" onclick="copyToClipboard(document.getElementById('bast-pppoe-user-val').innerText, 'Username PPPoE disalin!')" title="Salin Username" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+              <div class="bg-slate-900/90 px-2.5 py-1.5 rounded flex items-center justify-between border border-slate-700">
+                <div class="truncate mr-1">
+                  <span class="text-[9px] text-slate-400 block font-sans">Password PPPoE:</span>
+                  <span id="bast-pppoe-pass-val" class="text-amber-300 select-all font-bold">-</span>
+                </div>
+                <button type="button" onclick="copyToClipboard(document.getElementById('bast-pppoe-pass-val').innerText, 'Password PPPoE disalin!')" title="Salin Password" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 1. PENGUKURAN REDAMAN OPTIK (OPM) DENGAN LIVE SOP VALIDATION -->
         <div class="space-y-2 border border-slate-200 rounded-md p-4 bg-white">
           <div class="flex items-center justify-between">
@@ -14106,10 +14178,27 @@
         if (found) return found;
       }
 
+      // 2b. Cari di window.adminRegistrationsData
+      if (Array.isArray(window.adminRegistrationsData)) {
+        const found = window.adminRegistrationsData.find(r => r && (r.id === targetStr || r.registration_no === targetStr || r.phone === targetStr));
+        if (found) return found;
+      }
+
       // 3. Cari di salesRegistrationsList
       if (Array.isArray(salesRegistrationsList)) {
         const found = salesRegistrationsList.find(r => r && (r.id === targetStr || r.registration_no === targetStr || r.phone === targetStr));
         if (found) return found;
+      }
+
+      // 3b. Cari di technicianWorkOrders (untuk akses langsung Teknisi Lapangan)
+      if (typeof technicianWorkOrders !== 'undefined' && Array.isArray(technicianWorkOrders)) {
+        const woMatch = technicianWorkOrders.find(w => w && (
+          w.id === targetStr || 
+          w.order_no === targetStr || 
+          w.registration_id === targetStr ||
+          (w.registration && (w.registration.id === targetStr || w.registration.registration_no === targetStr || w.registration.phone === targetStr))
+        ));
+        if (woMatch && woMatch.registration) return woMatch.registration;
       }
 
       // 4. Fallback: Lookup on-demand via tracking API
@@ -20401,29 +20490,116 @@
 
               <!-- Technical Details Specs Grid -->
               <div class="grid grid-cols-3 gap-2 text-[11px]">
-                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
                   <span class="block text-[10px] font-mono text-slate-400 uppercase">Paket</span>
                   <strong class="text-slate-800 font-sans truncate block">${reg.selected_plan_name || '-'}</strong>
                 </div>
-                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
                   <span class="block text-[10px] font-mono text-slate-400 uppercase">ODP / Jarak</span>
                   <strong class="text-blue-700 font-mono text-[11px] truncate block">${reg.nearest_odp_code || '-'} (~${Math.round(reg.distance_to_odp_meters || 0)}m)</strong>
                 </div>
-                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
                   <span class="block text-[10px] font-mono text-slate-400 uppercase">E-Contract</span>
                   <strong class="${reg.contract_signed_at ? 'text-emerald-700' : 'text-slate-500'} font-sans text-[11px] flex items-center gap-0.5">
                     ${reg.contract_signed_at ? '&check; Sudah TTD' : 'Belum TTD'}
                   </strong>
                 </div>
               </div>
+
+              <!-- Kredensial Akun PPPoE Modem ONT (Untuk Setting Manual Teknisi di Lapangan) -->
+              <div class="p-3 rounded-md bg-slate-900 text-white border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-blue-400"></i>
+                    <span>Akun PPPoE Modem ONT</span>
+                  </span>
+                  ${reg.upstream_pppoe_username ? `
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                      JARTUP (${reg.partner_code || 'WHOLESALE'})
+                    </span>
+                  ` : `
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                      GOGIGA FTTH
+                    </span>
+                  `}
+                </div>
+
+                ${reg.upstream_pppoe_username ? `
+                  <!-- Upstream PPPoE Dial (Mitra Jartup/Bitstream) -->
+                  <div class="p-2 bg-purple-950/40 rounded border border-purple-800/40 space-y-1">
+                    <div class="flex items-center justify-between text-[10px] font-mono text-purple-300">
+                      <span class="font-bold">Dial Upstream Jartup (${reg.partner_code || 'Mitra'}):</span>
+                      <span class="text-[9px] text-slate-400">Input di WAN ONT</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-mono">
+                      <div class="bg-black/50 px-2 py-1.5 rounded flex items-center justify-between border border-white/10">
+                        <div class="truncate mr-1">
+                          <span class="text-[9px] text-slate-400 block font-sans">User Upstream:</span>
+                          <span class="text-white select-all font-bold break-all">${reg.upstream_pppoe_username}</span>
+                        </div>
+                        <button type="button" onclick="copyToClipboard('${reg.upstream_pppoe_username}', 'Username Upstream disalin!')" title="Salin" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                      <div class="bg-black/50 px-2 py-1.5 rounded flex items-center justify-between border border-white/10">
+                        <div class="truncate mr-1">
+                          <span class="text-[9px] text-slate-400 block font-sans">Pass Upstream:</span>
+                          <span class="text-amber-300 select-all font-bold">${reg.upstream_pppoe_password || '-'}</span>
+                        </div>
+                        ${reg.upstream_pppoe_password ? `
+                          <button type="button" onclick="copyToClipboard('${reg.upstream_pppoe_password}', 'Password Upstream disalin!')" title="Salin" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                          </button>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                ` : ''}
+
+                <!-- Akun PPPoE Resmi GoGiga FTTH -->
+                <div class="p-2 bg-slate-800/80 rounded border border-slate-700 space-y-1">
+                  <div class="flex items-center justify-between text-[10px] font-mono text-slate-300">
+                    <span class="font-bold">${reg.upstream_pppoe_username ? 'Akun Master GoGiga (FreeRADIUS):' : 'Akun Dial WAN ONT (PPPoE GoGiga):'}</span>
+                    <span class="text-[9px] text-slate-400">${reg.upstream_pppoe_username ? 'Autentikasi Master' : 'Input di WAN ONT'}</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-mono">
+                    <div class="bg-slate-900/90 px-2 py-1.5 rounded flex items-center justify-between border border-slate-700">
+                      <div class="truncate mr-1">
+                        <span class="text-[9px] text-slate-400 block font-sans">Username:</span>
+                        <span class="text-emerald-400 select-all font-bold break-all">${reg.pppoe_username || '-'}</span>
+                      </div>
+                      ${reg.pppoe_username ? `
+                        <button type="button" onclick="copyToClipboard('${reg.pppoe_username}', 'Username PPPoE disalin!')" title="Salin Username" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                    <div class="bg-slate-900/90 px-2 py-1.5 rounded flex items-center justify-between border border-slate-700">
+                      <div class="truncate mr-1">
+                        <span class="text-[9px] text-slate-400 block font-sans">Password:</span>
+                        <span class="text-amber-300 select-all font-bold">${reg.pppoe_password || '-'}</span>
+                      </div>
+                      ${reg.pppoe_password ? `
+                        <button type="button" onclick="copyToClipboard('${reg.pppoe_password}', 'Password PPPoE disalin!')" title="Salin Password" class="p-1 hover:bg-white/10 rounded text-slate-300 shrink-0">
+                          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Action Button Footer -->
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
               <span class="text-[10px] font-mono text-slate-400">
                 ${isCompleted ? 'Aktif sejak: ' + new Date(wo.updated_at || wo.created_at).toLocaleDateString('id-ID') : 'Jadwal: Segera'}
               </span>
-              <div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="openAdminDetailModal('${reg.id || wo.registration_id}')" title="Lihat detail permohonan pelanggan" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-md text-xs font-mono font-bold flex items-center gap-1.5 transition shadow-2xs">
+                  <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-600"></i>
+                  <span>Lihat Detail</span>
+                </button>
                 ${isCompleted ? `
                   <button type="button" onclick="openViewBastModal('${wo.id}')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-semibold font-mono flex items-center gap-1.5 transition shadow-xs">
                     <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -20832,6 +21008,37 @@
       const bastUpstreamPass = document.getElementById('bast-upstream-pppoe-pass');
       if (bastUpstreamUser) bastUpstreamUser.value = reg.upstream_pppoe_username || '';
       if (bastUpstreamPass) bastUpstreamPass.value = reg.upstream_pppoe_password || '';
+
+      // Tampilkan Kredensial PPPoE untuk Konfigurasi Modem ONT Teknisi
+      const bastPppoeUser = document.getElementById('bast-pppoe-user-val');
+      const bastPppoePass = document.getElementById('bast-pppoe-pass-val');
+      if (bastPppoeUser) bastPppoeUser.innerText = reg.pppoe_username || '-';
+      if (bastPppoePass) bastPppoePass.innerText = reg.pppoe_password || '-';
+
+      const bastUpstreamCard = document.getElementById('bast-upstream-display-card');
+      const bastBadgeType = document.getElementById('bast-badge-service-type');
+      const bastGogigaLabel = document.getElementById('bast-gogiga-pppoe-label');
+      if (reg.upstream_pppoe_username) {
+        if (bastUpstreamCard) bastUpstreamCard.classList.remove('hidden');
+        if (bastBadgeType) {
+          bastBadgeType.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30';
+          bastBadgeType.innerText = `JARTUP (${reg.partner_code || 'WHOLESALE'})`;
+        }
+        const partnerLabel = document.getElementById('bast-upstream-partner-label');
+        if (partnerLabel) partnerLabel.innerText = reg.partner_code || 'Mitra';
+        const upUserEl = document.getElementById('bast-pppoe-upstream-user-val');
+        const upPassEl = document.getElementById('bast-pppoe-upstream-pass-val');
+        if (upUserEl) upUserEl.innerText = reg.upstream_pppoe_username;
+        if (upPassEl) upPassEl.innerText = reg.upstream_pppoe_password || '-';
+        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Master GoGiga (FreeRADIUS):';
+      } else {
+        if (bastUpstreamCard) bastUpstreamCard.classList.add('hidden');
+        if (bastBadgeType) {
+          bastBadgeType.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30';
+          bastBadgeType.innerText = 'GOGIGANET FTTH';
+        }
+        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Dial WAN ONT (GoGiga FTTH):';
+      }
       
       removeBastHousePhoto();
       removeBastOntPhoto();
