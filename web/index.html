@@ -11309,9 +11309,8 @@
           }
 
           if (ontBadge) {
-            const isSmart = ont.source && ont.source.includes('SmartOLT');
             ontBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200";
-            ontBadge.innerText = isSmart ? `ONLINE (${ont.status || 'SMARTOLT'})` : "ONLINE (TR-069 AKTIF)";
+            ontBadge.innerText = "ONLINE (TERHUBUNG)";
           }
 
           const snEl = document.getElementById('cust-ont-sn');
@@ -11637,8 +11636,7 @@
       const origHtml = btn ? btn.innerHTML : '';
       if (btn) {
         btn.disabled = true;
-        const targetServer = (currentCustomerONT && currentCustomerONT.source) ? 'SMARTOLT' : 'FTTX ACS';
-        btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>MENGIRIM KE ${targetServer}...</span>`;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>MENYIMPAN KE MODEM...</span>`;
         lucide.createIcons();
       }
 
@@ -11654,8 +11652,7 @@
         });
         const json = await res.json();
         if (json.success) {
-          const srv = (currentCustomerONT && currentCustomerONT.source) ? currentCustomerONT.source : 'TR-069 FTTX Command Center';
-          alert(`✓ BERHASIL DISIMPAN!\n\nNama dan kata sandi WiFi telah berhasil dikirim via ${srv} ke modem ONT Anda. Modem akan menerapkan konfigurasi baru.`);
+          alert('✓ BERHASIL DISIMPAN!\n\nNama dan kata sandi WiFi telah berhasil dikirim ke modem ONT Anda. Modem akan menerapkan konfigurasi baru.');
           if (currentCustomerONT) {
             currentCustomerONT.wifi_ssid = ssid;
             currentCustomerONT.wifi_password = password;
@@ -11702,7 +11699,7 @@
         });
         const json = await res.json();
         if (json.success) {
-          alert('✓ PERINTAH RESTART BERHASIL DIKIRIM!\n\nPerintah restart modem telah dikirim ke OLT/modem. Silakan tunggu sekitar 1-2 menit hingga lampu PON/Internet kembali menyala normal.');
+          alert('✓ PERINTAH RESTART BERHASIL DIKIRIM!\n\nPerintah restart modem telah dikirim ke perangkat modem. Silakan tunggu sekitar 1-2 menit hingga lampu PON/Internet kembali menyala normal.');
         } else {
           alert('Gagal me-restart modem: ' + (json.message || json.error || 'Terjadi kesalahan'));
         }

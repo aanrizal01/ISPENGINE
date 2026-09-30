@@ -811,7 +811,7 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Direct SmartOLT Live Diagnostic check if configured
-	smartClient, smartCfg := s.resolveSmartOLTClientForRegistration(r.Context(), reg)
+	smartClient, _ := s.resolveSmartOLTClientForRegistration(r.Context(), reg)
 	if smartClient != nil && smartClient.IsConfigured() {
 		if diag, err := smartClient.GetONUSignalDiagnostics(r.Context(), sn); err == nil && diag != nil {
 			hosts, hostsErr := smartClient.GetONURouterHosts(r.Context(), sn)
@@ -820,12 +820,7 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 				hostsNotice = hostsErr.Error()
 			}
 
-			source := "SmartOLT"
-			if smartCfg != nil && smartCfg.ProviderID != "" {
-				source = fmt.Sprintf("SmartOLT %s", smartCfg.ProviderID)
-			}
-
-			response.Success(w, "Telemetri ONT SmartOLT Jartaplok", map[string]interface{}{
+			response.Success(w, "Telemetri Modem ONT GOGIGANET", map[string]interface{}{
 				"has_fttx_integration":     true,
 				"can_configure_wifi":       true,
 				"can_reboot":               true,
@@ -839,7 +834,7 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 				"ip_address":               diag.WANIPv4,
 				"status":                   diag.Status,
 				"signal_quality":           diag.SignalQuality,
-				"source":                   source,
+				"source":                   "GOGIGANET Optical Network",
 				"connected_devices":        hosts,
 				"connected_devices_notice": hostsNotice,
 			})
@@ -978,21 +973,21 @@ func (s *Server) handleCustomerUpdateONTWifi(w http.ResponseWriter, r *http.Requ
 	// 1. Prioritize Direct SmartOLT Wi-Fi update (OMCI)
 	smartClient, smartCfg := s.resolveSmartOLTClientForRegistration(r.Context(), reg)
 	if smartClient != nil && smartClient.IsConfigured() {
-		source := "SmartOLT"
+		provName := "GOGIGANET"
 		if smartCfg != nil && smartCfg.ProviderID != "" {
-			source = fmt.Sprintf("SmartOLT %s", smartCfg.ProviderID)
+			provName = smartCfg.ProviderID
 		}
 		if err := smartClient.SetONUWifi(r.Context(), sn, reqBody.SSID, reqBody.Password); err == nil {
-			response.Success(w, fmt.Sprintf("Nama Wi-Fi dan kata sandi modem %s berhasil diperbarui langsung ke %s", sn, source), map[string]interface{}{
+			response.Success(w, fmt.Sprintf("Nama Wi-Fi dan kata sandi modem %s berhasil diperbarui", sn), map[string]interface{}{
 				"serial_number": sn,
 				"wifi_ssid":     reqBody.SSID,
-				"source":        source,
+				"status":        "UPDATED",
 			})
 			return
 		} else {
-			log.Printf("[%s] SetONUWifi failed on %s: %v", source, sn, err)
+			log.Printf("[%s] SetONUWifi failed on %s: %v", provName, sn, err)
 			if !reg.HasFTTXIntegration {
-				response.Error(w, http.StatusBadGateway, "Gagal memperbarui Wi-Fi ke "+source+": "+err.Error(), "smartolt_error")
+				response.Error(w, http.StatusBadGateway, "Gagal memperbarui konfigurasi Wi-Fi modem: "+err.Error(), "modem_error")
 				return
 			}
 		}
@@ -1071,21 +1066,20 @@ func (s *Server) handleCustomerRebootONT(w http.ResponseWriter, r *http.Request)
 	// 1. Direct SmartOLT Reboot
 	smartClient, smartCfg := s.resolveSmartOLTClientForRegistration(r.Context(), reg)
 	if smartClient != nil && smartClient.IsConfigured() {
-		source := "SmartOLT"
+		provName := "GOGIGANET"
 		if smartCfg != nil && smartCfg.ProviderID != "" {
-			source = fmt.Sprintf("SmartOLT %s", smartCfg.ProviderID)
+			provName = smartCfg.ProviderID
 		}
 		if err := smartClient.RebootONU(r.Context(), sn); err == nil {
-			response.Success(w, fmt.Sprintf("Perintah restart modem %s berhasil dikirim ke %s", sn, source), map[string]interface{}{
+			response.Success(w, fmt.Sprintf("Perintah restart modem %s berhasil dikirim", sn), map[string]interface{}{
 				"serial_number": sn,
 				"status":        "REBOOT_TRIGGERED",
-				"source":        source,
 			})
 			return
 		} else {
-			log.Printf("[%s] Reboot failed on %s: %v", source, sn, err)
+			log.Printf("[%s] Reboot failed on %s: %v", provName, sn, err)
 			if !reg.HasFTTXIntegration {
-				response.Error(w, http.StatusBadGateway, "Gagal restart modem via "+source+": "+err.Error(), "smartolt_error")
+				response.Error(w, http.StatusBadGateway, "Gagal mengirim perintah restart modem: "+err.Error(), "modem_error")
 				return
 			}
 		}
