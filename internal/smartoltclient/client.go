@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -370,4 +371,138 @@ func toFloat(v interface{}) float64 {
 		return f
 	}
 	return 0.0
+}
+
+// SetONUWifi sets the Wi-Fi SSID and WPA2 passphrase for an ONU using SmartOLT set_wifi_port_lan API.
+// It applies the settings to 2.4GHz (wifi_0/1) and if available 5GHz (wifi_0/5).
+func (c *Client) SetONUWifi(ctx context.Context, sn, ssid, password string) error {
+	if !c.IsConfigured() {
+		return fmt.Errorf("smartolt client is not configured")
+	}
+
+	ports := []string{"wifi_0/1", "wifi_0/5"}
+	var lastErr error
+	successCount := 0
+
+	for _, port := range ports {
+		form := url.Values{}
+		form.Set("wifi_port", port)
+		form.Set("dhcp", "No control")
+		form.Set("authentication_mode", "WPA2")
+		form.Set("ssid", ssid)
+		form.Set("password", password)
+
+		endpoint := fmt.Sprintf("%s/api/onu/set_wifi_port_lan/%s", c.baseURL, sn)
+		req, err := http.NewRequestWithContext(ctx, "POST", endpoint, strings.NewReader(form.Encode()))
+		if err != nil {
+			lastErr = err
+			continue
+		}
+		req.Header.Set("X-Token", c.apiKey)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("User-Agent", "GoGiga-ISP-Onboarding/1.0")
+
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			lastErr = err
+			continue
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		var apiRes struct {
+			Status bool   `json:"status"`
+			Error  string `json:"error"`
+		}
+		_ = json.Unmarshal(body, &apiRes)
+
+		if resp.StatusCode == http.StatusOK && apiRes.Status {
+			successCount++
+		} else if apiRes.Error != "" {
+			lastErr = fmt.Errorf("%s: %s", port, apiRes.Error)
+		} else {
+			lastErr = fmt.Errorf("%s HTTP %d: %s", port, resp.StatusCode, string(body))
+		}
+	}
+
+	if successCount == 0 && lastErr != nil {
+		return lastErr
+	}
+	return nil
+}
+
+// RebootONU reboots an ONU via SmartOLT API.
+func (c *Client) RebootONU(ctx context.Context, sn string) error {
+	if !c.IsConfigured() {
+		return fmt.Errorf("smartolt client is not configured")
+	}
+
+	endpoint := fmt.Sprintf("%s/api/onu/reboot/%s", c.baseURL, sn)
+	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("X-Token", c.apiKey)
+	req.Header.Set("User-Agent", "GoGiga-ISP-Onboarding/1.0")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("smartolt reboot error (HTTP %d): %s", resp.StatusCode, string(body))
+	}
+	return nil
+}
+
+type RouterHost struct {
+	Hostname   string `json:"hostname"`
+	IPAddress  string `json:"ip_address"`
+	MACAddress string `json:"mac_address"`
+	Interface  string `json:"interface"` // Ethernet / WiFi
+	Active     bool   `json:"active"`
+}
+
+// GetONURouterHosts retrieves connected LAN/WiFi devices via SmartOLT TR069 ACS if active.
+func (c *Client) GetONURouterHosts(ctx context.Context, sn string) ([]RouterHost, error) {
+	if !c.IsConfigured() {
+		return nil, fmt.Errorf("smartolt client is not configured")
+	}
+
+	endpoint := fmt.Sprintf("%s/api/onu/get_onu_router_hosts/%s", c.baseURL, sn)
+	req, err := http.NewRequestWithContext(ctx, "GET", endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-Token", c.apiKey)
+	req.Header.Set("User-Agent", "GoGiga-ISP-Onboarding/1.0")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	var apiRes struct {
+		Status    bool         `json:"status"`
+		Error     string       `json:"error"`
+		ErrorCode string       `json:"error_code"`
+		Hosts     []RouterHost `json:"hosts"`
+	}
+	if err := json.Unmarshal(body, &apiRes); err != nil {
+		return nil, fmt.Errorf("failed to parse router hosts: %w", err)
+	}
+
+	if !apiRes.Status {
+		if strings.Contains(strings.ToLower(apiRes.Error), "tr069") || apiRes.ErrorCode == "tr069_unable_to_process_command" {
+			return nil, fmt.Errorf("fitur pembacaan perangkat terhubung memerlukan profil TR-069 aktif di SmartOLT")
+		}
+		return nil, fmt.Errorf("%s", apiRes.Error)
+	}
+
+	return apiRes.Hosts, nil
 }

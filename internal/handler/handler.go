@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -800,19 +801,29 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 	// Direct SmartOLT Live Diagnostic check if configured
 	if s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
 		if diag, err := s.smartOLTClient.GetONUSignalDiagnostics(r.Context(), sn); err == nil && diag != nil {
+			hosts, hostsErr := s.smartOLTClient.GetONURouterHosts(r.Context(), sn)
+			hostsNotice := ""
+			if hostsErr != nil {
+				hostsNotice = hostsErr.Error()
+			}
+
 			response.Success(w, "Telemetri ONT SmartOLT Jartaplok", map[string]interface{}{
-				"has_fttx_integration": true,
-				"serial_number":        sn,
-				"vendor":               "ZTE",
-				"model":                diag.DeviceType,
-				"rx_optical_power":     diag.RxPowerDBM,
-				"tx_optical_power":     diag.TxPowerDBM,
-				"attenuation_db":       diag.AttenuationDB,
-				"distance_meters":      diag.DistanceMeters,
-				"ip_address":           diag.WANIPv4,
-				"status":               diag.Status,
-				"signal_quality":       diag.SignalQuality,
-				"source":               "SmartOLT GNET-Biaro",
+				"has_fttx_integration":     true,
+				"can_configure_wifi":       true,
+				"can_reboot":               true,
+				"serial_number":            sn,
+				"vendor":                   "ZTE",
+				"model":                    diag.DeviceType,
+				"rx_optical_power":         diag.RxPowerDBM,
+				"tx_optical_power":         diag.TxPowerDBM,
+				"attenuation_db":           diag.AttenuationDB,
+				"distance_meters":          diag.DistanceMeters,
+				"ip_address":               diag.WANIPv4,
+				"status":                   diag.Status,
+				"signal_quality":           diag.SignalQuality,
+				"source":                   "SmartOLT GNET-Biaro",
+				"connected_devices":        hosts,
+				"connected_devices_notice": hostsNotice,
 			})
 			return
 		}
@@ -911,11 +922,6 @@ func (s *Server) handleCustomerUpdateONTWifi(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if !reg.HasFTTXIntegration {
-		response.Error(w, http.StatusForbidden, "Pengaturan Wi-Fi mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.", "action_not_allowed")
-		return
-	}
-
 	var reqBody struct {
 		SerialNumber string `json:"serial_number"`
 		SSID         string `json:"ssid"`
@@ -926,7 +932,21 @@ func (s *Server) handleCustomerUpdateONTWifi(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	reqBody.SSID = strings.TrimSpace(reqBody.SSID)
+	reqBody.Password = strings.TrimSpace(reqBody.Password)
+	if reqBody.SSID == "" {
+		response.Error(w, http.StatusBadRequest, "Nama Wi-Fi (SSID) wajib diisi", "missing_ssid")
+		return
+	}
+	if len(reqBody.Password) < 8 {
+		response.Error(w, http.StatusBadRequest, "Kata sandi Wi-Fi minimal 8 karakter", "invalid_password")
+		return
+	}
+
 	sn := reqBody.SerialNumber
+	if sn == "" {
+		sn = reg.ONTSerialNumber
+	}
 	if sn == "" {
 		if wo, err := s.repo.GetWorkOrderByRegistrationID(r.Context(), reg.ID); err == nil && wo != nil && wo.BAST != nil {
 			sn = wo.BAST.ONTSerialNumber
@@ -934,6 +954,29 @@ func (s *Server) handleCustomerUpdateONTWifi(w http.ResponseWriter, r *http.Requ
 	}
 	if sn == "" {
 		response.Error(w, http.StatusBadRequest, "Serial number ONT tidak ditemukan", "missing_sn")
+		return
+	}
+
+	// 1. Prioritize Direct SmartOLT Wi-Fi update (OMCI)
+	if s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
+		if err := s.smartOLTClient.SetONUWifi(r.Context(), sn, reqBody.SSID, reqBody.Password); err == nil {
+			response.Success(w, fmt.Sprintf("Nama Wi-Fi dan kata sandi modem %s berhasil diperbarui langsung ke SmartOLT", sn), map[string]interface{}{
+				"serial_number": sn,
+				"wifi_ssid":     reqBody.SSID,
+				"source":        "SmartOLT GNET-Biaro",
+			})
+			return
+		} else {
+			log.Printf("[SmartOLT] SetONUWifi failed on %s: %v", sn, err)
+			if !reg.HasFTTXIntegration {
+				response.Error(w, http.StatusBadGateway, "Gagal memperbarui Wi-Fi ke SmartOLT: "+err.Error(), "smartolt_error")
+				return
+			}
+		}
+	}
+
+	if !reg.HasFTTXIntegration {
+		response.Error(w, http.StatusForbidden, "Pengaturan Wi-Fi mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.", "action_not_allowed")
 		return
 	}
 
@@ -983,11 +1026,6 @@ func (s *Server) handleCustomerRebootONT(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if !reg.HasFTTXIntegration {
-		response.Error(w, http.StatusForbidden, "Reboot mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.", "action_not_allowed")
-		return
-	}
-
 	var reqBody struct {
 		SerialNumber string `json:"serial_number"`
 	}
@@ -995,12 +1033,38 @@ func (s *Server) handleCustomerRebootONT(w http.ResponseWriter, r *http.Request)
 
 	sn := reqBody.SerialNumber
 	if sn == "" {
+		sn = reg.ONTSerialNumber
+	}
+	if sn == "" {
 		if wo, err := s.repo.GetWorkOrderByRegistrationID(r.Context(), reg.ID); err == nil && wo != nil && wo.BAST != nil {
 			sn = wo.BAST.ONTSerialNumber
 		}
 	}
 	if sn == "" {
 		response.Error(w, http.StatusBadRequest, "Serial number ONT tidak ditemukan", "missing_sn")
+		return
+	}
+
+	// 1. Direct SmartOLT Reboot
+	if s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
+		if err := s.smartOLTClient.RebootONU(r.Context(), sn); err == nil {
+			response.Success(w, fmt.Sprintf("Perintah restart modem %s berhasil dikirim ke SmartOLT", sn), map[string]interface{}{
+				"serial_number": sn,
+				"status":        "REBOOT_TRIGGERED",
+				"source":        "SmartOLT GNET-Biaro",
+			})
+			return
+		} else {
+			log.Printf("[SmartOLT] Reboot failed on %s: %v", sn, err)
+			if !reg.HasFTTXIntegration {
+				response.Error(w, http.StatusBadGateway, "Gagal restart modem via SmartOLT: "+err.Error(), "smartolt_error")
+				return
+			}
+		}
+	}
+
+	if !reg.HasFTTXIntegration {
+		response.Error(w, http.StatusForbidden, "Reboot mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.", "action_not_allowed")
 		return
 	}
 

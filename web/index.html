@@ -11433,11 +11433,11 @@
       }
     }
 
-    // ── ONT TR-069 ACTIONS ──
+    // ── ONT TR-069 & SMARTOLT ACTIONS ──
     async function handleSaveCustomerWiFi(e) {
       if (e) e.preventDefault();
       const reg = currentCustomerPortalData ? currentCustomerPortalData.registration : null;
-      if (!reg || !reg.has_fttx_integration) {
+      if (!reg || (!reg.has_fttx_integration && !currentCustomerONT)) {
         alert('Pengaturan Wi-Fi mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.');
         return;
       }
@@ -11452,7 +11452,8 @@
       const origHtml = btn ? btn.innerHTML : '';
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>MENGIRIM KE FTTX ACS...</span>';
+        const targetServer = (currentCustomerONT && currentCustomerONT.source) ? 'SMARTOLT' : 'FTTX ACS';
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>MENGIRIM KE ${targetServer}...</span>`;
         lucide.createIcons();
       }
 
@@ -11468,13 +11469,14 @@
         });
         const json = await res.json();
         if (json.success) {
-          alert('✓ BERHASIL DISIMPAN!\n\nNama dan kata sandi WiFi telah dikirim via TR-069 FTTX Command Center ke modem ONT Anda. Modem akan menerapkan konfigurasi baru.');
+          const srv = (currentCustomerONT && currentCustomerONT.source) ? currentCustomerONT.source : 'TR-069 FTTX Command Center';
+          alert(`✓ BERHASIL DISIMPAN!\n\nNama dan kata sandi WiFi telah berhasil dikirim via ${srv} ke modem ONT Anda. Modem akan menerapkan konfigurasi baru.`);
           if (currentCustomerONT) {
             currentCustomerONT.wifi_ssid = ssid;
             currentCustomerONT.wifi_password = password;
           }
         } else {
-          alert('Gagal mengubah pengaturan WiFi: ' + (json.error ? json.error.message : 'Kesalahan server TR-069'));
+          alert('Gagal mengubah pengaturan WiFi: ' + (json.message || json.error || 'Terjadi kesalahan sistem'));
         }
       } catch (err) {
         alert('Koneksi terganggu: ' + err.message);
@@ -11489,7 +11491,7 @@
 
     async function rebootCustomerModem() {
       const reg = currentCustomerPortalData ? currentCustomerPortalData.registration : null;
-      if (!reg || !reg.has_fttx_integration) {
+      if (!reg || (!reg.has_fttx_integration && !currentCustomerONT)) {
         alert('Reboot modem mandiri tidak tersedia pada segmen jaringan ini. Silakan hubungi tim Customer Care GOGIGANET.');
         return;
       }
@@ -11515,9 +11517,9 @@
         });
         const json = await res.json();
         if (json.success) {
-          alert('✓ PERINTAH RESTART BERHASIL DIKIRIM!\n\nPerintah RPC Reboot TR-069 telah dikirim via FTTX Command Center ke modem. Silakan tunggu sekitar 1-2 menit hingga lampu PON/Internet kembali menyala hijau normal.');
+          alert('✓ PERINTAH RESTART BERHASIL DIKIRIM!\n\nPerintah restart modem telah dikirim ke OLT/modem. Silakan tunggu sekitar 1-2 menit hingga lampu PON/Internet kembali menyala normal.');
         } else {
-          alert('Gagal me-restart modem: ' + (json.error ? json.error.message : 'Kesalahan server'));
+          alert('Gagal me-restart modem: ' + (json.message || json.error || 'Terjadi kesalahan'));
         }
       } catch (err) {
         alert('Koneksi terganggu: ' + err.message);
