@@ -23,6 +23,7 @@ import (
 	customMiddleware "isp-onboarding/internal/middleware"
 	"isp-onboarding/internal/repository"
 	"isp-onboarding/internal/service"
+	"isp-onboarding/internal/smartoltclient"
 	"isp-onboarding/pkg/response"
 )
 
@@ -30,6 +31,7 @@ type Server struct {
 	svc             *service.OnboardingService
 	repo            repository.Storage
 	client          *billingclient.Client
+	smartOLTClient  *smartoltclient.Client
 	adminAPIKey     string
 	fttxBaseURL     string
 	fttxAdminKey    string
@@ -50,6 +52,11 @@ func NewServer(svc *service.OnboardingService, repo repository.Storage, client *
 		registerLimiter: customMiddleware.NewIPRateLimiter(30, 5*time.Minute),
 		coverageLimiter: customMiddleware.NewIPRateLimiter(100, 1*time.Minute),
 	}
+}
+
+func (s *Server) WithSmartOLT(c *smartoltclient.Client) *Server {
+	s.smartOLTClient = c
+	return s
 }
 
 func (s *Server) Routes() http.Handler {
@@ -175,6 +182,11 @@ func (s *Server) Routes() http.Handler {
 		r.Put("/clusters/{name}/status", s.handleUpdateClusterStatus)
 		r.Get("/staff-kpi", s.handleStaffKPI)
 		r.Get("/branches", s.handleAdminListBranches)
+		// SmartOLT Live Monitoring & Auto-Attach
+		r.Get("/smartolt/onus", s.handleSmartOLTListONUs)
+		r.Post("/smartolt/sync", s.handleSmartOLTSync)
+		r.Get("/smartolt/diagnostics/{sn}", s.handleSmartOLTDiagnostics)
+		r.Post("/registrations/{id}/attach-smartolt", s.handleSmartOLTAttachRegistration)
 	})
 
 	// ── SUPERUSER / EXECUTIVE ROUTES ──────────────────────────
@@ -198,6 +210,11 @@ func (s *Server) Routes() http.Handler {
 		r.Get("/jartaplok-partners", s.handleSuperUserListJartaplokPartners)
 		r.Post("/jartaplok-partners", s.handleSuperUserCreateJartaplokPartner)
 		r.Put("/jartaplok-partners/{id}", s.handleSuperUserUpdateJartaplokPartner)
+		// SmartOLT Live Monitoring & Auto-Attach
+		r.Get("/smartolt/onus", s.handleSmartOLTListONUs)
+		r.Post("/smartolt/sync", s.handleSmartOLTSync)
+		r.Get("/smartolt/diagnostics/{sn}", s.handleSmartOLTDiagnostics)
+		r.Post("/registrations/{id}/attach-smartolt", s.handleSmartOLTAttachRegistration)
 	})
 
 	// ── JARTAPLOK PARTNER B2B ROUTES ──────────────────────────
@@ -709,7 +726,8 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !reg.HasFTTXIntegration {
+	// Support SmartOLT integration even if legacy HasFTTXIntegration flag is not set
+	if !reg.HasFTTXIntegration && reg.ONTSerialNumber == "" && (s.smartOLTClient == nil || !s.smartOLTClient.IsConfigured()) {
 		response.Success(w, "Status pengelolaan modem pelanggan", map[string]interface{}{
 			"has_fttx_integration": false,
 			"status":               "CUSTOMER_CARE_MANAGED",
@@ -718,10 +736,12 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For FTTX integrated networks (GNET2):
-	sn := ""
-	if wo, err := s.repo.GetWorkOrderByRegistrationID(r.Context(), reg.ID); err == nil && wo != nil && wo.BAST != nil {
-		sn = wo.BAST.ONTSerialNumber
+	// For FTTX / SmartOLT integrated networks:
+	sn := reg.ONTSerialNumber
+	if sn == "" {
+		if wo, err := s.repo.GetWorkOrderByRegistrationID(r.Context(), reg.ID); err == nil && wo != nil && wo.BAST != nil {
+			sn = wo.BAST.ONTSerialNumber
+		}
 	}
 
 	client := &http.Client{Timeout: 5 * time.Second}
@@ -754,13 +774,48 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// SmartOLT Auto-Lookup if SN is still empty
+	if sn == "" && s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
+		if onust, err := s.smartOLTClient.GetScopedONUs(r.Context()); err == nil {
+			for _, o := range onust {
+				if (reg.PPPoEUsername != "" && strings.EqualFold(o.Name, reg.PPPoEUsername)) ||
+					strings.EqualFold(o.Name, reg.FullName) ||
+					(reg.UpstreamPPPoEUsername != "" && strings.EqualFold(o.Name, reg.UpstreamPPPoEUsername)) {
+					sn = o.SerialNumber
+					break
+				}
+			}
+		}
+	}
+
 	if sn == "" {
-		response.Success(w, "ONT belum terdaftar di FTTX Command Center", map[string]interface{}{
+		response.Success(w, "ONT belum terdaftar di sistem monitoring", map[string]interface{}{
 			"has_fttx_integration": true,
 			"status":               "PENDING_INSTALLATION",
-			"message":              "Perangkat modem ONT belum terdaftar di FTTX Command Center.",
+			"message":              "Perangkat modem ONT belum terdaftar atau belum selesai diinstalasi.",
 		})
 		return
+	}
+
+	// Direct SmartOLT Live Diagnostic check if configured
+	if s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
+		if diag, err := s.smartOLTClient.GetONUSignalDiagnostics(r.Context(), sn); err == nil && diag != nil {
+			response.Success(w, "Telemetri ONT SmartOLT Jartaplok", map[string]interface{}{
+				"has_fttx_integration": true,
+				"serial_number":        sn,
+				"vendor":               "ZTE",
+				"model":                diag.DeviceType,
+				"rx_optical_power":     diag.RxPowerDBM,
+				"tx_optical_power":     diag.TxPowerDBM,
+				"attenuation_db":       diag.AttenuationDB,
+				"distance_meters":      diag.DistanceMeters,
+				"ip_address":           diag.WANIPv4,
+				"status":               diag.Status,
+				"signal_quality":       diag.SignalQuality,
+				"source":               "SmartOLT GNET-Biaro",
+			})
+			return
+		}
 	}
 
 	// Query ACS CPE Data from FTTX
@@ -2524,4 +2579,188 @@ func (s *Server) handlePublicListBranches(w http.ResponseWriter, r *http.Request
 	}
 	response.Success(w, "Daftar cabang aktif", active)
 }
+
+// ── SMARTOLT JARTAPLOK HANDLERS ──────────────────────────────────────
+
+func (s *Server) handleSmartOLTListONUs(w http.ResponseWriter, r *http.Request) {
+	if s.smartOLTClient == nil || !s.smartOLTClient.IsConfigured() {
+		response.Error(w, http.StatusServiceUnavailable, "SmartOLT client belum dikonfigurasi di server ISP Onboarding", "smartolt_not_configured")
+		return
+	}
+
+	onus, err := s.smartOLTClient.GetScopedONUs(r.Context())
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "Gagal mengambil data dari SmartOLT: "+err.Error(), "smartolt_error")
+		return
+	}
+
+	regs, _ := s.repo.ListRegistrations(r.Context(), nil, nil, nil)
+	wos, _ := s.repo.ListWorkOrders(r.Context(), nil)
+	bastMap := make(map[string]domain.BASTReport)
+	for _, wo := range wos {
+		if wo.BAST != nil {
+			bastMap[wo.BAST.ONTSerialNumber] = *wo.BAST
+		}
+	}
+
+	for i := range onus {
+		for _, reg := range regs {
+			matched := false
+			if reg.PPPoEUsername != "" && strings.EqualFold(onus[i].Name, reg.PPPoEUsername) {
+				matched = true
+			} else if reg.UpstreamPPPoEUsername != "" && strings.EqualFold(onus[i].Name, reg.UpstreamPPPoEUsername) {
+				matched = true
+			} else if strings.EqualFold(onus[i].Name, reg.FullName) {
+				matched = true
+			} else if b, ok := bastMap[onus[i].SerialNumber]; ok && (b.WorkOrderID == reg.ID || (reg.WorkOrderID != nil && b.WorkOrderID == *reg.WorkOrderID)) {
+				matched = true
+			}
+
+			if matched {
+				onus[i].IsAttached = true
+				onus[i].MatchedRegNo = reg.RegistrationNo
+				onus[i].MatchedCust = reg.FullName
+				break
+			}
+		}
+	}
+
+	response.Success(w, "Daftar perangkat ONT SmartOLT Zone GOGIGA", onus)
+}
+
+func (s *Server) handleSmartOLTSync(w http.ResponseWriter, r *http.Request) {
+	if s.smartOLTClient == nil || !s.smartOLTClient.IsConfigured() {
+		response.Error(w, http.StatusServiceUnavailable, "SmartOLT client belum dikonfigurasi di server ISP Onboarding", "smartolt_not_configured")
+		return
+	}
+
+	onus, err := s.smartOLTClient.GetScopedONUs(r.Context())
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "Gagal mengambil data dari SmartOLT: "+err.Error(), "smartolt_error")
+		return
+	}
+
+	regs, err := s.repo.ListRegistrations(r.Context(), nil, nil, nil)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal memuat data registrasi", err.Error())
+		return
+	}
+
+	attachedCount := 0
+	attachedList := make([]map[string]interface{}, 0)
+
+	for _, onu := range onus {
+		for _, reg := range regs {
+			matched := false
+			if reg.PPPoEUsername != "" && strings.EqualFold(onu.Name, reg.PPPoEUsername) {
+				matched = true
+			} else if reg.UpstreamPPPoEUsername != "" && strings.EqualFold(onu.Name, reg.UpstreamPPPoEUsername) {
+				matched = true
+			} else if strings.EqualFold(onu.Name, reg.FullName) {
+				matched = true
+			}
+
+			if matched {
+				rx := -18.0
+				mac := ""
+				upUser := onu.Name
+				if diag, err := s.smartOLTClient.GetONUSignalDiagnostics(r.Context(), onu.SerialNumber); err == nil && diag != nil {
+					rx = diag.RxPowerDBM
+					if diag.PPPoEUsername != "" {
+						upUser = diag.PPPoEUsername
+					}
+				}
+
+				if err := s.repo.AttachSmartOLTDevice(r.Context(), reg.ID, onu.SerialNumber, mac, rx, onu.Status, upUser); err == nil {
+					attachedCount++
+					attachedList = append(attachedList, map[string]interface{}{
+						"registration_no": reg.RegistrationNo,
+						"customer_name":   reg.FullName,
+						"serial_number":   onu.SerialNumber,
+						"pppoe_username":  upUser,
+						"rx_power_dbm":    rx,
+						"status":          onu.Status,
+					})
+				}
+				break
+			}
+		}
+	}
+
+	response.Success(w, fmt.Sprintf("Sinkronisasi SmartOLT berhasil: %d pelanggan terhubung", attachedCount), map[string]interface{}{
+		"total_scanned_onus": len(onus),
+		"attached_count":     attachedCount,
+		"attached_customers": attachedList,
+	})
+}
+
+func (s *Server) handleSmartOLTDiagnostics(w http.ResponseWriter, r *http.Request) {
+	sn := chi.URLParam(r, "sn")
+	if sn == "" {
+		response.Error(w, http.StatusBadRequest, "Serial number wajib diisi", "missing_sn")
+		return
+	}
+
+	if s.smartOLTClient == nil || !s.smartOLTClient.IsConfigured() {
+		response.Error(w, http.StatusServiceUnavailable, "SmartOLT client belum dikonfigurasi", "smartolt_not_configured")
+		return
+	}
+
+	diag, err := s.smartOLTClient.GetONUSignalDiagnostics(r.Context(), sn)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "Gagal mengambil diagnostik SmartOLT: "+err.Error(), "smartolt_error")
+		return
+	}
+
+	response.Success(w, "Diagnostik sinyal optik SmartOLT", diag)
+}
+
+func (s *Server) handleSmartOLTAttachRegistration(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		response.Error(w, http.StatusBadRequest, "ID atau No Registrasi wajib diisi", "missing_id")
+		return
+	}
+
+	var req struct {
+		SerialNumber  string `json:"serial_number"`
+		PPPoEUsername string `json:"pppoe_username"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Format JSON tidak valid: "+err.Error(), "bad_request")
+		return
+	}
+
+	cleanSN := strings.TrimSpace(req.SerialNumber)
+	if cleanSN == "" {
+		response.Error(w, http.StatusBadRequest, "Serial number ONT wajib diisi", "missing_sn")
+		return
+	}
+
+	rx := -18.0
+	status := "Online"
+	upUser := req.PPPoEUsername
+
+	if s.smartOLTClient != nil && s.smartOLTClient.IsConfigured() {
+		if diag, err := s.smartOLTClient.GetONUSignalDiagnostics(r.Context(), cleanSN); err == nil && diag != nil {
+			rx = diag.RxPowerDBM
+			status = diag.Status
+			if upUser == "" && diag.PPPoEUsername != "" {
+				upUser = diag.PPPoEUsername
+			}
+		}
+	}
+
+	if err := s.repo.AttachSmartOLTDevice(r.Context(), id, cleanSN, "", rx, status, upUser); err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal attach ONT ke registrasi: "+err.Error(), err.Error())
+		return
+	}
+
+	response.Success(w, fmt.Sprintf("Perangkat ONT %s berhasil di-attach ke pelanggan", cleanSN), map[string]interface{}{
+		"serial_number": cleanSN,
+		"rx_power_dbm":  rx,
+		"status":        status,
+	})
+}
+
 

@@ -63,6 +63,7 @@ type Storage interface {
 	GetWorkOrderByRegistrationID(ctx context.Context, regID string) (*domain.WorkOrder, error)
 	ListWorkOrders(ctx context.Context, status *string) ([]domain.WorkOrder, error)
 	SaveBAST(ctx context.Context, bast *domain.BASTReport) error
+	AttachSmartOLTDevice(ctx context.Context, idOrRegNo string, sn string, mac string, opticalPower float64, status string, pppoeUser string) error
 
 	// Partner
 	GetPartnerByAPIKey(ctx context.Context, apiKey string) (*domain.Partner, error)
@@ -294,6 +295,9 @@ func (s *SQLiteStorage) initSchema() error {
 	_, _ = s.db.Exec(`ALTER TABLE bast_reports ADD COLUMN upstream_pppoe_username TEXT DEFAULT '';`)
 	_, _ = s.db.Exec(`ALTER TABLE bast_reports ADD COLUMN upstream_pppoe_password TEXT DEFAULT '';`)
 	_, _ = s.db.Exec(`ALTER TABLE registrations ADD COLUMN customer_password_hash TEXT DEFAULT '';`)
+	_, _ = s.db.Exec(`ALTER TABLE registrations ADD COLUMN ont_serial_number TEXT DEFAULT '';`)
+	_, _ = s.db.Exec(`ALTER TABLE registrations ADD COLUMN ont_optical_power REAL DEFAULT 0;`)
+	_, _ = s.db.Exec(`ALTER TABLE registrations ADD COLUMN ont_status TEXT DEFAULT '';`)
 	_, _ = s.db.Exec(`CREATE TABLE IF NOT EXISTS customer_otps (
 		id TEXT PRIMARY KEY,
 		phone TEXT NOT NULL,
@@ -1702,6 +1706,8 @@ func (s *SQLiteStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport) e
 	}
 	defer tx.Rollback()
 
+	_, _ = tx.ExecContext(ctx, `DELETE FROM bast_reports WHERE work_order_id = ?`, bast.WorkOrderID)
+
 	_, err = tx.ExecContext(ctx,
 		`INSERT INTO bast_reports (
 			id, work_order_id, optical_power_dbm, ont_serial_number, ont_mac_address, dropcore_length_meters,
@@ -1742,6 +1748,84 @@ func (s *SQLiteStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport) e
 	}
 
 	return tx.Commit()
+}
+
+func (s *SQLiteStorage) AttachSmartOLTDevice(ctx context.Context, idOrRegNo string, sn string, mac string, opticalPower float64, status string, pppoeUser string) error {
+	clean := strings.TrimSpace(idOrRegNo)
+	if clean == "" {
+		return fmt.Errorf("id or registration_no cannot be empty")
+	}
+
+	reg, err := s.GetRegistrationByNo(ctx, clean)
+	if err != nil || reg == nil {
+		reg, err = s.GetRegistrationByID(ctx, clean)
+	}
+	if err != nil || reg == nil {
+		list, _ := s.ListRegistrations(ctx, nil, nil, nil)
+		for _, r := range list {
+			if strings.EqualFold(r.PPPoEUsername, clean) || strings.EqualFold(r.FullName, clean) ||
+				(pppoeUser != "" && strings.EqualFold(r.PPPoEUsername, pppoeUser)) ||
+				(pppoeUser != "" && strings.EqualFold(r.FullName, pppoeUser)) {
+				reg = &r
+				break
+			}
+		}
+	}
+	if reg == nil {
+		return fmt.Errorf("pelanggan %s tidak ditemukan di database", clean)
+	}
+
+	newStatus := reg.Status
+	if newStatus == "SUBMITTED" || newStatus == "SURVEY" || newStatus == "INSTALLATION" || newStatus == "INSTALLATION_SCHEDULED" {
+		newStatus = "ACTIVE"
+	}
+
+	upPPPoE := reg.UpstreamPPPoEUsername
+	if upPPPoE == "" {
+		upPPPoE = pppoeUser
+	}
+
+	_, err = s.db.ExecContext(ctx, `
+		UPDATE registrations 
+		SET status = ?, 
+		    upstream_pppoe_username = ?,
+		    activated_at = CASE WHEN activated_at IS NULL THEN CURRENT_TIMESTAMP ELSE activated_at END,
+		    updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, newStatus, upPPPoE, reg.ID)
+	if err != nil {
+		return err
+	}
+
+	wo, _ := s.GetWorkOrderByRegistrationID(ctx, reg.ID)
+	woID := ""
+	if wo != nil {
+		woID = wo.ID
+	} else {
+		woID = uuid.NewString()
+		newWO := &domain.WorkOrder{
+			ID:             woID,
+			OrderNo:        fmt.Sprintf("WO-%s", time.Now().Format("20060102150405")),
+			RegistrationID: reg.ID,
+			Type:           "INSTALLATION",
+			TechnicianName: "SmartOLT Auto-Provisioning",
+			ScheduledAt:    time.Now(),
+			Status:         "COMPLETED",
+		}
+		_ = s.CreateWorkOrder(ctx, newWO)
+	}
+
+	bast := &domain.BASTReport{
+		WorkOrderID:           woID,
+		OpticalPowerDBM:       opticalPower,
+		ONTSerialNumber:       sn,
+		ONTMACAddress:         mac,
+		DropcoreLengthMeters:  50,
+		UpstreamPPPoEUsername: upPPPoE,
+		Notes:                 fmt.Sprintf("Tersinkronisasi otomatis via SmartOLT Jartaplok (Status: %s)", status),
+		TechnicianName:        "SmartOLT Auto-Provisioning",
+	}
+	return s.SaveBAST(ctx, bast)
 }
 
 func (s *SQLiteStorage) GetPartnerByAPIKey(ctx context.Context, apiKey string) (*domain.Partner, error) {

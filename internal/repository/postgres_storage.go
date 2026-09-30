@@ -272,6 +272,9 @@ func (s *PostgresStorage) initSchema(ctx context.Context) error {
 		`ALTER TABLE staff_users ADD COLUMN IF NOT EXISTS is_superuser INTEGER DEFAULT 0;`,
 		`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS roles TEXT DEFAULT '[]';`,
 		`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS is_superuser INTEGER DEFAULT 0;`,
+		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_serial_number VARCHAR(64) DEFAULT '';`,
+		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_optical_power DOUBLE PRECISION DEFAULT 0;`,
+		`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS ont_status VARCHAR(64) DEFAULT '';`,
 	}
 
 	for _, q := range queries {
@@ -1472,6 +1475,8 @@ func (s *PostgresStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport)
 	}
 	defer tx.Rollback()
 
+	_, _ = tx.ExecContext(ctx, `DELETE FROM bast_reports WHERE work_order_id = $1`, bast.WorkOrderID)
+
 	_, err = tx.ExecContext(ctx, `
 		INSERT INTO bast_reports (
 			id, work_order_id, optical_power_dbm, ont_serial_number, ont_mac_address,
@@ -1507,6 +1512,84 @@ func (s *PostgresStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport)
 	}
 
 	return tx.Commit()
+}
+
+func (s *PostgresStorage) AttachSmartOLTDevice(ctx context.Context, idOrRegNo string, sn string, mac string, opticalPower float64, status string, pppoeUser string) error {
+	clean := strings.TrimSpace(idOrRegNo)
+	if clean == "" {
+		return fmt.Errorf("id or registration_no cannot be empty")
+	}
+
+	reg, err := s.GetRegistrationByNo(ctx, clean)
+	if err != nil || reg == nil {
+		reg, err = s.GetRegistrationByID(ctx, clean)
+	}
+	if err != nil || reg == nil {
+		list, _ := s.ListRegistrations(ctx, nil, nil, nil)
+		for _, r := range list {
+			if strings.EqualFold(r.PPPoEUsername, clean) || strings.EqualFold(r.FullName, clean) ||
+				(pppoeUser != "" && strings.EqualFold(r.PPPoEUsername, pppoeUser)) ||
+				(pppoeUser != "" && strings.EqualFold(r.FullName, pppoeUser)) {
+				reg = &r
+				break
+			}
+		}
+	}
+	if reg == nil {
+		return fmt.Errorf("pelanggan %s tidak ditemukan di database", clean)
+	}
+
+	newStatus := reg.Status
+	if newStatus == "SUBMITTED" || newStatus == "SURVEY" || newStatus == "INSTALLATION" || newStatus == "INSTALLATION_SCHEDULED" {
+		newStatus = "ACTIVE"
+	}
+
+	upPPPoE := reg.UpstreamPPPoEUsername
+	if upPPPoE == "" {
+		upPPPoE = pppoeUser
+	}
+
+	_, err = s.db.ExecContext(ctx, `
+		UPDATE registrations 
+		SET status = $1, 
+		    upstream_pppoe_username = $2,
+		    activated_at = CASE WHEN activated_at IS NULL THEN CURRENT_TIMESTAMP ELSE activated_at END,
+		    updated_at = CURRENT_TIMESTAMP
+		WHERE id = $3
+	`, newStatus, upPPPoE, reg.ID)
+	if err != nil {
+		return err
+	}
+
+	wo, _ := s.GetWorkOrderByRegistrationID(ctx, reg.ID)
+	woID := ""
+	if wo != nil {
+		woID = wo.ID
+	} else {
+		woID = uuid.NewString()
+		newWO := &domain.WorkOrder{
+			ID:             woID,
+			OrderNo:        fmt.Sprintf("WO-%s", time.Now().Format("20060102150405")),
+			RegistrationID: reg.ID,
+			Type:           "INSTALLATION",
+			TechnicianName: "SmartOLT Auto-Provisioning",
+			ScheduledAt:    time.Now(),
+			Status:         "COMPLETED",
+		}
+		_ = s.CreateWorkOrder(ctx, newWO)
+	}
+
+	bast := &domain.BASTReport{
+		WorkOrderID:           woID,
+		OpticalPowerDBM:       opticalPower,
+		ONTSerialNumber:       sn,
+		ONTMACAddress:         mac,
+		DropcoreLengthMeters:  50,
+		UpstreamPPPoEUsername: upPPPoE,
+		Notes:                 fmt.Sprintf("Tersinkronisasi otomatis via SmartOLT Jartaplok (Status: %s)", status),
+		TechnicianName:        "SmartOLT Auto-Provisioning",
+	}
+	return s.SaveBAST(ctx, bast)
 }
 
 // ── PARTNER OPERATIONS ──────────────────────────────────────────

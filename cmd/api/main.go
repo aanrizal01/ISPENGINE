@@ -16,6 +16,7 @@ import (
 	"isp-onboarding/internal/handler"
 	"isp-onboarding/internal/repository"
 	"isp-onboarding/internal/service"
+	"isp-onboarding/internal/smartoltclient"
 )
 
 func main() {
@@ -47,8 +48,13 @@ func main() {
 	}
 	defer storage.Close()
 
-	// 2. Inisialisasi GOGIGABILL Client
+	// 2. Inisialisasi GOGIGABILL Client & SmartOLT Client
 	billingClient := billingclient.New(cfg.GigabillBaseURL, cfg.GigabillAPIToken)
+	var smartOLTClient *smartoltclient.Client
+	if cfg.SmartOLTEnabled && cfg.SmartOLTAPIKey != "" {
+		smartOLTClient = smartoltclient.New(cfg.SmartOLTBaseURL, cfg.SmartOLTAPIKey)
+		log.Printf("SmartOLT Jartaplok Client: CONNECTED (%s, Zone: %s)", cfg.SmartOLTBaseURL, cfg.SmartOLTZoneName)
+	}
 
 	// Cek koneksi ke GOGIGABILL
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -63,7 +69,7 @@ func main() {
 	onboardingSvc := service.NewOnboardingService(storage, billingClient, cfg.MaxCoverageMeters)
 
 	// 4. Inisialisasi HTTP Handler & Router
-	server := handler.NewServer(onboardingSvc, storage, billingClient, cfg.AdminAPIKey, cfg.FTTXBaseURL, cfg.FTTXAdminKey)
+	server := handler.NewServer(onboardingSvc, storage, billingClient, cfg.AdminAPIKey, cfg.FTTXBaseURL, cfg.FTTXAdminKey).WithSmartOLT(smartOLTClient)
 
 	httpServer := &http.Server{
 		Addr:         ":" + cfg.Port,

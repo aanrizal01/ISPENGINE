@@ -112,6 +112,9 @@ type Registration struct {
 	BranchID               *string    `json:"branch_id,omitempty"`
 	BranchCode             *string    `json:"branch_code,omitempty"`
 	HasFTTXIntegration     bool       `json:"has_fttx_integration"`
+	ONTSerialNumber        string     `json:"ont_serial_number,omitempty"`
+	ONTOpticalPower        float64    `json:"ont_optical_power,omitempty"`
+	ONTStatus              string     `json:"ont_status,omitempty"`
 	CustomerPasswordHash   string     `json:"-"` // Hash kata sandi portal pelanggan (bcrypt)
 	CreatedAt              time.Time  `json:"created_at"`
 	UpdatedAt              time.Time  `json:"updated_at"`
