@@ -526,6 +526,12 @@ type UpdateUpstreamPPPoERequest struct {
 	UpstreamPPPoEPassword string `json:"upstream_pppoe_password"`
 }
 
+// AssignWorkOrderRequest permohonan penunjukan teknisi atau alokasi ke job pool
+type AssignWorkOrderRequest struct {
+	TechnicianName string `json:"technician_name"`
+	Notes          string `json:"notes,omitempty"`
+}
+
 // NOCApprovalActionRequest permohonan persetujuan atau penolakan penarikan khusus dari NOC / Atasan
 type NOCApprovalActionRequest struct {
 	Action       string `json:"action"` // "APPROVE" atau "REJECT"

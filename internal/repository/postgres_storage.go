@@ -1489,6 +1489,19 @@ func (s *PostgresStorage) ListWorkOrders(ctx context.Context, status *string) ([
 	return list, nil
 }
 
+func (s *PostgresStorage) AssignWorkOrder(ctx context.Context, idOrRegID string, techName string, notes string) error {
+	cleanID := strings.TrimSpace(idOrRegID)
+	cleanTech := strings.TrimSpace(techName)
+	cleanNotes := strings.TrimSpace(notes)
+	query := `UPDATE work_orders 
+	          SET technician_name = $1, 
+	              notes = CASE WHEN $2 != '' THEN $2 ELSE notes END,
+	              updated_at = NOW() 
+	          WHERE id = $3 OR registration_id = $4`
+	_, err := s.db.ExecContext(ctx, query, cleanTech, cleanNotes, cleanID, cleanID)
+	return err
+}
+
 func (s *PostgresStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport) error {
 	if bast.ID == "" {
 		bast.ID = uuid.NewString()

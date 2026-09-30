@@ -159,6 +159,7 @@ func (s *Server) Routes() http.Handler {
 	r.Route("/api/v1/technician", func(r chi.Router) {
 		r.Get("/work-orders", s.handleListWorkOrders)
 		r.Get("/work-orders/{id}", s.handleGetWorkOrder)
+		r.Post("/work-orders/{id}/claim", s.handleTechnicianClaimWorkOrder)
 		r.Post("/work-orders/{id}/bast", s.handleSubmitBAST)
 		r.Get("/referrals", s.handleTechnicianListReferrals)
 	})
@@ -182,6 +183,8 @@ func (s *Server) Routes() http.Handler {
 		r.Delete("/registrations/{id}", s.handleAdminDeleteRegistration)
 		r.Post("/registrations/{id}/delete", s.handleAdminDeleteRegistration)
 		r.Post("/work-orders", s.handleCreateWorkOrder)
+		r.Post("/work-orders/{id}/assign", s.handleAdminAssignWorkOrder)
+		r.Put("/work-orders/{id}/assign", s.handleAdminAssignWorkOrder)
 		r.Get("/odps", s.handleAdminListODPs)
 		r.Post("/odps", s.handleAdminCreateODP)
 		r.Delete("/odps/{id}", s.handleAdminDeleteODP)
@@ -1623,6 +1626,40 @@ func (s *Server) handleCreateWorkOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Created(w, "Work order berhasil diterbitkan", wo)
+}
+
+func (s *Server) handleAdminAssignWorkOrder(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var req domain.AssignWorkOrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid payload", err.Error())
+		return
+	}
+
+	wo, err := s.svc.AssignWorkOrder(r.Context(), id, req.TechnicianName, req.Notes)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal menugaskan work order", err.Error())
+		return
+	}
+	response.Success(w, "Penugasan work order berhasil diperbarui", wo)
+}
+
+func (s *Server) handleTechnicianClaimWorkOrder(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var req domain.AssignWorkOrderRequest
+	_ = json.NewDecoder(r.Body).Decode(&req)
+
+	techName := strings.TrimSpace(req.TechnicianName)
+	if techName == "" {
+		techName = "Teknisi Lapangan"
+	}
+
+	wo, err := s.svc.AssignWorkOrder(r.Context(), id, techName, "Diambil mandiri oleh teknisi: "+techName)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal mengambil job", err.Error())
+		return
+	}
+	response.Success(w, fmt.Sprintf("Job berhasil diambil oleh %s", techName), wo)
 }
 
 func (s *Server) handleListWorkOrders(w http.ResponseWriter, r *http.Request) {

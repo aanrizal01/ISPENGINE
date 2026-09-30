@@ -62,6 +62,7 @@ type Storage interface {
 	GetWorkOrderByID(ctx context.Context, id string) (*domain.WorkOrder, error)
 	GetWorkOrderByRegistrationID(ctx context.Context, regID string) (*domain.WorkOrder, error)
 	ListWorkOrders(ctx context.Context, status *string) ([]domain.WorkOrder, error)
+	AssignWorkOrder(ctx context.Context, idOrRegID string, techName string, notes string) error
 	SaveBAST(ctx context.Context, bast *domain.BASTReport) error
 	AttachSmartOLTDevice(ctx context.Context, idOrRegNo string, sn string, mac string, opticalPower float64, status string, pppoeUser string) error
 
@@ -1716,6 +1717,19 @@ func (s *SQLiteStorage) ListWorkOrders(ctx context.Context, status *string) ([]d
 		list = append(list, wo)
 	}
 	return list, nil
+}
+
+func (s *SQLiteStorage) AssignWorkOrder(ctx context.Context, idOrRegID string, techName string, notes string) error {
+	cleanID := strings.TrimSpace(idOrRegID)
+	cleanTech := strings.TrimSpace(techName)
+	cleanNotes := strings.TrimSpace(notes)
+	query := `UPDATE work_orders 
+	          SET technician_name = ?, 
+	              notes = CASE WHEN ? != '' THEN ? ELSE notes END,
+	              updated_at = CURRENT_TIMESTAMP 
+	          WHERE id = ? OR registration_id = ?`
+	_, err := s.db.ExecContext(ctx, query, cleanTech, cleanNotes, cleanNotes, cleanID, cleanID)
+	return err
 }
 
 func (s *SQLiteStorage) SaveBAST(ctx context.Context, bast *domain.BASTReport) error {

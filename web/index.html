@@ -4062,15 +4062,21 @@
       <!-- Filter, Search, and Action Bar -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
         <!-- Filter Tabs -->
-        <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200/80">
-          <button type="button" id="tech-filter-all" onclick="setTechnicianFilter('all')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-white text-slate-900 shadow-xs border border-slate-200">
-            Semua SPK (<span id="count-tech-all">0</span>)
+        <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200/80 overflow-x-auto">
+          <button type="button" id="tech-filter-my" onclick="setTechnicianFilter('my')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-white text-slate-900 shadow-xs border border-slate-200 whitespace-nowrap">
+            Tugas Saya (<span id="count-tech-my">0</span>)
           </button>
-          <button type="button" id="tech-filter-pending" onclick="setTechnicianFilter('pending')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900">
+          <button type="button" id="tech-filter-pool" onclick="setTechnicianFilter('pool')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 whitespace-nowrap">
+            Bursa Job Pool (<span id="count-tech-pool">0</span>)
+          </button>
+          <button type="button" id="tech-filter-pending" onclick="setTechnicianFilter('pending')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 whitespace-nowrap">
             Perlu BAST (<span id="count-tech-pending">0</span>)
           </button>
-          <button type="button" id="tech-filter-completed" onclick="setTechnicianFilter('completed')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900">
+          <button type="button" id="tech-filter-completed" onclick="setTechnicianFilter('completed')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 whitespace-nowrap">
             Selesai Aktif (<span id="count-tech-completed">0</span>)
+          </button>
+          <button type="button" id="tech-filter-all" onclick="setTechnicianFilter('all')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 whitespace-nowrap">
+            Semua SPK (<span id="count-tech-all">0</span>)
           </button>
         </div>
 
@@ -14591,24 +14597,57 @@
             </div>
           `;
         } else if (hasWO) {
-          woBadge.className = "text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200";
-          woBadge.innerText = "SPK DITERBITKAN (PERLU BAST)";
+          const curTech = r.technician_name || 'Job Pool (Terbuka)';
+          const isPool = isWorkOrderPool({ technician_name: curTech });
+          woBadge.className = isPool 
+            ? "text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200"
+            : "text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200";
+          woBadge.innerText = isPool ? "SPK BURSA JOB POOL (TERBUKA)" : "SPK DITERBITKAN (PERLU BAST)";
           woContainer.innerHTML = `
             <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-md space-y-3 text-xs font-sans">
               <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                 <div>
                   <span class="text-[10px] uppercase font-mono text-slate-500 font-bold block">Surat Perintah Kerja (SPK) Pasang Baru</span>
-                  <strong class="text-xs text-slate-900 font-mono">${r.work_order_no}</strong>
-                  <span class="text-[11px] text-slate-600 font-sans block mt-0.5">Petugas: <strong class="text-slate-800">${r.technician_name || 'Tim Teknisi Lapangan'}</strong>${isGoldenSubcontract ? ' <span class="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">SUBKONTRAK GOLDEN (OTC RP 150RB)</span>' : ''}</span>
+                  <strong class="text-xs text-slate-900 font-mono">${r.work_order_no || 'WO-BARU'}</strong>
+                  <span class="text-[11px] text-slate-600 font-sans block mt-0.5">Petugas Saat Ini: <strong class="text-slate-800">${curTech}</strong>${isGoldenSubcontract ? ' <span class="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">SUBKONTRAK GOLDEN (OTC RP 150RB)</span>' : ''}</span>
                 </div>
                 <div class="text-left sm:text-right">
-                  <span class="text-[10px] uppercase font-mono text-slate-500 font-bold block">Status Tindakan</span>
-                  <span class="font-mono font-bold text-[11px] text-amber-700">Siap Tarik Kabel &amp; BAST</span>
+                  <span class="text-[10px] uppercase font-mono text-slate-500 font-bold block">Status Penugasan</span>
+                  <span class="font-mono font-bold text-[11px] ${isPool ? 'text-blue-700' : 'text-amber-700'}">${isPool ? 'Bursa Terbuka (Job Pool)' : 'Ditugaskan ke Teknisi'}</span>
                 </div>
               </div>
-              <p class="text-[11px] text-slate-600 font-sans">
-                Lokasi tercover ODP <strong class="font-mono">${r.nearest_odp_code || '-'}</strong> (~${Math.round(r.distance_to_odp_meters || 0)}m). Petugas dapat langsung mengisi BAST, validasi ONT, dan mengaktifkan internet:
-              </p>
+
+              <!-- Kontrol Penugasan Teknisi NOC / Supervisor -->
+              <div class="p-3 bg-white border border-slate-200 rounded-md space-y-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <label class="block text-[10px] font-mono font-bold uppercase text-slate-700">Tunjuk Teknisi / Alihkan Penugasan:</label>
+                  <span class="text-[9.5px] font-mono text-slate-500">NOC dapat tunjuk langsung atau lempar ke Bursa Job Pool</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <select id="detail-reassign-technician-select" onchange="onDetailReassignTechChange(this.value)" class="flex-grow bg-slate-50 border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-xs font-sans outline-none focus:border-slate-900">
+                    <option value="Job Pool (Terbuka)" ${curTech.toLowerCase().includes('pool') || curTech.toLowerCase().includes('terbuka') || curTech.toLowerCase().includes('lapangan') || curTech.toLowerCase().includes('payakumbuh') ? 'selected' : ''}>Job Pool (Terbuka) - Bebas diambil teknisi mana saja</option>
+                    <option value="Ricci" ${curTech.toLowerCase().includes('ricci') ? 'selected' : ''}>Ricci (RICCI-TECH - Payakumbuh)</option>
+                    <option value="Zikka" ${curTech.toLowerCase().includes('zikka') ? 'selected' : ''}>Zikka (ZIKKA-TECH - Payakumbuh)</option>
+                    <option value="Egi" ${curTech.toLowerCase().includes('egi') ? 'selected' : ''}>Egi (EGI-TECH - Payakumbuh)</option>
+                    <option value="Nando" ${curTech.toLowerCase().includes('nando') ? 'selected' : ''}>Nando (NANDO-TECH - Payakumbuh)</option>
+                    <option value="Mitra Teknisi Golden" ${isGoldenSubcontract ? 'selected' : ''}>Mitra Teknisi Golden (PT GNET BIARO AKSES - Subkontrak OTC Rp 150rb)</option>
+                  </select>
+                  <button type="button" onclick="submitReassignTechnician('${r.work_order_id || r.id}', '${r.id}')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-mono font-bold shrink-0 transition shadow-xs flex items-center justify-center gap-1.5">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Simpan Penugasan</span>
+                  </button>
+                </div>
+                <div id="detail-reassign-golden-note" class="${isGoldenSubcontract ? '' : 'hidden'} p-2.5 bg-indigo-50 border border-indigo-200 rounded-md text-[11px] text-indigo-900 flex items-start gap-2">
+                  <i data-lucide="info" class="w-4 h-4 text-indigo-700 shrink-0 mt-0.5"></i>
+                  <div>
+                    <strong class="font-mono font-bold">SKEMA SUBKONTRAK KEMITRAAN (GOLDEN NET):</strong>
+                    <p class="font-sans text-[10.5px] text-indigo-800 mt-0.5 leading-snug">
+                      Pekerjaan dialihkan ke armada PT GNET BIARO AKSES dengan biaya pasang baru (OTC) <strong>Rp 150.000 / titik</strong> (ditagihkan pada Berita Acara Rekonsiliasi bulanan).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <button type="button" onclick="openAdminTechnicianBastModal('${r.work_order_id || ''}', '${r.id}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-mono font-bold inline-flex items-center gap-1.5 shadow-xs transition">
                   <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
@@ -14638,14 +14677,14 @@
               <div class="space-y-1.5 pt-2 border-t border-slate-200">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <label class="block text-[10px] font-mono font-bold uppercase text-slate-700">Tugaskan Teknisi Pelaksana:</label>
-                  <span class="text-[9.5px] font-mono text-slate-500">Pilih tim internal atau alihkan jika jadwal overload</span>
+                  <span class="text-[9.5px] font-mono text-slate-500">Pilih teknisi, lempar ke Bursa Job Pool, atau alihkan ke Mitra Golden</span>
                 </div>
                 <select id="detail-assign-technician-select" onchange="onDetailAssignTechChange(this.value)" class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-xs font-sans outline-none focus:border-slate-900">
-                  <option value="Tim Teknisi Payakumbuh">Tim Teknisi Payakumbuh (Internal - Bergilir)</option>
-                  <option value="Nando">Nando (NANDO-TECH - Tim Internal)</option>
-                  <option value="Ricci">Ricci (RICCI-TECH - Tim Internal)</option>
-                  <option value="Zikka">Zikka (ZIKKA-TECH - Tim Internal)</option>
-                  <option value="Egi">Egi (EGI-TECH - Tim Internal)</option>
+                  <option value="Job Pool (Terbuka)" selected>Job Pool (Terbuka) - Bursa Terbuka Seluruh Teknisi</option>
+                  <option value="Ricci">Ricci (RICCI-TECH - Tim Internal Payakumbuh)</option>
+                  <option value="Zikka">Zikka (ZIKKA-TECH - Tim Internal Payakumbuh)</option>
+                  <option value="Egi">Egi (EGI-TECH - Tim Internal Payakumbuh)</option>
+                  <option value="Nando">Nando (NANDO-TECH - Tim Internal Payakumbuh)</option>
                   <option value="Mitra Teknisi Golden">Mitra Teknisi Golden (PT GNET BIARO AKSES - Subkontrak OTC Rp 150.000)</option>
                 </select>
                 <div id="detail-assign-golden-note" class="hidden p-2.5 bg-indigo-50 border border-indigo-200 rounded-md text-[11px] text-indigo-900 flex items-start gap-2">
@@ -15000,6 +15039,55 @@
         } else {
           banner.classList.add('hidden');
         }
+      }
+    }
+
+    function onDetailReassignTechChange(val) {
+      const banner = document.getElementById('detail-reassign-golden-note');
+      if (banner) {
+        if (val && val.includes('Golden')) {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+      }
+    }
+
+    async function submitReassignTechnician(woIdOrRegId, regId) {
+      const select = document.getElementById('detail-reassign-technician-select');
+      if (!select) return;
+      const techName = select.value;
+      const isGolden = techName.includes('Golden');
+      const isPool = techName.includes('Pool') || techName.includes('Terbuka');
+      const notes = isGolden 
+        ? 'Dialihkan ke Subkontrak Mitra Golden (OTC Rp 150.000)' 
+        : (isPool ? 'Dilepaskan kembali ke Bursa Job Pool' : `Ditugaskan oleh NOC/Admin ke ${techName}`);
+
+      try {
+        const token = localStorage.getItem('auth_session_token') || '';
+        const res = await fetch(`/api/v1/admin/work-orders/${encodeURIComponent(woIdOrRegId)}/assign`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            technician_name: techName,
+            notes: notes
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert(`✓ Penugasan teknisi berhasil diperbarui!\nStatus Penugasan: ${techName}`);
+          await loadAdminRegistrations();
+          if (regId) {
+            openAdminDetailModal(regId);
+          }
+        } else {
+          alert('Gagal mengalihkan penugasan: ' + (json.error || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Koneksi terganggu: ' + err.message);
       }
     }
 
@@ -20132,7 +20220,7 @@
     // PORTAL TEKNISI LAPANGAN & BAST DIGITAL LOGIC
     // ══════════════════════════════════════════════════════════════
     let technicianWorkOrders = [];
-    let currentTechFilter = 'all';
+    let currentTechFilter = 'my';
     let currentBastWO = null;
     let bastOntPhotoBase64 = "";
     let bastHousePhotoBase64 = "";
@@ -20255,15 +20343,43 @@
       lucide.createIcons();
     }
 
+    function isWorkOrderPool(wo) {
+      if (!wo) return false;
+      const tn = (wo.technician_name || '').toLowerCase().trim();
+      if (!tn) return true;
+      return tn.includes('pool') || tn.includes('terbuka') || tn.includes('belum') || tn.includes('tim teknisi payakumbuh') || tn.includes('tim lapangan');
+    }
+
+    function isWorkOrderMine(wo, myTechName) {
+      if (!wo) return false;
+      if (isWorkOrderPool(wo)) return false;
+      if (!myTechName) return false;
+      const my = myTechName.toLowerCase().trim();
+      const tn = (wo.technician_name || '').toLowerCase().trim();
+      if (!tn) return false;
+
+      // Exact match or partial match
+      if (tn === my || my.includes(tn) || tn.includes(my)) return true;
+
+      // Check first token (e.g. "Ricci", "Nando", "Zikka", "Egi")
+      const myToken = my.split(/[\s\-]/)[0];
+      const tnToken = tn.split(/[\s\-]/)[0];
+      if (myToken.length >= 3 && tn.includes(myToken)) return true;
+      if (tnToken.length >= 3 && my.includes(tnToken)) return true;
+      return false;
+    }
+
     function updateTechnicianCounters() {
       const activeRole = getActivePortalSession();
       const branchFilter = localStorage.getItem('selected_branch_filter') || 'ALL';
       let wos = technicianWorkOrders || [];
 
+      let tData = {};
+      try { tData = JSON.parse(localStorage.getItem('technician_auth') || '{}'); } catch(e){}
+      const myTechName = (tData.name || tData.username || '').trim();
+
       if (activeRole === 'technician') {
-        let tData = {};
-        try { tData = JSON.parse(localStorage.getItem('technician_auth') || '{}'); } catch(e){}
-        const tName = (tData.name || tData.username || '').toLowerCase();
+        const tName = myTechName.toLowerCase();
         if (tName.includes('ricci') || tName.includes('zikka') || tName.includes('egi') || tName.includes('nando')) {
           wos = wos.filter(wo => {
             const reg = wo.registration || {};
@@ -20296,8 +20412,25 @@
       }
 
       const total = wos.length;
-      const completed = wos.filter(w => w.status === 'COMPLETED' || (w.registration && w.registration.status === 'ACTIVE')).length;
-      const pending = total - completed;
+      let completed = 0;
+      let pending = 0;
+      let myCount = 0;
+      let poolCount = 0;
+
+      wos.forEach(w => {
+        const isDone = w.status === 'COMPLETED' || (w.registration && w.registration.status === 'ACTIVE');
+        if (isDone) {
+          completed++;
+        } else {
+          pending++;
+          if (isWorkOrderPool(w)) {
+            poolCount++;
+          }
+          if (isWorkOrderMine(w, myTechName) || (activeRole !== 'technician' && !isWorkOrderPool(w))) {
+            myCount++;
+          }
+        }
+      });
 
       const elTotal = document.getElementById('technician-stat-total');
       const elPending = document.getElementById('technician-stat-pending');
@@ -20306,29 +20439,40 @@
       if (elPending) elPending.innerText = pending;
       if (elCompleted) elCompleted.innerText = completed;
 
-      const cAll = document.getElementById('count-tech-all');
+      const cMy = document.getElementById('count-tech-my');
+      const cPool = document.getElementById('count-tech-pool');
       const cPending = document.getElementById('count-tech-pending');
       const cCompleted = document.getElementById('count-tech-completed');
-      if (cAll) cAll.innerText = total;
+      const cAll = document.getElementById('count-tech-all');
+      if (cMy) cMy.innerText = myCount;
+      if (cPool) cPool.innerText = poolCount;
       if (cPending) cPending.innerText = pending;
       if (cCompleted) cCompleted.innerText = completed;
+      if (cAll) cAll.innerText = total;
     }
 
     function setTechnicianFilter(filter) {
       currentTechFilter = filter;
-      const inactiveBtn = "px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900";
-      const activeBtn = "px-3 py-1.5 text-xs font-bold rounded-md bg-white text-slate-900 shadow-xs border border-slate-200";
+      const inactiveBtn = "px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 whitespace-nowrap";
+      const activeBtn = "px-3 py-1.5 text-xs font-bold rounded-md bg-white text-slate-900 shadow-xs border border-slate-200 whitespace-nowrap";
 
-      const bAll = document.getElementById('tech-filter-all');
+      const bMy = document.getElementById('tech-filter-my');
+      const bPool = document.getElementById('tech-filter-pool');
       const bPending = document.getElementById('tech-filter-pending');
       const bCompleted = document.getElementById('tech-filter-completed');
-      if (bAll) bAll.className = inactiveBtn;
+      const bAll = document.getElementById('tech-filter-all');
+
+      if (bMy) bMy.className = inactiveBtn;
+      if (bPool) bPool.className = inactiveBtn;
       if (bPending) bPending.className = inactiveBtn;
       if (bCompleted) bCompleted.className = inactiveBtn;
+      if (bAll) bAll.className = inactiveBtn;
 
-      if (filter === 'all' && bAll) bAll.className = activeBtn;
+      if (filter === 'my' && bMy) bMy.className = activeBtn;
+      if (filter === 'pool' && bPool) bPool.className = activeBtn;
       if (filter === 'pending' && bPending) bPending.className = activeBtn;
       if (filter === 'completed' && bCompleted) bCompleted.className = activeBtn;
+      if (filter === 'all' && bAll) bAll.className = activeBtn;
 
       renderTechnicianWorkOrders();
     }
@@ -20338,22 +20482,34 @@
       if (!grid) return;
       const searchQuery = (document.getElementById('technician-search-input')?.value || '').toLowerCase().trim();
 
+      const activeRole = getActivePortalSession();
+      const branchFilter = localStorage.getItem('selected_branch_filter') || 'ALL';
+      let tData = {};
+      try { tData = JSON.parse(localStorage.getItem('technician_auth') || '{}'); } catch(e){}
+      const myTechName = (tData.name || tData.username || '').trim();
+
       let list = technicianWorkOrders.filter(wo => {
         const isCompleted = wo.status === 'COMPLETED' || (wo.registration && wo.registration.status === 'ACTIVE');
-        if (currentTechFilter === 'pending' && isCompleted) return false;
-        if (currentTechFilter === 'completed' && !isCompleted) return false;
+        const isPool = isWorkOrderPool(wo);
+        const isMine = isWorkOrderMine(wo, myTechName) || (activeRole !== 'technician' && !isPool);
+
+        if (currentTechFilter === 'my') {
+          if (!isMine) return false;
+        } else if (currentTechFilter === 'pool') {
+          if (!isPool || isCompleted) return false;
+        } else if (currentTechFilter === 'pending') {
+          if (isCompleted) return false;
+        } else if (currentTechFilter === 'completed') {
+          if (!isCompleted) return false;
+        }
 
         // Isolasi Wilayah Operasional (Branch Scoping)
-        const activeRole = getActivePortalSession();
-        const branchFilter = localStorage.getItem('selected_branch_filter') || 'ALL';
         const reg = wo.registration || {};
         const odp = (reg.nearest_odp_code || '').toUpperCase();
         const addr = (reg.address || '').toUpperCase();
 
         if (activeRole === 'technician') {
-          let tData = {};
-          try { tData = JSON.parse(localStorage.getItem('technician_auth') || '{}'); } catch(e){}
-          const tName = (tData.name || tData.username || '').toLowerCase();
+          const tName = myTechName.toLowerCase();
           // Teknisi Payakumbuh hanya melihat Payakumbuh
           if (tName.includes('ricci') || tName.includes('zikka') || tName.includes('egi') || tName.includes('nando')) {
             if (odp.includes('PAPUA') || addr.includes('PAPUA')) return false;
@@ -20371,7 +20527,6 @@
         }
 
         if (searchQuery) {
-          const reg = wo.registration || {};
           const text = `${wo.order_no} ${wo.technician_name} ${reg.registration_no || ''} ${reg.full_name || ''} ${reg.site_pic_name || ''} ${reg.site_pic_phone || ''} ${reg.phone || ''} ${reg.address || ''} ${reg.nearest_odp_code || ''} ${reg.selected_plan_name || ''}`.toLowerCase();
           return text.includes(searchQuery);
         }
@@ -20379,11 +20534,21 @@
       });
 
       if (list.length === 0) {
+        let emptyTitle = "Tidak Ada Surat Perintah Kerja";
+        let emptyDesc = "Tidak ada SPK yang cocok dengan filter atau kata kunci pencarian Anda.";
+        if (currentTechFilter === 'my') {
+          emptyTitle = "Belum Ada Tugas Khusus Untuk Anda";
+          emptyDesc = `Halo ${myTechName || 'Teknisi'}, Anda belum memiliki SPK yang ditugaskan khusus. Silakan cek tab 'Bursa Job Pool' untuk mengambil order pasang baru yang tersedia!`;
+        } else if (currentTechFilter === 'pool') {
+          emptyTitle = "Bursa Job Pool Kosong";
+          emptyDesc = "Saat ini tidak ada order baru di bursa terbuka. Semua SPK sudah diambil atau ditugaskan oleh NOC.";
+        }
+
         grid.innerHTML = `
           <div class="col-span-full text-center py-12 bg-white rounded-lg border border-slate-200">
             <i data-lucide="clipboard-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
-            <h4 class="font-bold text-slate-700 text-sm">Tidak Ada Surat Perintah Kerja</h4>
-            <p class="text-xs text-slate-500 mt-1">Tidak ada SPK yang cocok dengan filter atau kata kunci pencarian Anda.</p>
+            <h4 class="font-bold text-slate-700 text-sm font-sans">${emptyTitle}</h4>
+            <p class="text-xs text-slate-500 mt-1 font-sans max-w-md mx-auto">${emptyDesc}</p>
           </div>
         `;
         lucide.createIcons();
@@ -20393,6 +20558,9 @@
       grid.innerHTML = list.map(wo => {
         const reg = wo.registration || {};
         const isCompleted = wo.status === 'COMPLETED' || reg.status === 'ACTIVE';
+        const isPool = isWorkOrderPool(wo);
+        const isMine = isWorkOrderMine(wo, myTechName);
+        const isGoldenSubcontract = Boolean(wo.technician_name && wo.technician_name.includes('Golden'));
 
         // PIC Lapangan dan Nomor Kontak
         const picName = reg.site_pic_name || reg.full_name || 'Pelanggan';
@@ -20409,36 +20577,54 @@
         const waMsg = encodeURIComponent(waGreeting);
         const waUrl = phoneFormatted ? `https://wa.me/${phoneFormatted}?text=${waMsg}` : '#';
 
+        // Penugasan Label Badge
+        let techBadgeHtml = '';
+        if (isPool) {
+          techBadgeHtml = `<span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">BURSA JOB POOL (TERBUKA)</span>`;
+        } else if (isGoldenSubcontract) {
+          techBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">SUBKONTRAK GOLDEN</span>`;
+        } else if (isMine) {
+          techBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">TUGAS SAYA (${wo.technician_name})</span>`;
+        } else {
+          techBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">Teknisi: ${wo.technician_name}</span>`;
+        }
+
         return `
-          <div class="bg-white border ${isCompleted ? 'border-emerald-200 shadow-xs' : 'border-slate-200 hover:border-slate-400 shadow-xs'} rounded-lg p-5 space-y-4 transition flex flex-col justify-between">
+          <div class="bg-white border ${isCompleted ? 'border-emerald-200 shadow-xs' : (isPool ? 'border-amber-300 shadow-xs ring-1 ring-amber-200' : 'border-slate-200 hover:border-slate-400 shadow-xs')} rounded-lg p-5 space-y-4 transition flex flex-col justify-between">
             <!-- Card Top Bar -->
             <div class="space-y-3">
               <div class="flex items-start justify-between gap-2">
                 <div>
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="font-mono font-black text-sm text-slate-900">${wo.order_no}</span>
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold ${wo.type === 'INSTALLATION' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-purple-50 text-purple-700 border border-purple-200'} uppercase">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${wo.type === 'INSTALLATION' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-purple-50 text-purple-700 border border-purple-200'} uppercase">
                       ${wo.type === 'INSTALLATION' ? 'Pasang Baru' : 'Survey Lapangan'}
                     </span>
+                    ${techBadgeHtml}
                   </div>
                   <span class="text-[11px] text-slate-400 font-mono block mt-0.5">
-                    ID Reg: <strong>${reg.registration_no || '-'}</strong> &bull; Teknisi: ${wo.technician_name || 'Tim Lapangan'}${wo.technician_name && wo.technician_name.includes('Golden') ? ' <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">SUBKONTRAK GOLDEN</span>' : ''}
+                    ID Reg: <strong>${reg.registration_no || '-'}</strong> &bull; Status: ${isCompleted ? 'Selesai' : (isPool ? 'Menunggu Klaim Teknisi' : 'Siap Tarik Kabel')}
                   </span>
                 </div>
 
                 <!-- Status Badge -->
                 <div>
                   ${isCompleted ? `
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-sans">
                       <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                      <span>Selesai & Aktif</span>
+                      <span>Selesai &amp; Aktif</span>
+                    </span>
+                  ` : (isPool ? `
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 font-sans">
+                      <i data-lucide="inbox" class="w-3.5 h-3.5"></i>
+                      <span>Bursa Terbuka</span>
                     </span>
                   ` : `
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 font-sans">
                       <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                       <span>Perlu BAST</span>
                     </span>
-                  `}
+                  `)}
                 </div>
               </div>
 
@@ -20449,22 +20635,22 @@
                     <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Pemilik Akun</span>
                     <strong class="text-slate-900 text-sm font-sans block truncate">${reg.full_name || 'Pelanggan Tanpa Nama'}</strong>
                     ${(reg.site_pic_name && reg.site_pic_name !== reg.full_name) ? `
-                      <div class="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold">
+                      <div class="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold font-sans">
                         <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
                         <span>PIC Lokasi: <strong>${reg.site_pic_name}</strong></span>
                       </div>
                     ` : `
-                      <span class="text-[10px] text-slate-500 font-medium block">PIC: Pemohon Langsung</span>
+                      <span class="text-[10px] text-slate-500 font-medium block font-sans">PIC: Pemohon Langsung</span>
                     `}
                   </div>
                   <!-- Contact Buttons -->
                   <div class="flex items-center gap-1.5 shrink-0 pt-1">
                     ${phoneFormatted ? `
-                      <a href="${waUrl}" target="_blank" title="Chat WhatsApp PIC (${picPhone})" class="px-2 py-1 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs">
+                      <a href="${waUrl}" target="_blank" title="Chat WhatsApp PIC (${picPhone})" class="px-2 py-1 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs font-sans">
                         <i data-lucide="message-circle" class="w-3 h-3"></i>
                         <span>WA PIC</span>
                       </a>
-                      <a href="tel:${picPhone}" title="Telepon Langsung (${picPhone})" class="px-2 py-1 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs">
+                      <a href="tel:${picPhone}" title="Telepon Langsung (${picPhone})" class="px-2 py-1 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs font-sans">
                         <i data-lucide="phone" class="w-3 h-3"></i>
                         <span>Telp</span>
                       </a>
@@ -20472,7 +20658,7 @@
                   </div>
                 </div>
 
-                <div class="text-[11px] text-slate-600 space-y-1">
+                <div class="text-[11px] text-slate-600 space-y-1 font-sans">
                   <div class="flex items-start gap-1.5">
                     <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5"></i>
                     <span class="leading-tight">${reg.address || '-'}</span>
@@ -20510,7 +20696,7 @@
             <!-- Action Button Footer -->
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
               <span class="text-[10px] font-mono text-slate-400">
-                ${isCompleted ? 'Aktif sejak: ' + new Date(wo.updated_at || wo.created_at).toLocaleDateString('id-ID') : 'Jadwal: Segera'}
+                ${isCompleted ? 'Aktif sejak: ' + new Date(wo.updated_at || wo.created_at).toLocaleDateString('id-ID') : (isPool ? 'Status: Bursa Terbuka' : 'Jadwal: Segera')}
               </span>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="openAdminDetailModal('${reg.id || wo.registration_id}')" title="Lihat detail permohonan pelanggan" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-md text-xs font-mono font-bold flex items-center gap-1.5 transition shadow-2xs">
@@ -20522,12 +20708,17 @@
                     <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>Lihat BAST</span>
                   </button>
+                ` : (isPool ? `
+                  <button type="button" onclick="claimWorkOrderByTechnician('${wo.id}', '${(reg.full_name || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold font-mono flex items-center gap-1.5 transition shadow-xs">
+                    <i data-lucide="hand" class="w-3.5 h-3.5"></i>
+                    <span>Ambil Job Ini</span>
+                  </button>
                 ` : `
                   <button type="button" onclick="openTechnicianBastModal('${wo.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold font-mono flex items-center gap-1.5 transition shadow-xs">
                     <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
-                    <span>Form BAST & Aktivasi</span>
+                    <span>Form BAST &amp; Aktivasi</span>
                   </button>
-                `}
+                `)}
               </div>
             </div>
 
@@ -20536,6 +20727,48 @@
       }).join('');
 
       lucide.createIcons();
+    }
+
+    async function claimWorkOrderByTechnician(woId, custName) {
+      let tData = {};
+      try { tData = JSON.parse(localStorage.getItem('technician_auth') || '{}'); } catch(e){}
+      let techName = (tData.name || tData.username || '').trim();
+
+      if (!techName) {
+        techName = prompt('Masukkan nama teknisi Anda untuk mengambil job ini:', 'Ricci');
+        if (!techName) return;
+        tData.name = techName;
+        localStorage.setItem('technician_auth', JSON.stringify(tData));
+      }
+
+      const conf = confirm(`Ambil job pasang baru untuk pelanggan "${custName}"?\nJob akan ditugaskan ke Anda (${techName}) dan dipindahkan ke tab Tugas Saya.`);
+      if (!conf) return;
+
+      try {
+        const token = localStorage.getItem('auth_session_token') || '';
+        const res = await fetch(`/api/v1/technician/work-orders/${encodeURIComponent(woId)}/claim`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            technician_name: techName,
+            notes: `Diklaim mandiri oleh teknisi ${techName} dari Bursa Job Pool`
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert(`✓ Berhasil mengambil job!\nSPK sekarang berada di tab Tugas Saya.`);
+          await loadTechnicianWorkOrders();
+          setTechnicianFilter('my');
+        } else {
+          alert('Gagal mengambil job: ' + (json.error || 'SPK mungkin sudah diambil teknisi lain'));
+          await loadTechnicianWorkOrders();
+        }
+      } catch (err) {
+        alert('Koneksi terganggu: ' + err.message);
+      }
     }
 
     function updateSopIndicator(val) {

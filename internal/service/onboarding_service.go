@@ -1017,7 +1017,7 @@ func (s *OnboardingService) ListWorkOrders(ctx context.Context, status *string) 
 				if r.Status == "PENDING_SURVEY_OVERDISTANCE" {
 					woType = "SURVEY"
 				}
-				_, _ = s.CreateWorkOrder(ctx, r.ID, woType, "Tim Teknisi Payakumbuh", time.Now().Add(24*time.Hour), "Penugasan Pasang Baru Otomatis Sistem")
+				_, _ = s.CreateWorkOrder(ctx, r.ID, woType, "Job Pool (Terbuka)", time.Now().Add(24*time.Hour), "Bursa Job Pool: Menunggu Penunjukan NOC atau Diambil Teknisi")
 			}
 		}
 	}
@@ -1040,6 +1040,26 @@ func (s *OnboardingService) ListWorkOrders(ctx context.Context, status *string) 
 	}
 
 	return wos, nil
+}
+
+func (s *OnboardingService) AssignWorkOrder(ctx context.Context, idOrRegID string, techName string, notes string) (*domain.WorkOrder, error) {
+	cleanTech := strings.TrimSpace(techName)
+	if cleanTech == "" {
+		cleanTech = "Job Pool (Terbuka)"
+	}
+	if err := s.repo.AssignWorkOrder(ctx, idOrRegID, cleanTech, notes); err != nil {
+		return nil, fmt.Errorf("gagal menugaskan teknisi: %w", err)
+	}
+	wo, err := s.repo.GetWorkOrderByID(ctx, idOrRegID)
+	if err != nil || wo == nil {
+		wo, _ = s.repo.GetWorkOrderByRegistrationID(ctx, idOrRegID)
+	}
+	if wo != nil {
+		if reg, err := s.repo.GetRegistrationByID(ctx, wo.RegistrationID); err == nil && reg != nil {
+			wo.Registration = reg
+		}
+	}
+	return wo, nil
 }
 
 func (s *OnboardingService) GetWorkOrderByID(ctx context.Context, id string) (*domain.WorkOrder, error) {
