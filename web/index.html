@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="version" content="2026.09.30.02" />
   <title>GOGIGANET Broadband • Registrasi & Jangkauan Fiber Optik</title>
-  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="icon" type="image/png" href="/logo.png?v=20260930" />
   
   <!-- ZERO-FOUC EARLY SUBDOMAIN & ROUTING INITIALIZER -->
   <script>
@@ -13022,60 +13026,60 @@
             </td>
             <td class="py-3 px-3.5 font-mono align-top text-right whitespace-nowrap min-w-[280px]">
               <div class="inline-flex items-center justify-end gap-1 flex-nowrap">
-                <button onclick="openAdminDetailModal('${r.id}')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold rounded-md shadow-2xs transition active:scale-98 cursor-pointer shrink-0">
-                  Lihat Detail
+                <button type="button" onclick="openAdminDetailModal('${r.id}')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold rounded-md shadow-2xs transition active:scale-95 cursor-pointer shrink-0">
+                  <span class="pointer-events-none">Lihat Detail</span>
                 </button>
                 ${(r.status === 'SUBMITTED' || r.status === 'INSTALLATION_SCHEDULED' || r.status === 'SURVEY_SCHEDULED' || r.status === 'PENDING_SURVEY_OVERDISTANCE') ? `
-                  <button onclick="openAdminTechnicianBastModal('${r.work_order_id || ''}', '${r.id}')" title="Form BAST & Aktivasi Teknisi" class="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>BAST</span>
+                  <button type="button" onclick="openAdminTechnicianBastModal('${r.work_order_id || ''}', '${r.id}')" title="Form BAST & Aktivasi Teknisi" class="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-emerald-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">BAST</span>
                   </button>
                 ` : ''}
                 ${(r.status === 'PENDING_SURVEY_OVERDISTANCE' || r.status === 'UNCOVERED_WISHLIST' || !r.nearest_odp_code) ? `
-                  <button onclick="openAttachPartnerODPModal('${r.id}', '${r.registration_no}', '${r.full_name.replace(/'/g, "\\'")}', '${r.nearest_odp_code || ''}', ${r.distance_to_odp_meters || 50})" title="Oper Order / Attach ke TIF" class="px-2 py-1 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 hover:border-indigo-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="network" class="w-3.5 h-3.5 text-indigo-600"></i>
-                    <span>Oper TIF</span>
+                  <button type="button" onclick="openAttachPartnerODPModal('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.nearest_odp_code || ''}', ${r.distance_to_odp_meters || 50})" title="Oper Order / Attach ke TIF" class="px-2 py-1 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 hover:border-indigo-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="network" class="w-3.5 h-3.5 text-indigo-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Oper TIF</span>
                   </button>
-                  <button onclick="openMarkUncoveredModal('${r.id}', '${r.registration_no}', '${r.full_name.replace(/'/g, "\\'")}', '${r.phone || ''}')" title="Penanganan Tidak Tercover" class="px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 hover:border-rose-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="map-pin-off" class="w-3.5 h-3.5 text-rose-600"></i>
-                    <span>Wishlist</span>
+                  <button type="button" onclick="openMarkUncoveredModal('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.phone || ''}')" title="Penanganan Tidak Tercover" class="px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 hover:border-rose-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="map-pin-off" class="w-3.5 h-3.5 text-rose-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Wishlist</span>
                   </button>
                 ` : ''}
                 ${r.status === 'ACTIVE' ? (
                   r.partner_suspension_policy === 'DISALLOWED' ? `
-                    <button disabled title="Jeda dilarang oleh kontrak mitra" class="px-2 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded-md font-mono text-[11px] font-bold cursor-not-allowed flex items-center gap-1 opacity-70 shrink-0">
-                      <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
-                      <span>Isolir</span>
+                    <button type="button" disabled title="Jeda dilarang oleh kontrak mitra" class="px-2 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded-md font-mono text-[11px] font-bold cursor-not-allowed flex items-center gap-1 opacity-70 shrink-0">
+                      <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                      <span class="pointer-events-none">Isolir</span>
                     </button>
                   ` : `
-                    <button onclick="toggleCustomerSuspension('${r.registration_no}', 'ACTIVE', '${r.full_name.replace(/'/g, "\\'")}', '${r.partner_suspension_policy || ''}', '${r.partner_name ? r.partner_name.replace(/'/g, "\\'") : ''}')" title="Isolir Layanan & Putus Koneksi MikroTik" class="px-2 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                      <i data-lucide="pause" class="w-3.5 h-3.5 text-slate-600"></i>
-                      <span>Isolir</span>
+                    <button type="button" onclick="toggleCustomerSuspension('${r.registration_no}', 'ACTIVE', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.partner_suspension_policy || ''}', '${(r.partner_name || '').replace(/['"\\]/g, ' ')}')" title="Isolir Layanan & Putus Koneksi MikroTik" class="px-2 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                      <i data-lucide="pause" class="w-3.5 h-3.5 text-slate-600 pointer-events-none"></i>
+                      <span class="pointer-events-none">Isolir</span>
                     </button>
                   `
                 ) : ''}
                 ${r.status === 'SUSPENDED' ? `
-                  <button onclick="toggleCustomerSuspension('${r.registration_no}', 'SUSPENDED', '${r.full_name.replace(/'/g, "\\'")}')" title="Buka Isolir & Pulihkan Koneksi" class="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>Buka Isolir</span>
+                  <button type="button" onclick="toggleCustomerSuspension('${r.registration_no}', 'SUSPENDED', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}')" title="Buka Isolir & Pulihkan Koneksi" class="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Buka Isolir</span>
                   </button>
                 ` : ''}
                 ${r.pppoe_username ? `
-                  <button onclick="kickPPPoESession('${r.pppoe_username}', '${r.full_name.replace(/'/g, "\\'")}')" title="Reset / Kick Sesi PPPoE MikroTik" class="px-2 py-1 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 hover:border-amber-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-amber-600"></i>
-                    <span>Kick</span>
+                  <button type="button" onclick="kickPPPoESession('${r.pppoe_username}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}')" title="Reset / Kick Sesi PPPoE MikroTik" class="px-2 py-1 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 hover:border-amber-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-amber-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Kick</span>
                   </button>
                 ` : ''}
                 ${(r.status === 'ACTIVE' || r.status === 'SUSPENDED') ? `
-                  <button onclick="openUpgradePlanModal('${r.id}')" title="Upgrade / Ganti Paket Bandwidth" class="px-2 py-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 hover:border-blue-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0">
-                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span>Upgrade</span>
+                  <button type="button" onclick="openUpgradePlanModal('${r.id}')" title="Upgrade / Ganti Paket Bandwidth" class="px-2 py-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 hover:border-blue-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Upgrade</span>
                   </button>
                 ` : ''}
                 ${isSuperUser ? `
-                  <button onclick="confirmDeleteRegistration('${r.id}', '${r.registration_no}', '${r.full_name.replace(/'/g, "\\'")}', '${r.status}')" title="Hapus Data (Super User)" class="px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 hover:border-rose-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
-                    <span>Hapus</span>
+                  <button type="button" onclick="confirmDeleteRegistration('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.status}')" title="Hapus Data (Super User)" class="px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 hover:border-rose-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600 pointer-events-none"></i>
+                    <span class="pointer-events-none">Hapus</span>
                   </button>
                 ` : ''}
               </div>
@@ -14141,8 +14145,14 @@
     }
 
     async function openAdminDetailModal(target) {
+      const modal = document.getElementById('modal-admin-detail');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      }
       const r = await resolveRegistrationRecord(target);
       if (!r) {
+        if (modal) modal.classList.add('hidden');
         alert('Data detail permohonan pelanggan tidak ditemukan (Target: ' + target + '). Silakan segarkan halaman.');
         return;
       }

@@ -77,9 +77,14 @@ func (s *Server) Routes() http.Handler {
 	}))
 
 	// ── WEB PORTAL UI (HTML + Tailwind + Leaflet Map) ──────
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	serveIndex := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
 		http.ServeFile(w, r, "./web/index.html")
-	})
+	}
+	r.Get("/", serveIndex)
+	r.Get("/index.html", serveIndex)
 	r.Get("/logo.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./web/logo.png")
 	})
@@ -92,7 +97,12 @@ func (s *Server) Routes() http.Handler {
 	r.Get("/MATRIKS_TUGAS_DAN_TANGGUNG_JAWAB_SDM_GOGIGANET.pdf", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./MATRIKS_TUGAS_DAN_TANGGUNG_JAWAB_SDM_GOGIGANET.pdf")
 	})
-	r.Handle("/web/*", http.StripPrefix("/web/", http.FileServer(http.Dir("./web"))))
+	r.Handle("/web/*", http.StripPrefix("/web/", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		http.FileServer(http.Dir("./web")).ServeHTTP(w, req)
+	})))
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		gigaHealth, _ := s.client.CheckHealth(r.Context())
