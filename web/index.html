@@ -5935,15 +5935,16 @@
   </div>
 
   <!-- MODAL OPER ORDER / MANUAL ATTACH KE MITRA WHOLESALE (TIF / GNET) -->
+  <!-- MODAL OPER ORDER / MANUAL ATTACH KE MITRA WHOLESALE (JARTUP / JARTAPLOK) -->
   <div id="modal-attach-partner-odp" class="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white max-w-lg w-full rounded-lg border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="p-4 bg-slate-900 text-white border-b border-slate-800 flex items-center justify-between">
+    <div class="bg-white max-w-lg w-full rounded-lg border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div class="p-4 bg-slate-900 text-white border-b border-slate-800 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-md bg-white/10 border border-white/15 flex items-center justify-center text-white">
             <i data-lucide="network" class="w-4 h-4"></i>
           </div>
           <div>
-            <h4 class="text-sm font-bold font-sans">Oper Order / Hubungkan ke Infra Wholesale</h4>
+            <h4 class="text-sm font-bold font-sans">Oper Order / Alihkan ke Mitra Jartup</h4>
             <span class="text-[11px] text-indigo-200 font-mono" id="attach-odp-regno-subtitle">REG-XXXXXX</span>
           </div>
         </div>
@@ -5952,51 +5953,50 @@
         </button>
       </div>
 
-      <form id="form-attach-partner-odp" onsubmit="handleAttachPartnerODPSubmit(event)" class="p-5 space-y-4 text-xs font-sans">
+      <form id="form-attach-partner-odp" onsubmit="handleAttachPartnerODPSubmit(event)" class="p-5 space-y-4 text-xs font-sans overflow-y-auto">
         <input type="hidden" id="attach-odp-reg-id" />
         
         <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-md text-indigo-900 text-[11px] leading-relaxed">
-          <strong class="font-bold block mb-0.5">Manual Attachment (Tanpa KML Telkom):</strong>
-          Karena TIF tidak menyediakan file KML massal, sistem akan otomatis mendaftarkan titik ODP ini ke database lokal di bawah mitra yang dipilih dan mempromosikan status pelanggan ke <strong>Siap Pasang (INSTALLATION_SCHEDULED)</strong>.
+          <strong class="font-bold block mb-0.5">Alokasi Multi-Provider Jartup / Jartaplok:</strong>
+          Jika tiang eksisting tidak tercover atau di area ini terdapat beberapa mitra Jartup, pilih salah satu provider di bawah. Sistem akan mendaftarkan titik ODP mitra dan mengalihkan status pelanggan ke <strong>Siap Pasang (INSTALLATION_SCHEDULED)</strong>.
         </div>
 
         <div>
-          <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Mitra Wholesale Tujuan</label>
-          <select id="attach-odp-partner-code" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900  bg-white">
-            <option value="TELKO-PYK" selected>PT Telkom Infrastruktur Indonesia (TIF) - Skema Bitstream 1:1</option>
-            <option value="GNET-BIARO">PT. GNET BIARO AKSES - Skema Sewa Port FO Pasif</option>
+          <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Mitra Jartup / Wholesale Tujuan *</label>
+          <select id="attach-odp-partner-code" onchange="onAttachPartnerODPChange(this.value)" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
+            <!-- Dinamis diisi dari master superUserJartaplokPartners -->
           </select>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Kode / No. ODP Mitra *</label>
-            <input type="text" id="attach-odp-code" required placeholder="Misal: ODP-TIF-PYK-001" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-mono uppercase focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-purple-500" />
-            <span class="text-[10px] text-slate-400 block mt-0.5">Kode ODP dari konfirmasi Telkom/TIF</span>
+            <input type="text" id="attach-odp-code" required placeholder="Misal: ODP-TIF-PYK-001" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-mono uppercase focus:ring-1 focus:ring-slate-900 focus:border-slate-900" />
+            <span class="text-[10px] text-slate-400 block mt-0.5">Kode ODP dari konfirmasi mitra/survei</span>
           </div>
           <div>
             <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Jarak Kabel Dropcore (Meter) *</label>
-            <input type="number" id="attach-odp-distance" required min="1" max="1000" value="50" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-mono focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-purple-500" />
-            <span class="text-[10px] text-slate-400 block mt-0.5">Batas TIF 150m, GNET 250m</span>
+            <input type="number" id="attach-odp-distance" required min="1" max="1000" value="50" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-mono focus:ring-1 focus:ring-slate-900 focus:border-slate-900" />
+            <span id="attach-odp-distance-hint" class="text-[10px] text-slate-400 block mt-0.5">Batas jarak dropcore sesuai kebijakan mitra</span>
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Nama / Lokasi Tiang ODP</label>
-          <input type="text" id="attach-odp-name" placeholder="Misal: Tiang Telkom Sudirman Depan Apotek No. 45" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-purple-500" />
+          <input type="text" id="attach-odp-name" placeholder="Misal: Tiang Depan Apotek / Dekat Simpang" class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900" />
         </div>
 
         <!-- Akun Dial Modem Jartaplok (Opsional) -->
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2">
+        <div id="attach-upstream-box" class="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-[11px] font-mono font-bold uppercase text-slate-800 flex items-center gap-1.5">
               <i data-lucide="key" class="w-3.5 h-3.5 text-slate-600"></i>
               <span>Akun Dial ONT Upstream (Opsional)</span>
             </span>
-            <span class="text-[9px] font-mono text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded">Jika TIF / Telkom</span>
+            <span id="attach-upstream-type-badge" class="text-[9px] font-mono text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded">Jika Diwajibkan Mitra</span>
           </div>
-          <p class="text-[10.5px] font-sans text-slate-500 leading-normal">
-            Jika TIF mewajibkan modem ONT mendial dengan username PPPoE dari mereka, masukkan di bawah ini. Akun resmi GoGiga tetap tercatat sebagai master customer ID.
+          <p id="attach-upstream-desc" class="text-[10.5px] font-sans text-slate-500 leading-normal">
+            Jika mitra (seperti Bitstream TIF/Telkom) mewajibkan modem ONT mendial dengan akun upstream mereka, masukkan di bawah ini. Akun resmi GoGiga tetap tercatat sebagai master customer ID.
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
             <div>
@@ -6012,7 +6012,7 @@
 
         <div>
           <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Catatan Oper Order (Internal NOC)</label>
-          <textarea id="attach-odp-notes" rows="2" placeholder="Misal: Hasil survei konfirmasi PIC Telkom siap tarik kabel, dialihkan dari GNET." class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-purple-500"></textarea>
+          <textarea id="attach-odp-notes" rows="2" placeholder="Misal: Hasil survei konfirmasi tiang mitra siap tarik kabel, dialihkan dari provider sebelumnya." class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900"></textarea>
         </div>
 
         <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] text-slate-500 flex items-center gap-2">
@@ -6020,13 +6020,13 @@
           <span>Prinsip White-Label: Nama rekanan wholesale tidak akan pernah ditampilkan kepada pelanggan ritel.</span>
         </div>
 
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 shrink-0">
           <button type="button" onclick="closeAttachPartnerODPModal()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-md text-xs font-semibold text-slate-700 transition">
             Batal
           </button>
           <button type="submit" id="btn-submit-attach-odp" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm">
             <i data-lucide="check" class="w-4 h-4"></i>
-            <span>HUBUNGKAN & JADWALKAN PASANG</span>
+            <span>HUBUNGKAN KE MITRA JARTUP</span>
           </button>
         </div>
       </form>
@@ -13037,9 +13037,9 @@
                   </button>
                 ` : ''}
                 ${(r.status === 'PENDING_SURVEY_OVERDISTANCE' || r.status === 'UNCOVERED_WISHLIST' || !r.nearest_odp_code) ? `
-                  <button type="button" onclick="openAttachPartnerODPModal('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.nearest_odp_code || ''}', ${r.distance_to_odp_meters || 50})" title="Oper Order / Attach ke TIF" class="px-2 py-1 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 hover:border-indigo-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
+                  <button type="button" onclick="openAttachPartnerODPModal('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.nearest_odp_code || ''}', ${r.distance_to_odp_meters || 50})" title="Oper Order / Alihkan ke Mitra Jartup" class="px-2 py-1 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 hover:border-indigo-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
                     <i data-lucide="network" class="w-3.5 h-3.5 text-indigo-600 pointer-events-none"></i>
-                    <span class="pointer-events-none">Oper TIF</span>
+                    <span class="pointer-events-none">Oper Jartup</span>
                   </button>
                   <button type="button" onclick="openMarkUncoveredModal('${r.id}', '${r.registration_no}', '${(r.full_name || 'Pelanggan').replace(/['"\\]/g, ' ')}', '${r.phone || ''}')" title="Penanganan Tidak Tercover" class="px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 hover:border-rose-300 rounded-md font-mono text-[11px] font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 active:scale-95">
                     <i data-lucide="map-pin-off" class="w-3.5 h-3.5 text-rose-600 pointer-events-none"></i>
@@ -14733,7 +14733,7 @@
               </button>
               <button onclick="openAttachPartnerODPModal('${r.id}', '${r.registration_no}', '${r.full_name.replace(/'/g, "\\'")}', '${r.nearest_odp_code || ''}', ${r.distance_to_odp_meters || 50})" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-md text-xs font-mono font-semibold inline-flex items-center gap-1.5 shadow-2xs transition">
                 <i data-lucide="network" class="w-3.5 h-3.5 text-slate-600"></i>
-                <span>Oper ke Infra TIF</span>
+                <span>Oper Infra Jartup</span>
               </button>
               <button onclick="openMarkUncoveredModal('${r.id}', '${r.registration_no}', '${r.full_name.replace(/'/g, "\\'")}', '${r.phone || ''}')" class="px-3.5 py-2 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 rounded-md text-xs font-mono font-semibold inline-flex items-center gap-1.5 shadow-2xs transition">
                 <i data-lucide="map-pin-off" class="w-3.5 h-3.5"></i>
@@ -15940,23 +15940,146 @@
       }
     }
 
-    function openAttachPartnerODPModal(regId, regNo, name, currentODP, currentDist, existingUpUser = '', existingUpPass = '') {
+    async function populateAttachPartnerOptions(selectedCode) {
+      const select = document.getElementById('attach-odp-partner-code');
+      if (!select) return;
+
+      if (!superUserJartaplokPartners || superUserJartaplokPartners.length === 0) {
+        try {
+          const res = await fetch('/api/v1/superuser/jartaplok-partners?branch=ALL', {
+            headers: {
+              'X-Admin-Key': 'isp-onboarding-admin-key',
+              'X-User-Role': localStorage.getItem('active_portal_role') || 'superuser',
+              'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || '')
+            }
+          });
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            superUserJartaplokPartners = json.data;
+          }
+        } catch (e) {
+          console.warn('Gagal memuat daftar rekanan jartaplok:', e);
+        }
+      }
+
+      const partners = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
+        ? superUserJartaplokPartners
+        : [
+            { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
+            { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)', service_type: 'BITSTREAM', max_distance_meters: 150 }
+          ];
+
+      select.innerHTML = partners.map(p => {
+        const typeLabel = p.service_type === 'BITSTREAM' ? 'Bitstream' : 'Sewa Port FO Pasif';
+        const maxD = p.max_distance_meters || (p.service_type === 'BITSTREAM' ? 150 : 250);
+        return `<option value="${p.code}">${p.name} (${p.code}) • ${typeLabel} (Maks ${maxD}m)</option>`;
+      }).join('');
+
+      if (selectedCode && partners.some(p => p.code === selectedCode)) {
+        select.value = selectedCode;
+      } else if (partners.length > 0) {
+        select.value = partners[0].code;
+      }
+
+      onAttachPartnerODPChange(select.value, true);
+    }
+
+    function onAttachPartnerODPChange(partnerCode, keepOdpValue = false) {
+      const partners = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
+        ? superUserJartaplokPartners
+        : [
+            { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
+            { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)', service_type: 'BITSTREAM', max_distance_meters: 150 }
+          ];
+      const p = partners.find(x => x.code === partnerCode);
+
+      const maxDist = p?.max_distance_meters || (p?.service_type === 'BITSTREAM' ? 150 : 250);
+      const distInput = document.getElementById('attach-odp-distance');
+      const distHint = document.getElementById('attach-odp-distance-hint');
+      if (distInput) {
+        distInput.max = maxDist;
+        if (parseFloat(distInput.value) > maxDist) distInput.value = maxDist;
+      }
+      if (distHint) {
+        const typeText = p?.service_type === 'BITSTREAM' ? 'Bitstream Wholesale' : 'Sewa Port Pasif FO';
+        distHint.innerHTML = `Batas toleransi penarikan kabel dropcore rekanan ini: <strong class="text-slate-800 font-mono">maks. ${maxDist} meter</strong> (${typeText}).`;
+      }
+
+      const upstreamBadge = document.getElementById('attach-upstream-type-badge');
+      const upstreamDesc = document.getElementById('attach-upstream-desc');
+      if (p?.service_type === 'BITSTREAM') {
+        if (upstreamBadge) {
+          upstreamBadge.className = 'text-[9px] font-mono text-purple-700 bg-purple-100 border border-purple-200 px-1.5 py-0.5 rounded font-bold';
+          upstreamBadge.innerText = 'Wajib / Rekomendasi Bitstream';
+        }
+        if (upstreamDesc) {
+          upstreamDesc.innerText = `Mitra Bitstream (${p.name || partnerCode}) umumnya memerlukan modem ONT mendial akun upstream milik mitra. Akun resmi GoGiga tetap tercatat sebagai master customer ID.`;
+        }
+      } else {
+        if (upstreamBadge) {
+          upstreamBadge.className = 'text-[9px] font-mono text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded';
+          upstreamBadge.innerText = 'Opsional (Sewa Port FO Pasif)';
+        }
+        if (upstreamDesc) {
+          upstreamDesc.innerText = `Untuk sewa port pasif FO, ONT mendial langsung ke BNG/PPPoE Server GoGiga. Isi upstream dial di bawah hanya jika mitra mensyaratkan khusus.`;
+        }
+      }
+
+      const odpInput = document.getElementById('attach-odp-code');
+      if (odpInput) {
+        const cleanCode = (partnerCode || '').replace(/[^a-zA-Z0-9]/g, '');
+        odpInput.placeholder = `Misal: ODP-${cleanCode}-001`;
+        if (!keepOdpValue) {
+          if (partnerCode === 'TELKO-PYK') {
+            odpInput.value = 'ODP-TIF-PYK-';
+          } else {
+            odpInput.value = `ODP-${partnerCode}-`;
+          }
+        }
+      }
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    async function openAttachPartnerODPModal(regId, regNo, name, currentODP, currentDist, existingUpUser = '', existingUpPass = '') {
       document.getElementById('attach-odp-reg-id').value = regId;
       document.getElementById('attach-odp-regno-subtitle').innerText = `${regNo} • ${name}`;
-      document.getElementById('attach-odp-partner-code').value = 'TELKO-PYK';
-      document.getElementById('attach-odp-code').value = currentODP && currentODP.startsWith('ODP-TIF') ? currentODP : 'ODP-TIF-PYK-';
+
+      let selectedPartner = 'TELKO-PYK';
+      let regRecord = null;
+      if (window.adminRegistrationsData) {
+        regRecord = window.adminRegistrationsData.find(x => x.id === regId);
+        if (regRecord && regRecord.partner_code) {
+          selectedPartner = regRecord.partner_code;
+        } else if (currentODP) {
+          if (currentODP.startsWith('ODP-TIF')) selectedPartner = 'TELKO-PYK';
+          else if (currentODP.startsWith('ODP-GNET')) selectedPartner = 'GNET-BIARO';
+        }
+      }
+
+      await populateAttachPartnerOptions(selectedPartner);
+
+      const odpInput = document.getElementById('attach-odp-code');
+      if (odpInput) {
+        if (currentODP && currentODP.trim()) {
+          odpInput.value = currentODP.trim();
+        } else {
+          odpInput.value = selectedPartner === 'TELKO-PYK' ? 'ODP-TIF-PYK-' : `ODP-${selectedPartner}-`;
+        }
+      }
+
       document.getElementById('attach-odp-name').value = '';
-      document.getElementById('attach-odp-distance').value = currentDist > 0 && currentDist <= 150 ? Math.round(currentDist) : 50;
+      const distInput = document.getElementById('attach-odp-distance');
+      const maxAllowed = parseFloat(distInput?.max) || 150;
+      if (distInput) {
+        distInput.value = (currentDist > 0 && currentDist <= maxAllowed) ? Math.round(currentDist) : Math.min(50, maxAllowed);
+      }
       document.getElementById('attach-odp-notes').value = '';
 
       let upUserVal = existingUpUser || '';
       let upPassVal = existingUpPass || '';
-      if (!upUserVal && window.adminRegistrationsData) {
-        const found = window.adminRegistrationsData.find(x => x.id === regId);
-        if (found) {
-          upUserVal = found.upstream_pppoe_username || '';
-          upPassVal = found.upstream_pppoe_password || '';
-        }
+      if (!upUserVal && regRecord) {
+        upUserVal = regRecord.upstream_pppoe_username || '';
+        upPassVal = regRecord.upstream_pppoe_password || '';
       }
       const upUserInput = document.getElementById('attach-upstream-pppoe-user');
       const upPassInput = document.getElementById('attach-upstream-pppoe-pass');
@@ -15964,7 +16087,7 @@
       if (upPassInput) upPassInput.value = upPassVal;
 
       document.getElementById('modal-attach-partner-odp')?.classList.remove('hidden');
-      lucide.createIcons();
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     function closeAttachPartnerODPModal() {
@@ -16014,7 +16137,16 @@
         });
         const json = await res.json();
         if (json.success) {
-          alert(`✓ Berhasil! Sirkuit pelanggan berhasil di-attach ke ${partnerCode === 'TELKO-PYK' ? 'Infrastruktur TIF Bitstream' : 'Mitra Jartaplok'}.\nTitik ODP ${odpCode} telah didaftarkan dan status berubah menjadi Siap Pasang.`);
+          const partnerList = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
+            ? superUserJartaplokPartners
+            : [
+                { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA' },
+                { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)' }
+              ];
+          const partnerObj = partnerList.find(x => x.code === partnerCode);
+          const partnerName = partnerObj ? partnerObj.name : partnerCode;
+
+          alert(`✓ Berhasil! Sirkuit pelanggan berhasil dialihkan ke Mitra Jartup: ${partnerName} (${partnerCode}).\nTitik ODP ${odpCode} telah didaftarkan dan status berubah menjadi Siap Pasang.`);
           closeAttachPartnerODPModal();
           closeAdminDetailModal();
           await loadAdminRegistrations();
