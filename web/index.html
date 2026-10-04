@@ -3650,7 +3650,7 @@
                     <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">Multi-Provider</span>
                   </div>
                   <p id="exec-jartaplok-info-sub" class="text-xs text-slate-300 mt-0.5">
-                    HPP per pelanggan aktif yang dibayarkan GOGIGA ISP ke pemilik jaringan (Jartaplok / Bitstream).
+                    HPP per pelanggan aktif yang dibayarkan <span class="cust-brand-name-dynamic">ISP</span> ke pemilik jaringan (Jartaplok / Bitstream).
                   </p>
                 </div>
               </div>
@@ -3690,7 +3690,7 @@
                   <h4 class="text-base font-bold text-slate-900 font-mono uppercase">Rekanan Penyelenggara JARTAPLOK (Multi-Tenant Wholesale)</h4>
                   <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-100 text-indigo-800">Multi-Provider</span>
                 </div>
-                <p class="text-xs text-slate-500 font-sans mt-0.5">Daftar badan hukum penyelenggara jaringan fiber optik rekanan GOGIGA ISP berserta utilisasi tiang dan port.</p>
+                <p class="text-xs text-slate-500 font-sans mt-0.5">Daftar badan hukum penyelenggara jaringan fiber optik rekanan <span class="cust-brand-name-dynamic">ISP</span> berserta utilisasi tiang dan port.</p>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="openNewJartaplokPartnerModal()" class="px-3.5 py-2 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold shadow-xs transition flex items-center gap-1.5">
@@ -23605,6 +23605,9 @@
         if (elBrandName) elBrandName.textContent = brandName;
         const elMobileBrandName = document.getElementById('noc-mobile-brand-name');
         if (elMobileBrandName) elMobileBrandName.textContent = brandName;
+        document.querySelectorAll('.cust-brand-name-dynamic').forEach(el => {
+          el.textContent = brandName;
+        });
         const elBrandHighlight = document.getElementById('noc-login-brand-highlight');
         if (elBrandHighlight) elBrandHighlight.textContent = brandName + ' Command Center';
         const elHeroSub = document.getElementById('noc-login-hero-sub');
@@ -24090,7 +24093,8 @@
         if (d.total_savings_prorata > 0) {
           elBillingSub.innerHTML = `<span class="text-emerald-700 font-bold font-mono">Hemat Prorata & Jeda: Rp ${Number(d.total_savings_prorata).toLocaleString('id-ID')}</span> (Normal: Rp ${Number(d.total_full_monthly || 0).toLocaleString('id-ID')})`;
         } else {
-          elBillingSub.innerText = 'Kewajiban sewa bulan berjalan dari GOGIGA ISP';
+          const bName = (window.__ISPSYNC_TENANT__ && (window.__ISPSYNC_TENANT__.short_name || window.__ISPSYNC_TENANT__.slug)) ? (window.__ISPSYNC_TENANT__.short_name || window.__ISPSYNC_TENANT__.slug).toUpperCase() : 'ISP';
+          elBillingSub.innerText = 'Kewajiban sewa bulan berjalan dari ' + bName + ' ISP';
         }
       }
       if (elActive) elActive.innerText = d.total_active_ports || 0;

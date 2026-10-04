@@ -231,7 +231,16 @@ func (h *PageHandler) ServeApp(w http.ResponseWriter, r *http.Request) {
 		html = strings.Replace(html, "/logo.png", tCtx.Tenant.LogoURL, -1)
 	}
 
+	// Dynamic Brand Entity Replacements
+	html = strings.Replace(html, "PT GOGIGA MEDIA TEKNOLOGI", tCtx.Tenant.Name, -1)
+	html = strings.Replace(html, "PT GoGiga Solusi Nusantara", tCtx.Tenant.Name, -1)
+	html = strings.Replace(html, "GOGIGANET BROADBAND", brandShort+" FIBER BROADBAND", -1)
+	html = strings.Replace(html, "GOGIGA ISP", brandShort+" ISP", -1)
 	html = strings.Replace(html, "GOGIGANET", brandShort, -1)
+	html = strings.Replace(html, "GOGIGABILL", brandShort+" BILL", -1)
+	html = strings.Replace(html, "Gogiganet", brandShort, -1)
+	html = strings.Replace(html, "GoGiga", brandShort, -1)
+	html = strings.Replace(html, "GOGIGA", brandShort, -1)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
