@@ -205,13 +205,12 @@ func (h *PageHandler) ServeApp(w http.ResponseWriter, r *http.Request) {
 	html = strings.Replace(html, "info@ispsync.id", email, -1)
 	html = strings.Replace(html, "mailto:info@ispsync.id", "mailto:"+email, -1)
 
-	// Dynamic Logo replacements
+	// Dynamic Logo & Favicon replacements
+	faviconURL := "/web/" + tCtx.Tenant.Slug + "_favicon.svg"
+	html = strings.Replace(html, `<link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="/web/dev_favicon.svg" />`, `<link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="`+faviconURL+`" />`, 1)
+	html = strings.Replace(html, `<link rel="icon" type="image/png" href="/logo.png?v=20260930" />`, `<link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="`+faviconURL+`" />`, 1)
 	if tCtx.Tenant.LogoURL != "" {
 		html = strings.Replace(html, "/logo.png", tCtx.Tenant.LogoURL, -1)
-		faviconURL := strings.Replace(tCtx.Tenant.LogoURL, "_logo.svg", "_favicon.svg", 1)
-		html = strings.Replace(html, "<link id=\"dynamic-favicon\" rel=\"icon\" type=\"image/png\" href=\""+tCtx.Tenant.LogoURL+"\" />", "<link id=\"dynamic-favicon\" rel=\"icon\" type=\"image/svg+xml\" href=\""+faviconURL+"\" />", 1)
-		// Fallback for without ID
-		html = strings.Replace(html, "<link rel=\"icon\" type=\"image/png\" href=\""+tCtx.Tenant.LogoURL+"\" />", "<link rel=\"icon\" type=\"image/svg+xml\" href=\""+faviconURL+"\" />", 1)
 	}
 
 	html = strings.Replace(html, "GOGIGANET", tCtx.Tenant.Name, -1)

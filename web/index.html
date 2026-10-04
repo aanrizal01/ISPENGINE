@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0" />
   <meta name="version" content="2026.09.30.02" />
   <title>GOGIGANET Broadband • Registrasi & Jangkauan Fiber Optik</title>
-  <link rel="icon" type="image/png" href="/logo.png?v=20260930" />
+  <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="/web/dev_favicon.svg" />
   
   <!-- ZERO-FOUC EARLY SUBDOMAIN & ROUTING INITIALIZER -->
   <script>
@@ -25,6 +25,22 @@
         else if (param === 'portal' || host.startsWith('portal.') || host.includes('portal.gogiga')) mode = 'portal';
 
         document.documentElement.setAttribute('data-subdomain', mode);
+
+        // Dynamic early favicon resolver
+        var favSlug = '';
+        if (window.__ISPSYNC_TENANT__ && window.__ISPSYNC_TENANT__.slug) {
+          favSlug = window.__ISPSYNC_TENANT__.slug;
+        } else {
+          var hp = host.split('.');
+          if (hp.length >= 4) favSlug = (hp[0] === 'sales' || hp[0] === 'noc' || hp[0] === 'fibergrid' || hp[0] === 'ledger') ? hp[1] : hp[0];
+          else if (hp.length === 3 && hp[1] === 'ispsync') favSlug = hp[0];
+        }
+        if (!favSlug || favSlug === 'localhost' || favSlug === '103') favSlug = 'dev';
+        var elFav = document.getElementById('dynamic-favicon');
+        if (elFav) {
+          elFav.href = '/web/' + favSlug + '_favicon.svg';
+          elFav.type = 'image/svg+xml';
+        }
 
         // Cek apakah di portal pelanggan sedang meminta mode login/tracking atau sudah ada sesi
         var isPortalLogin = (mode === 'portal') && (urlParams.get('track') || urlParams.get('login') || urlParams.get('masuk') || !!localStorage.getItem('customer_auth_data'));
@@ -19639,6 +19655,16 @@
         const elSupportEmail = document.getElementById('sales-support-email');
         if (elSupportEmail) elSupportEmail.textContent = supportEmail;
 
+        const favUrl = '/web/' + (slug || 'dev') + '_favicon.svg';
+        let favLink = document.querySelector("link[rel~='icon']");
+        if (!favLink) {
+          favLink = document.createElement('link');
+          favLink.rel = 'icon';
+          document.head.appendChild(favLink);
+        }
+        favLink.type = 'image/svg+xml';
+        favLink.href = favUrl;
+
         document.title = 'Masuk | ' + brandName + ' Sales';
       } catch (e) {
         console.warn('Failed applying Sales dynamic branding:', e);
@@ -23506,6 +23532,16 @@
         if (elSupportEmail) elSupportEmail.textContent = supportEmail;
         const elFgLink = document.getElementById('noc-fibergrid-link');
         if (elFgLink) elFgLink.href = fgUrl;
+
+        const favUrl = '/web/' + (slug || 'dev') + '_favicon.svg';
+        let favLink = document.querySelector("link[rel~='icon']");
+        if (!favLink) {
+          favLink = document.createElement('link');
+          favLink.rel = 'icon';
+          document.head.appendChild(favLink);
+        }
+        favLink.type = 'image/svg+xml';
+        favLink.href = favUrl;
 
         // Set carrier document.title without trailing ISPSYNC duplication
         document.title = 'Masuk | ' + brandName + ' NOC Command Center';
