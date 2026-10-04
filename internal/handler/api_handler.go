@@ -1222,13 +1222,37 @@ func (h *APIHandler) AdminStaffKPI(w http.ResponseWriter, r *http.Request) {
 
 	wos, _ := h.store.ListWorkOrders(r.Context(), t.ID, "")
 	spkDone := 0
+	totalOpticalPower := 0.0
+	opticalCount := 0
 	for _, w := range wos {
 		if w.Status == "COMPLETED" || w.Status == "BAST_APPROVED" {
 			spkDone++
+			if w.RxPowerDBM != nil && *w.RxPowerDBM != 0 {
+				totalOpticalPower += *w.RxPowerDBM
+				opticalCount++
+			}
 		}
+	}
+	avgOptical := 0.0
+	if opticalCount > 0 {
+		avgOptical = totalOpticalPower / float64(opticalCount)
 	}
 
 	users, _ := h.store.ListUsersByTenant(r.Context(), t.ID)
+
+	type allTeamMetric struct {
+		ID           string `json:"id"`
+		Name         string `json:"name"`
+		Username     string `json:"username"`
+		Role         string `json:"role"`
+		RoleLabel    string `json:"role_label"`
+		Branch       string `json:"branch"`
+		OutputDesc   string `json:"output_desc"`
+		Status       string `json:"status"`
+		Score        int    `json:"score"`
+		Grade        string `json:"grade"`
+		HasEvaluated bool   `json:"has_evaluated"`
+	}
 
 	type techMetric struct {
 		Name                string  `json:"name"`
@@ -1239,6 +1263,7 @@ func (h *APIHandler) AdminStaffKPI(w http.ResponseWriter, r *http.Request) {
 		TotalDropcoreMeters int     `json:"total_dropcore_meters"`
 		Score               int     `json:"score"`
 		Grade               string  `json:"grade"`
+		HasEvaluated        bool    `json:"has_evaluated"`
 	}
 
 	type salesMetric struct {
@@ -1250,43 +1275,164 @@ func (h *APIHandler) AdminStaffKPI(w http.ResponseWriter, r *http.Request) {
 		TotalCommission   float64 `json:"total_commission"`
 		Score             int     `json:"score"`
 		Grade             string  `json:"grade"`
+		HasEvaluated      bool    `json:"has_evaluated"`
 	}
 
+	allTeam := make([]allTeamMetric, 0)
 	technicians := make([]techMetric, 0)
 	sales := make([]salesMetric, 0)
 
 	for _, u := range users {
 		roleUpper := strings.ToUpper(u.Role)
-		if roleUpper == "TECHNICIAN" {
+		branch := "Nasional (Pusat)"
+
+		completed := 0
+		pending := 0
+		techDropcore := 0
+		techOpticalSum := 0.0
+		techOpticalCount := 0
+		for _, w := range wos {
+			match := false
+			if w.TechnicianID != nil && *w.TechnicianID == u.ID {
+				match = true
+			}
+			if !match && strings.EqualFold(w.TechnicianName, u.FullName) {
+				match = true
+			}
+			if match {
+				if w.Status == "COMPLETED" || w.Status == "BAST_APPROVED" {
+					completed++
+					if w.RxPowerDBM != nil && *w.RxPowerDBM != 0 {
+						techOpticalSum += *w.RxPowerDBM
+						techOpticalCount++
+					}
+				} else {
+					pending++
+				}
+			}
+		}
+
+		roleLabel := "Staf Operasional"
+		outputDesc := "Belum ada aktivitas tercatat"
+		score := 0
+		grade := "BELUM DIEVALUASI"
+		hasEval := false
+
+		switch roleUpper {
+		case "OWNER":
+			roleLabel = "OWNER / DIREKSI"
+			outputDesc = "Supervisi Manajemen & Eksekutif ISP"
+			score = 100
+			grade = "LEADERSHIP"
+			hasEval = true
+		case "NOC":
+			roleLabel = "NOC OPERATOR"
+			outputDesc = "Monitoring Core Network (SLA 99.9%)"
+			score = 100
+			grade = "STANDAR SOP"
+			hasEval = true
+		case "FINANCE":
+			roleLabel = "FINANCE & BILLING"
+			outputDesc = "Rekonsiliasi Billing & Invoice"
+			score = 100
+			grade = "STANDAR SOP"
+			hasEval = true
+		case "TECHNICIAN":
+			roleLabel = "TEKNISI LAPANGAN"
+			if completed > 0 {
+				outputDesc = fmt.Sprintf("%d SPK Selesai (Instalasi Aktif)", completed)
+				score = 70 + (completed * 5)
+				if score > 100 {
+					score = 100
+				}
+				grade = "A"
+				if score >= 95 {
+					grade = "A+"
+				}
+				hasEval = true
+			} else {
+				outputDesc = "0 SPK (Belum ada penugasan selesai)"
+				score = 0
+				grade = "BELUM DIEVALUASI"
+				hasEval = false
+			}
+
+			techAvgOpt := 0.0
+			if techOpticalCount > 0 {
+				techAvgOpt = techOpticalSum / float64(techOpticalCount)
+			}
 			technicians = append(technicians, techMetric{
 				Name:                u.FullName,
 				Role:                "Teknisi Lapangan",
-				CompletedOrders:     0,
-				PendingOrders:       0,
-				AvgOpticalPowerDBm:  -18.5,
-				TotalDropcoreMeters: 0,
-				Score:               100,
-				Grade:               "A+",
+				CompletedOrders:     completed,
+				PendingOrders:       pending,
+				AvgOpticalPowerDBm:  techAvgOpt,
+				TotalDropcoreMeters: techDropcore,
+				Score:               score,
+				Grade:               grade,
+				HasEvaluated:        hasEval,
 			})
-		} else if roleUpper == "SALES" {
+		case "SALES":
+			roleLabel = "SALES MARKETING"
+			salesActive := 0
+			if salesActive > 0 {
+				outputDesc = fmt.Sprintf("%d Pelanggan Aktif Terpasang", salesActive)
+				score = 70 + (salesActive * 5)
+				if score > 100 {
+					score = 100
+				}
+				grade = "A"
+				if score >= 95 {
+					grade = "A+"
+				}
+				hasEval = true
+			} else {
+				outputDesc = "0 Prospek (Belum ada konversi)"
+				score = 0
+				grade = "BELUM DIEVALUASI"
+				hasEval = false
+			}
+
 			sales = append(sales, salesMetric{
 				Name:              u.FullName,
 				PartnerCode:       strings.ToUpper(u.Username),
-				TotalLeads:        0,
-				ActiveCustomers:   0,
+				TotalLeads:        salesActive,
+				ActiveCustomers:   salesActive,
 				ConversionRatePct: 0,
-				TotalCommission:   0,
-				Score:             100,
-				Grade:             "A+",
+				TotalCommission:   float64(salesActive * 50000),
+				Score:             score,
+				Grade:             grade,
+				HasEvaluated:      hasEval,
 			})
+		default:
+			roleLabel = roleUpper
+			outputDesc = "Penugasan Wilayah Operasional"
+			score = 100
+			grade = "AKTIF"
+			hasEval = true
 		}
+
+		allTeam = append(allTeam, allTeamMetric{
+			ID:           u.ID,
+			Name:         u.FullName,
+			Username:     u.Username,
+			Role:         roleUpper,
+			RoleLabel:    roleLabel,
+			Branch:       branch,
+			OutputDesc:   outputDesc,
+			Status:       u.Status,
+			Score:        score,
+			Grade:        grade,
+			HasEvaluated: hasEval,
+		})
 	}
 
 	h.successResponse(w, "Staff KPI retrieved", map[string]interface{}{
 		"branch_name":          "Nasional",
 		"total_spk_done":       spkDone,
-		"avg_team_optical_dbm": -18.5,
+		"avg_team_optical_dbm": avgOptical,
 		"total_active_subs":    activeCount,
+		"all_team":             allTeam,
 		"technicians":          technicians,
 		"sales":                sales,
 	})
