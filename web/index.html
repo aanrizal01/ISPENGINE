@@ -668,10 +668,7 @@
             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
             <span class="text-[10px] font-mono font-bold text-slate-500 uppercase hidden sm:inline">Wilayah:</span>
             <select id="global-branch-selector" onchange="onGlobalBranchChange(this.value)" class="bg-transparent text-xs font-mono font-bold text-slate-900 outline-none cursor-pointer pr-1">
-              <option value="ALL">Nasional (Semua Cabang)</option>
-              <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
-              <option value="GNET-BIARO">Mitra PT GNET BIARO AKSES</option>
-              <option value="PAPUA">Cabang Papua (Jayapura)</option>
+              <option value="ALL">Semua Wilayah Operasional</option>
             </select>
           </div>
         </div>
@@ -679,7 +676,7 @@
         <!-- Badge Wilayah Staf Lokal -->
         <span id="nav-branch-badge" class="hidden px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-300 mr-1 sm:mr-2 items-center gap-1">
           <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600"></i>
-          <span id="nav-branch-badge-text">Cabang Payakumbuh</span>
+          <span id="nav-branch-badge-text">Wilayah Operasional</span>
         </span>
 
         <!-- Single Clean Portal Login / Account Button -->
@@ -912,7 +909,7 @@
           </p>
         </div>
 
-        <!-- Official Payakumbuh Promo Banner & Benefit Pills -->
+        <!-- Official Promo Banner & Benefit Pills -->
         <div class="pt-2 border-t border-slate-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <div class="bg-gradient-to-r from-red-600 to-amber-500 rounded-xl p-3 text-white flex items-center gap-3 shadow-sm flex-grow">
             <div class="px-2.5 py-1 bg-white text-red-600 font-extrabold text-[11px] rounded-lg uppercase tracking-wider shrink-0 shadow-sm">
@@ -920,7 +917,7 @@
             </div>
             <div class="text-xs">
               <span class="font-extrabold">Khusus 50 Pelanggan Pertama!</span>
-              <span class="hidden sm:inline text-red-100 text-[11px] ml-1.5">• Promo hanya untuk area Kota Payakumbuh</span>
+              <span class="hidden sm:inline text-red-100 text-[11px] ml-1.5">• Promo pasang baru internet fiber</span>
             </div>
           </div>
 
@@ -954,7 +951,7 @@
             <div class="flex flex-col sm:flex-row items-stretch gap-2">
               <div class="relative flex-grow">
                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
-                <input type="text" id="input-search-map" placeholder="Cari nama jalan, kelurahan, atau patokan di Payakumbuh..." class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 outline-none focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition placeholder:text-slate-400" onkeydown="if(event.key==='Enter') searchAddress()" />
+                <input type="text" id="input-search-map" placeholder="Cari alamat atau patokan lokasi..." class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 outline-none focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition placeholder:text-slate-400" onkeydown="if(event.key==='Enter') searchAddress()" />
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 <button onclick="searchAddress()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-sm flex items-center gap-1.5">
@@ -1359,7 +1356,7 @@
                   <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl mt-2 flex items-start gap-2 text-xs text-blue-900 font-sans">
                     <i data-lucide="shield-alert" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
                     <p class="leading-relaxed">
-                      <strong>Pelanggan Terdaftar:</strong> Kata sandi awal adalah <strong>6 digit terakhir nomor WhatsApp</strong> Anda (atau <code>gogiga123</code>). Anda dapat mengubah sandi setelah masuk ke dashboard.
+                      <strong>Pelanggan Terdaftar:</strong> Kata sandi awal adalah <strong>6 digit terakhir nomor WhatsApp</strong> Anda (atau <code>isp123</code>). Anda dapat mengubah sandi setelah masuk ke dashboard.
                     </p>
                   </div>
                 </div>
@@ -1555,7 +1552,7 @@
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span class="hidden xs:inline sm:inline">Cek</span>
               </button>
-              <a id="cust-invoice-portal-link" href="https://billing.gogiga.net.id/billing/check" target="_blank" class="px-2.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition flex items-center gap-1.5" title="Lihat di Web Billing">
+              <a id="cust-invoice-portal-link" href="#" target="_blank" class="px-2.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition flex items-center gap-1.5" title="Lihat di Web Billing">
                 <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500"></i>
                 <span>Billing</span>
               </a>
@@ -2418,7 +2415,7 @@
                   <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
                   <span id="sales-map-layer-label">Satelit</span>
                 </button>
-                <button type="button" onclick="resetSalesMapPayakumbuh()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold border border-slate-200 transition flex items-center gap-1.5" title="Kembalikan Pusat Peta ke Payakumbuh">
+                <button type="button" onclick="resetSalesMap()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold border border-slate-200 transition flex items-center gap-1.5" title="Kembalikan Pusat Peta ke Titik Awal">
                   <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-500"></i>
                   <span>Reset Peta</span>
                 </button>
@@ -2437,15 +2434,14 @@
               <div class="sm:col-span-3">
                 <select id="sales-map-filter-provider" onchange="renderSalesMapMarkers()" class="w-full px-2.5 py-1.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-md text-xs font-mono outline-none focus:ring-1 focus:ring-slate-900 transition text-slate-700">
                   <option value="ALL">Semua Provider Jaringan</option>
-                  <option value="GNET-BIARO">PT. GNET BIARO AKSES</option>
-                  <option value="TELKO-PYK">TELKOM / TIF PYK</option>
-                  <option value="GNET2">GNET (2)</option>
+                  <option value="MITRA-WHOLESALE">Mitra Jartaplok Wholesale</option>
+                  <option value="TELKOM-INFRA">Mitra Telkom / TIF</option>
                 </select>
               </div>
 
               <div class="sm:col-span-3">
                 <select id="sales-map-filter-area" onchange="renderSalesMapMarkers()" class="w-full px-2.5 py-1.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-md text-xs font-mono outline-none focus:ring-1 focus:ring-slate-900 transition text-slate-700">
-                  <option value="ALL">Semua Area Payakumbuh</option>
+                  <option value="ALL">Semua Area</option>
                 </select>
               </div>
             </div>
@@ -2984,10 +2980,7 @@
               <span id="admin-sidebar-branch-role-tag" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-bold">ALL</span>
             </div>
             <select id="admin-sidebar-branch-selector" onchange="onGlobalBranchChange(this.value)" class="w-full bg-white border border-slate-300 text-slate-900 text-xs font-mono font-bold rounded-md px-2 py-1.5 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 cursor-pointer shadow-2xs">
-              <option value="ALL">Nasional (Semua Cabang)</option>
-              <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
-              <option value="GNET-BIARO">Mitra PT GNET BIARO AKSES</option>
-              <option value="PAPUA">Cabang Papua (Jayapura)</option>
+              <option value="ALL">Semua Wilayah Operasional</option>
             </select>
           </div>
 
@@ -3096,19 +3089,16 @@
               <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
               <span class="text-[10px] font-mono font-bold text-slate-500 uppercase hidden sm:inline">Cabang:</span>
               <select id="admin-table-branch-selector" onchange="onGlobalBranchChange(this.value)" class="bg-transparent text-xs font-mono font-bold text-slate-900 outline-none cursor-pointer">
-                <option value="ALL">Nasional (Semua Cabang)</option>
-                <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
-                <option value="GNET-BIARO">Mitra PT GNET BIARO AKSES</option>
-                <option value="PAPUA">Cabang Papua (Jayapura)</option>
+                <option value="ALL">Semua Wilayah</option>
               </select>
             </div>
             <button onclick="loadAdminRegistrations()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-mono text-xs font-semibold rounded-md border border-slate-300 flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
               <span>Refresh Data</span>
             </button>
-            <button type="button" onclick="openSmartOLTSyncModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-mono text-xs font-semibold rounded-md flex items-center gap-1.5 transition shadow-2xs cursor-pointer" title="Sinkronisasi Perangkat &amp; Redaman Sinyal dari SmartOLT Jartaplok Zone GOGIGA">
+            <button type="button" onclick="openSmartOLTSyncModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-mono text-xs font-semibold rounded-md flex items-center gap-1.5 transition shadow-2xs cursor-pointer" title="Sinkronisasi Perangkat &amp; Redaman Sinyal SmartOLT">
               <i data-lucide="radio" class="w-3.5 h-3.5 text-white"></i>
-              <span>SmartOLT GNET</span>
+              <span>SmartOLT Sync</span>
             </button>
           </div>
         </div>
@@ -3939,11 +3929,9 @@
                 <div>
                   <label class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">Pilih / Nama Teknisi</label>
                   <select id="impersonate-technician-select" class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-xs outline-none focus:border-slate-900 font-sans">
-                    <option value="Nando">Nando (NANDO-TECH - Teknisi Lapangan)</option>
-                    <option value="Ricci">Ricci (RICCI-TECH - Teknisi Lapangan)</option>
-                    <option value="Zikka">Zikka (ZIKKA-TECH - Teknisi Lapangan)</option>
-                    <option value="Egi">Egi (EGI-TECH - Teknisi Lapangan)</option>
-                    <option value="Mitra Teknisi Golden">Mitra Teknisi Golden (PT GNET BIARO AKSES - Subkontrak OTC Rp 150rb)</option>
+                    <option value="Teknisi 1">Teknisi Lapangan 1</option>
+                    <option value="Teknisi 2">Teknisi Lapangan 2</option>
+                    <option value="Mitra Teknisi">Mitra Teknisi Rekanan</option>
                   </select>
                 </div>
               </div>
@@ -4101,10 +4089,7 @@
               <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-md px-2 py-1">
                 <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
                 <select id="staff-table-branch-filter" onchange="onGlobalBranchChange(this.value)" class="text-xs font-mono font-bold bg-transparent text-slate-800 outline-none cursor-pointer">
-                  <option value="ALL">Nasional (Semua Cabang)</option>
-                  <option value="PAPUA">Kantor Cabang Papua</option>
-                  <option value="PYK">Kantor Cabang Payakumbuh</option>
-                  <option value="GNET-BIARO">Mitra PT GNET BIARO</option>
+                  <option value="ALL">Semua Wilayah Penugasan</option>
                 </select>
               </div>
               <button onclick="loadSuperUserStaff()" class="text-xs font-mono text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md border border-slate-200 hover:bg-slate-50 flex items-center gap-1.5 transition shadow-xs">
@@ -4631,7 +4616,7 @@
               Konsolidasi rekapitulasi dan estimasi pemakaian sewa port fiber optic (last-mile flat rate), kapasitas tiang ODP, serta tagihan bulanan resmi dengan <strong>PT GOGIGA MEDIA TEKNOLOGI</strong>.
             </p>
             <div class="flex flex-wrap items-center gap-3 pt-1 text-xs font-mono text-indigo-200/90">
-              <span>Mitra: <strong class="text-white" id="jartap-partner-name">PT. GNET BIARO AKSES</strong></span>
+              <span>Mitra: <strong class="text-white" id="jartap-partner-name">Mitra Wholesale</strong></span>
               <span>•</span>
               <span>Periode: <strong class="text-amber-300" id="jartap-period-month">September 2026</strong></span>
             </div>
@@ -4646,7 +4631,7 @@
               <i data-lucide="file-check-2" class="w-4 h-4"></i>
               <span>Cetak Rekap & Estimasi Pemakaian</span>
             </button>
-            <button type="button" onclick="openChangePasswordModal('gnet_biaro')" class="px-3.5 py-2.5 rounded-md bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition flex items-center gap-1.5" title="Ganti Kata Sandi Rekan">
+            <button type="button" onclick="openChangePasswordModal('jartaplok')" class="px-3.5 py-2.5 rounded-md bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition flex items-center gap-1.5" title="Ganti Kata Sandi Rekan">
               <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
               <span>Ganti Sandi</span>
             </button>
@@ -4702,7 +4687,7 @@
             <span id="jartap-total-capacity" class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">0</span>
             <span class="text-xs text-slate-500 font-mono">Port</span>
           </div>
-          <p id="jartap-total-odps-desc" class="text-[11px] text-slate-500 mt-1 font-sans">Terpasang pada 0 titik tiang ODP Payakumbuh</p>
+          <p id="jartap-total-odps-desc" class="text-[11px] text-slate-500 mt-1 font-sans">Terpasang pada 0 titik tiang ODP distribusi</p>
         </div>
 
         <!-- Card 4: Sisa Port Bebas -->
@@ -5486,7 +5471,7 @@
               <h3 class="text-sm font-bold font-mono text-white tracking-wide">SMARTOLT JARTAPLOK INTEGRATION</h3>
               <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">Zone: GOGIGA (122)</span>
             </div>
-            <p class="text-[11px] text-slate-300 font-sans mt-0.5">Telemetri live OLT ZTE C300 Payakumbuh &amp; sinkronisasi otomatis pelanggan GoGiga.</p>
+            <p class="text-[11px] text-slate-300 font-sans mt-0.5">Telemetri live OLT &amp; sinkronisasi otomatis ONT pelanggan.</p>
           </div>
         </div>
         <button type="button" onclick="closeSmartOLTSyncModal()" class="w-7 h-7 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer">
@@ -5620,8 +5605,8 @@
                 Klaster Wilayah Nexus <span class="text-rose-500">*</span>
               </label>
               <select id="fg-sync-cluster" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500">
-                <option value="Payakumbuh">Payakumbuh</option>
-                <option value="Biaro">Biaro &amp; Bukittinggi</option>
+                <option value="Area-1">Area Utama (1)</option>
+                <option value="Area-2">Area Penyangga (2)</option>
                 <option value="Jayapura">Jayapura (Papua)</option>
               </select>
             </div>
@@ -5830,7 +5815,7 @@
           </div>
           <div>
             <label class="block font-mono text-slate-600 text-xs font-semibold mb-1.5">Zone Name</label>
-            <input type="text" id="cluster-smartolt-zonename" placeholder="Contoh: GOGIGA" class="w-full py-2.5 px-3.5 bg-white border border-slate-300 rounded-md font-mono text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+            <input type="text" id="cluster-smartolt-zonename" placeholder="Contoh: ZONE-1" class="w-full py-2.5 px-3.5 bg-white border border-slate-300 rounded-md font-mono text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
             <p class="text-[10px] text-slate-500 font-sans mt-1">Label pengenal zona.</p>
           </div>
         </div>
@@ -6145,22 +6130,22 @@
               </label>
               <select id="detail-pricing-plan-select" onchange="handleDetailPlanSelectChange(this)" class="w-full py-2.5 px-3.5 bg-white border border-slate-300 rounded-md text-xs font-mono font-bold text-slate-900 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-2xs">
                 <option value="">-- Tetap / Sesuai Paket Saat Ini --</option>
-                <option value="paket-gold-10m|Paket Gold 10 Mbps (Cluster GNET Biaro)|183150">Paket Gold 10 Mbps (Rp 183.150/bln)</option>
-                <option value="paket-diamond-20m|Paket Diamond 20 Mbps (Cluster GNET Biaro)|259000">Paket Diamond 20 Mbps (Rp 259.000/bln)</option>
-                <option value="paket-epic-30m|Paket Epic 30 Mbps (Cluster GNET Biaro)|299000">Paket Epic 30 Mbps (Rp 299.000/bln)</option>
-                <option value="paket-legend-40m|Paket Legend 40 Mbps (Cluster GNET Biaro)|329000">Paket Legend 40 Mbps (Rp 329.000/bln)</option>
-                <option value="paket-honor-50m|Paket Honor 50 Mbps (Cluster GNET Biaro)|389000">Paket Honor 50 Mbps (Rp 389.000/bln)</option>
-                <option value="paket-glory-100m|Paket Glory 100 Mbps (Cluster GNET Biaro)|599000">Paket Glory 100 Mbps (Rp 599.000/bln)</option>
+                <option value="paket-gold-10m|Paket Gold 10 Mbps|183150">Paket Gold 10 Mbps (Rp 183.150/bln)</option>
+                <option value="paket-diamond-20m|Paket Diamond 20 Mbps|259000">Paket Diamond 20 Mbps (Rp 259.000/bln)</option>
+                <option value="paket-epic-30m|Paket Epic 30 Mbps|299000">Paket Epic 30 Mbps (Rp 299.000/bln)</option>
+                <option value="paket-legend-40m|Paket Legend 40 Mbps|329000">Paket Legend 40 Mbps (Rp 329.000/bln)</option>
+                <option value="paket-honor-50m|Paket Honor 50 Mbps|389000">Paket Honor 50 Mbps (Rp 389.000/bln)</option>
+                <option value="paket-glory-100m|Paket Glory 100 Mbps|599000">Paket Glory 100 Mbps (Rp 599.000/bln)</option>
                 <option value="custom|Paket Custom Khusus Lapangan|0">Custom / Nego Sendiri</option>
               </select>
-              <span class="text-[9.5px] text-slate-500 block mt-1">Pilih paket resmi cluster GNET (harga bulanan terisi otomatis)</span>
+              <span class="text-[9.5px] text-slate-500 block mt-1">Pilih paket resmi layanan (harga bulanan terisi otomatis)</span>
             </div>
             <div>
               <label class="block text-[11px] font-mono font-bold uppercase text-slate-800 mb-1">
                 Kode Titik ODP Target:
               </label>
-              <input type="text" id="detail-pricing-odp" placeholder="Contoh: ODP-PYK-0122" class="w-full py-2.5 px-3.5 bg-white border border-slate-300 rounded-md text-xs font-mono uppercase font-bold text-slate-900 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-2xs" />
-              <span class="text-[9.5px] text-slate-500 block mt-1">Titik ODP rujukan hasil survei / ODP Golden</span>
+              <input type="text" id="detail-pricing-odp" placeholder="Contoh: ODP-001" class="w-full py-2.5 px-3.5 bg-white border border-slate-300 rounded-md text-xs font-mono uppercase font-bold text-slate-900 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-2xs" />
+              <span class="text-[9.5px] text-slate-500 block mt-1">Titik ODP rujukan hasil survei lapangan</span>
             </div>
           </div>
 
@@ -6608,7 +6593,7 @@
             <span id="attach-upstream-type-badge" class="text-[9px] font-mono text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded">Jika Diwajibkan Mitra</span>
           </div>
           <p id="attach-upstream-desc" class="text-[10.5px] font-sans text-slate-500 leading-normal">
-            Jika mitra (seperti Bitstream TIF/Telkom) mewajibkan modem ONT mendial dengan akun upstream mereka, masukkan di bawah ini. Akun resmi GoGiga tetap tercatat sebagai master customer ID.
+            Jika mitra (seperti Bitstream TIF/Telkom) mewajibkan modem ONT mendial dengan akun upstream mereka, masukkan di bawah ini. Akun resmi ISP tetap tercatat sebagai master customer ID.
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
             <div>
@@ -6691,14 +6676,14 @@
 
         <div>
           <label class="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Alasan Teknis Internal NOC</label>
-          <textarea id="uncovered-reason" rows="2" placeholder="Misal: Hasil survei gabungan GNET & Telkom nihil tiang dalam radius aman." class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-rose-500">Hasil survei teknis tidak menemukan tiang distribusi FO dalam radius aman.</textarea>
+          <textarea id="uncovered-reason" rows="2" placeholder="Misal: Hasil survei teknis nihil tiang dalam radius aman." class="w-full px-3 py-2 border border-slate-300 rounded-md text-xs font-sans focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:border-rose-500">Hasil survei teknis tidak menemukan tiang distribusi FO dalam radius aman.</textarea>
         </div>
 
         <div class="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
               <i data-lucide="message-circle" class="w-3.5 h-3.5 text-slate-600"></i>
-              <span>Hubungi Pelanggan via WhatsApp (Resmi GOGIGANET)</span>
+              <span>Hubungi Pelanggan via WhatsApp</span>
             </span>
             <button type="button" onclick="sendUncoveredWhatsAppNotification()" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md text-xs font-mono font-semibold inline-flex items-center gap-1.5 transition shadow-2xs">
               <i data-lucide="send" class="w-3.5 h-3.5 text-slate-600"></i>
@@ -6706,7 +6691,7 @@
             </button>
           </div>
           <p class="text-[10px] text-slate-500 leading-relaxed font-sans">
-            Teks template WhatsApp 100% White-Label (hanya mengatasnamakan Tim Teknis GOGIGANET tanpa menyebut pihak ketiga).
+            Teks template WhatsApp profesional resmi penyedia layanan internet tanpa menyebut pihak ketiga.
           </p>
         </div>
 
@@ -6763,7 +6748,7 @@
           <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">Wilayah Cabang Penugasan</label>
           <select id="add-partner-branch" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-md px-4 py-2 text-sm font-mono outline-none focus:bg-white focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
             <option value="ALL">Nasional / Kantor Pusat</option>
-            <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
+            <option value="ALL">Semua Cabang / Wilayah</option>
             <option value="PAPUA">Cabang Papua (Jayapura)</option>
           </select>
         </div>
@@ -6819,9 +6804,9 @@
         <div>
           <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">Wilayah / Kantor Cabang Penempatan</label>
           <select id="add-staff-branch" class="w-full bg-white border border-slate-300 text-slate-900 rounded-md px-4 py-2 text-sm font-mono outline-none focus:border-slate-900 transition">
-            <option value="PYK">Kantor Cabang Payakumbuh (PYK)</option>
+            <option value="ALL">Semua Cabang (Nasional)</option>
             <option value="PAPUA">Kantor Cabang Papua (PAPUA)</option>
-            <option value="GNET-BIARO">Mitra PT GNET BIARO</option>
+            
             <option value="">Pusat / Nasional (Direktur Utama / Root)</option>
           </select>
         </div>
@@ -8248,22 +8233,22 @@
               <span>BERITA ACARA REKAPITULASI & ESTIMASI PEMAKAIAN</span>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">AUDIT RIIL</span>
             </h3>
-            <p class="text-[10px] text-slate-400 font-sans">Dokumen Resmi Rekapitulasi & Estimasi Pemakaian Port JARTAPLOK &bull; PT GOGIGA MEDIA TEKNOLOGI</p>
+            <p class="text-[10px] text-slate-400 font-sans">Dokumen Resmi Rekapitulasi & Estimasi Pemakaian Port JARTAPLOK</p>
           </div>
         </div>
 
         <!-- Partner Selector & Print Actions -->
         <div class="flex flex-wrap items-center gap-2">
           <!-- Static Partner Badge for Partner View -->
-          <span id="rekon-header-partner-badge" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-800 text-slate-200 border border-slate-700">PT. GNET BIARO DATA</span>
+          <span id="rekon-header-partner-badge" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-800 text-slate-200 border border-slate-700">Mitra Jartaplok Wholesale</span>
 
           <!-- Partner Switcher (HANYA ditampilkan untuk Admin / Owner) -->
           <div id="rekon-partner-selector-wrapper" class="flex items-center gap-1.5 text-xs text-slate-300 font-mono hidden">
             <span class="hidden sm:inline text-slate-400">Mitra:</span>
             <select id="rekon-partner-select" onchange="changeRekonPartner(this.value)" class="bg-slate-800 border border-slate-700 text-white rounded-md px-2.5 py-1.5 text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900">
-              <option value="GNET-BIARO">PT. GNET BIARO DATA (GNET-BIARO)</option>
-              <option value="GNET2">PT GNET BIARO DATA (2) (GNET2)</option>
-              <option value="TELKO-PYK">PT TELKOM INFRASTRUKTUR INDONESIA (TELKO-PYK)</option>
+              <option value="GNET-BIARO">Mitra Jartaplok Wholesale (GNET-BIARO)</option>
+              
+              
             </select>
           </div>
 
@@ -8301,7 +8286,7 @@
           <div class="border-b-2 border-slate-900 pb-4 flex items-start justify-between gap-4">
             <div>
               <h2 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight font-sans" id="inv-partner-name">
-                PT. GNET BIARO DATA
+                Mitra Jartaplok Wholesale
               </h2>
               <p class="text-xs text-slate-700 font-sans" id="inv-partner-type">
                 Penyelenggara Jaringan Tetap Lokal (JARTAPLOK) Berizin Kominfo RI
@@ -8326,12 +8311,12 @@
               <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">Ditagihkan Kepada (Mitra ISP):</span>
               <strong class="text-slate-900 text-sm block mt-0.5">PT GOGIGA MEDIA TEKNOLOGI</strong>
               <span class="text-slate-600 block text-xs">Penyelenggara Jasa Internet (ISP) - GOGIGA ISP</span>
-              <span class="text-slate-500 block text-[11px] font-mono mt-0.5">Jl. Pulutan, Harau No. 1 Depan Kantor Wali Nagari Kototuo, Lima Puluh Kota, Sumatera Barat 26271</span>
+              <span class="text-slate-500 block text-[11px] font-mono mt-0.5">Kantor Layanan Operasional Jaringan &bull; Layanan Terpadu</span>
             </div>
             <div>
               <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">Rincian Dokumen & Periode:</span>
               <div class="space-y-1 text-slate-700 font-mono text-[11px] mt-0.5">
-                <div>Nomor Dokumen: <strong class="text-slate-900" id="inv-no">BA.017/GNET-BA/REKON/IX/2026</strong></div>
+                <div>Nomor Dokumen: <strong class="text-slate-900" id="inv-no">BA/REKON/PORTAL/2026</strong></div>
                 <div>Periode Pemakaian: <strong class="text-indigo-700" id="inv-period">September 2026</strong></div>
                 <div>Model Kerjasama: <span id="inv-pricing-model" class="font-semibold text-slate-800">Flat Rate Sewa Port FO Pasif</span></div>
                 <div>Status Audit: <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold text-[10px]">TERVERIFIKASI SISTEM (AUDIT RIIL)</span></div>
@@ -8341,7 +8326,7 @@
 
           <!-- Pernyataan Berita Acara -->
           <p class="text-justify text-slate-800 leading-normal" id="inv-narasi">
-            Pada hari ini <strong id="inv-day-name">Kamis</strong> tanggal <strong id="inv-date-full">24 September 2026</strong>, telah dilaksanakan verifikasi dan rekapitulasi data utilisasi port FTTH Wholesale antara <strong id="inv-narasi-partner">PT. GNET BIARO DATA</strong> dan <strong id="inv-narasi-isp">PT GOGIGA MEDIA TEKNOLOGI</strong> sebagai dasar perhitungan estimasi pemakaian dan tagihan sewa port periode berjalan:
+            Pada hari ini <strong id="inv-day-name">Kamis</strong> tanggal <strong id="inv-date-full">24 September 2026</strong>, telah dilaksanakan verifikasi dan rekapitulasi data utilisasi port FTTH Wholesale antara <strong id="inv-narasi-partner">Mitra Jartaplok Wholesale</strong> dan <strong id="inv-narasi-isp">PT GOGIGA MEDIA TEKNOLOGI</strong> sebagai dasar perhitungan estimasi pemakaian dan tagihan sewa port periode berjalan:
           </p>
 
           <!-- Tabel 1: Rekapitulasi Tagihan Sewa Port Wholesale -->
@@ -8435,7 +8420,7 @@
             <div class="flex flex-col items-center justify-between">
               <div>
                 <span class="text-slate-500 block text-[11px]">Diterbitkan Oleh,</span>
-                <strong class="block text-slate-900 font-bold mt-0.5" id="inv-sign-partner">PT. GNET BIARO DATA</strong>
+                <strong class="block text-slate-900 font-bold mt-0.5" id="inv-sign-partner">Mitra Jartaplok Wholesale</strong>
               </div>
               <div class="h-28 flex items-center justify-center">
                 <span class="text-[10px] font-mono text-indigo-600 px-3 py-1 rounded border border-indigo-300 bg-indigo-50 font-bold">
@@ -8455,7 +8440,7 @@
                 <strong class="block text-slate-900 font-bold mt-0.5">PT GOGIGA MEDIA TEKNOLOGI</strong>
               </div>
               
-              <!-- Signature Area with Aan Rizal signature & Official Blue Circular Seal -->
+              <!-- Signature Area with Authorized Management Signature & Official Blue Circular Seal -->
               <div class="relative w-48 h-28 flex items-center justify-center my-1">
                 <!-- Handwritten dark signature stroke -->
                 <svg class="absolute inset-0 w-full h-full z-10" viewBox="0 0 200 100" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -8475,7 +8460,7 @@
                     <textPath href="#rekonCleanCircleTop" startOffset="50%" text-anchor="middle">PT GOGIGA MEDIA TEKNOLOGI</textPath>
                   </text>
                   <text font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#0284c7" letter-spacing="2">
-                    <textPath href="#rekonCleanCircleBottom" startOffset="50%" text-anchor="middle">★ SUMATERA BARAT ★</textPath>
+                    <textPath href="#rekonCleanCircleBottom" startOffset="50%" text-anchor="middle">★ OPERASIONAL NOC ★</textPath>
                   </text>
                   <circle cx="100" cy="100" r="30" fill="#e0f2fe" fill-opacity="0.3" />
                   <text x="100" y="97" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="900" fill="#0284c7" text-anchor="middle" letter-spacing="1">GOGIGA</text>
@@ -8485,8 +8470,8 @@
               </div>
 
               <div>
-                <strong class="font-bold text-slate-900 block underline text-xs">Aan Rizal, S.Kom.</strong>
-                <span class="text-[10px] text-slate-500 font-mono">Direktur</span>
+                <strong class="font-bold text-slate-900 block underline text-xs" id="rekon-sign-isp-pic">Pimpinan Operasional ISP</strong>
+                <span class="text-[10px] text-slate-500 font-mono">Pimpinan ISP</span>
               </div>
             </div>
           </div>
@@ -8514,11 +8499,11 @@
                 RINCIAN PENGGUNAAN PORT & SIRKUIT WHOLESALE TERPASANG
               </h2>
               <div class="text-[11px] font-mono text-slate-600 mt-0.5">
-                Nomor: <strong id="lamp-doc-no" class="text-slate-800">BA.017/GNET-BA/REKON/IX/2026</strong> &bull; Periode: <strong id="lamp-period" class="text-indigo-700">September 2026</strong>
+                Nomor: <strong id="lamp-doc-no" class="text-slate-800">BA/REKON/PORTAL/2026</strong> &bull; Periode: <strong id="lamp-period" class="text-indigo-700">September 2026</strong>
               </div>
             </div>
             <div class="text-right text-[11px] font-mono text-slate-600 shrink-0">
-              <div>Mitra: <strong id="lamp-partner-name" class="text-slate-900">PT. GNET BIARO DATA</strong></div>
+              <div>Mitra: <strong id="lamp-partner-name" class="text-slate-900">Mitra Jartaplok Wholesale</strong></div>
               <div class="text-slate-500 mt-0.5">ISP: <strong>PT GOGIGA MEDIA TEKNOLOGI</strong></div>
             </div>
           </div>
@@ -8716,13 +8701,13 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Wilayah / Cluster</label>
-            <input type="text" id="new-odp-cluster" placeholder="Biaro / Payakumbuh" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-emerald-600" />
+            <input type="text" id="new-odp-cluster" placeholder="Nama Cluster / Wilayah" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-emerald-600" />
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Tiang & Alamat Lokasi <span class="text-rose-500">*</span></label>
-          <input type="text" id="new-odp-name" placeholder="Contoh: Tiang Depan Simpang Masjid Biaro Jl. Raya" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-emerald-600" required />
+          <input type="text" id="new-odp-name" placeholder="Contoh: Tiang Depan Simpang Jl. Raya" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-emerald-600" required />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -8796,7 +8781,7 @@
             </button>
             <button type="button" onclick="applyPresetPartnerForm('new', 'SEWA_PORT_FO')" class="px-2.5 py-1.5 rounded-md bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-900 font-bold transition flex items-center gap-1.5 text-left shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-              <span>Sewa Port FO Pasif (GNET)</span>
+              <span>Sewa Port FO Pasif (Mitra)</span>
             </button>
           </div>
         </div>
@@ -8835,7 +8820,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1">Wilayah Cabang Penugasan <span class="text-rose-500">*</span></label>
             <select id="jp-branch" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 outline-none focus:border-indigo-600">
               <option value="ALL">Nasional / Multi-Cabang</option>
-              <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
+              <option value="ALL">Semua Cabang / Wilayah</option>
               <option value="PAPUA">Cabang Papua (Jayapura)</option>
             </select>
           </div>
@@ -8843,7 +8828,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Wilayah Cakupan (Coverage Area)</label>
-          <input type="text" id="jp-coverage" placeholder="Sumatera Barat / Payakumbuh" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-indigo-600" />
+          <input type="text" id="jp-coverage" placeholder="Wilayah Operasional" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 outline-none focus:border-indigo-600" />
         </div>
 
         <div>
@@ -8870,7 +8855,7 @@
           <div>
             <label class="block text-xs font-bold text-slate-800 mb-1">Batas Jarak ODP ke Rumah (Meter)</label>
             <input type="number" id="jp-max-dist" value="150" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-indigo-900 outline-none focus:border-indigo-600" />
-            <span class="text-[10px] text-slate-500 block mt-0.5">Bitstream TIF: 150m / Sewa Port GNET: 250m</span>
+            <span class="text-[10px] text-slate-500 block mt-0.5">Bitstream: 150m / Sewa Port FO Pasif: 250m</span>
           </div>
         </div>
 
@@ -8964,7 +8949,7 @@
             </button>
             <button type="button" onclick="applyPresetPartnerForm('edit', 'SEWA_PORT_FO')" class="px-2.5 py-1.5 rounded-md bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 font-bold transition flex items-center gap-1.5 text-left shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-              <span>Sewa Port FO Pasif (GNET)</span>
+              <span>Sewa Port FO Pasif (Mitra)</span>
             </button>
           </div>
         </div>
@@ -9010,7 +8995,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1">Wilayah Cabang <span class="text-rose-500">*</span></label>
             <select id="edit-jp-branch" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 outline-none focus:border-amber-600">
               <option value="ALL">Nasional / Multi-Cabang</option>
-              <option value="PYK">Cabang Payakumbuh &amp; 50 Kota</option>
+              <option value="ALL">Semua Cabang / Wilayah</option>
               <option value="PAPUA">Cabang Papua (Jayapura)</option>
             </select>
           </div>
@@ -9045,12 +9030,12 @@
           <div>
             <label class="block text-xs font-bold text-slate-800 mb-1">Biaya Pasang Baru / OTC (Rp)</label>
             <input type="number" id="edit-jp-otc" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-indigo-900 outline-none focus:border-amber-600" />
-            <span class="text-[10px] text-slate-500 block mt-0.5">TIF: Rp 500.000 / GNET: Rp 0</span>
+            <span class="text-[10px] text-slate-500 block mt-0.5">Bitstream: Sesuai Kontrak / Port Pasif: Rp 0</span>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-800 mb-1">Batas Jarak ODP ke Rumah (Meter)</label>
             <input type="number" id="edit-jp-max-dist" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-indigo-900 outline-none focus:border-amber-600" />
-            <span class="text-[10px] text-slate-500 block mt-0.5">TIF: 150m / GNET: 250m</span>
+            <span class="text-[10px] text-slate-500 block mt-0.5">Bitstream: 150m / Port Pasif: 250m</span>
           </div>
         </div>
 
@@ -9160,8 +9145,8 @@
     lucide.createIcons();
 
     let map, customerMarker, radiusCircle;
-    let isLocationCovered = true; // Payakumbuh center is covered (ODP-PYK-0119 ~85m)
-    let currentLat = -0.223844, currentLng = 100.629124; // GOGIGANET Payakumbuh Center
+    let isLocationCovered = false; // Initial coverage state
+    let currentLat = -6.2088, currentLng = 106.8456; // Default Center
     let nearestODPData = null;
     let availablePlans = [];
     let selectedPlanId = null;
@@ -9580,7 +9565,7 @@
 
       document.getElementById('contract-doc-no').innerText = `CTR-${regData.registration_no}`;
       const dt = regData.created_at ? new Date(regData.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      document.getElementById('contract-doc-date').innerText = `Payakumbuh, ${dt}`;
+      document.getElementById('contract-doc-date').innerText = dt;
 
       // Customer data
       document.getElementById('contract-cust-name').innerText = regData.full_name;
@@ -9971,12 +9956,7 @@
             fields: ['geometry', 'name', 'formatted_address']
           });
 
-          // Prioritas pencarian wilayah Payakumbuh & sekitarnya
-          const payakumbuhBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(-0.35, 100.50),
-            new google.maps.LatLng(-0.10, 100.75)
-          );
-          autocomplete.setBounds(payakumbuhBounds);
+          // Autocomplete pencarian alamat
 
           autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
@@ -10034,7 +10014,7 @@
             icon.className = "w-6 h-6 text-emerald-700";
             title.innerText = "Lokasi Tercover Fiber Optic! (≤ 250m)";
             title.className = "font-bold text-base text-emerald-900";
-            desc.innerText = `Kabar gembira! Rumah Anda hanya berjarak ~${roundedDist}m dari tiang fiber GOGIGANET. Paket reguler langsung dapat dipasang.`;
+            desc.innerText = `Kabar gembira! Rumah Anda hanya berjarak ~${roundedDist}m dari tiang fiber ${window.__EARLY_BRAND_NAME__ || "Layanan"}. Paket reguler langsung dapat dipasang.`;
             badge.innerText = "SIAP PASANG (OK)";
             badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300";
             statusEl.innerText = "Port ODP Tersedia";
@@ -10115,9 +10095,7 @@
       if (window.google && google.maps && google.maps.Geocoder) {
         try {
           const geocoder = new google.maps.Geocoder();
-          const query = q.toLowerCase().includes("sumatera barat") || q.toLowerCase().includes("payakumbuh") 
-            ? q 
-            : `${q}, Payakumbuh, Sumatera Barat`;
+          const query = q;
 
           geocoder.geocode({ address: query, componentRestrictions: { country: 'ID' } }, (results, status) => {
             if (status === 'OK' && results && results[0] && results[0].geometry) {
@@ -10143,7 +10121,7 @@
 
     async function fallbackOsmSearch(q) {
       try {
-        const query = q.toLowerCase().includes("payakumbuh") ? q : `${q}, Payakumbuh`;
+        const query = q;
         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id`);
         const results = await res.json();
         if (results && results.length > 0) {
@@ -10426,7 +10404,7 @@
                 <div class="p-2.5 rounded-lg bg-indigo-50 border border-indigo-200/60 text-[11px] text-indigo-950 flex items-start gap-2">
                   <i data-lucide="info" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
                   <span class="leading-relaxed">
-                    Permohonan ini akan diprioritaskan oleh <strong>Account Executive GOGIGANET</strong> untuk penyusunan proposal penawaran harga resmi (Quotation & BoQ) serta jadwal survei teknis korporat.
+                    Permohonan ini akan diprioritaskan oleh <strong>Account Executive ${window.__EARLY_BRAND_NAME__ || "ISP"}</strong> untuk penyusunan proposal penawaran harga resmi (Quotation & BoQ) serta jadwal survei teknis korporat.
                   </span>
                 </div>
               </div>
@@ -10502,7 +10480,7 @@
 
         if (resp.ok && json.success && json.data && json.data.valid) {
           verifiedReferral = json.data;
-          localStorage.setItem('gogiganet_referral_code', verifiedReferral.code);
+          localStorage.setItem('ispsync_referral_code', verifiedReferral.code);
 
           const isSales = verifiedReferral.type === 'SALES_PARTNER';
           const badgeTitle = isSales ? 'SALES RESMI' : 'PELANGGAN REFERRAL';
@@ -11490,7 +11468,7 @@
       // Pre-fill WhatsApp Helpdesk link
       const waLink = document.getElementById('cust-dash-wa-link');
       if (waLink) {
-        const msg = encodeURIComponent(`Halo Tim Helpdesk GOGIGANET, saya pelanggan ${reg.full_name} (${reg.registration_no}) ingin berkonsultasi tentang layanan saya.`);
+        const msg = encodeURIComponent(`Halo Tim Helpdesk ${window.__EARLY_BRAND_NAME__ || "ISP"}, saya pelanggan ${reg.full_name} (${reg.registration_no}) ingin berkonsultasi tentang layanan saya.`);
         waLink.href = `https://wa.me/6285186866164?text=${msg}`;
       }
 
@@ -11503,7 +11481,7 @@
     // ═══════════════════════════════════════════════════════════════════
     // CUSTOMER BILLING & ONT TR-069 INTEGRATION
     // ═══════════════════════════════════════════════════════════════════
-    const BILLING_API_BASE = 'https://billing.gogiga.net.id/api/v1';
+    const BILLING_API_BASE = '/api/v1';
     let currentCustomerInvoice = null;
     let currentCustomerInvoicesList = [];
     let currentCustomerONT = null;
@@ -11742,7 +11720,7 @@
 
       if (portalLink) {
         const q = lookupQuery || (reg ? (reg.phone || reg.registration_no || reg.email) : '');
-        portalLink.href = `https://billing.gogiga.net.id/billing/check?q=${encodeURIComponent(q)}`;
+        portalLink.href = `#?q=${encodeURIComponent(q)}`;
       }
 
       // Render line items
@@ -12112,7 +12090,7 @@
 
           const waBtn = document.getElementById('btn-cust-ont-wa-care');
           if (waBtn) {
-            const text = `Halo Customer Care GOGIGANET, saya ${reg.full_name || 'Pelanggan'} (${reg.registration_no || ''}). Saya ingin memohon bantuan pengaturan nama/kata sandi Wi-Fi untuk layanan saya.`;
+            const text = `Halo Customer Care ${window.__EARLY_BRAND_NAME__ || "ISP"}, saya ${reg.full_name || 'Pelanggan'} (${reg.registration_no || ''}). Saya ingin memohon bantuan pengaturan nama/kata sandi Wi-Fi untuk layanan saya.`;
             waBtn.href = `https://wa.me/628116666755?text=${encodeURIComponent(text)}`;
           }
           if (window.lucide) lucide.createIcons();
@@ -12368,7 +12346,7 @@
       }
 
       const sn = currentCustomerONT ? currentCustomerONT.serial_number : '';
-      if (!confirm(`Apakah Anda yakin ingin me-restart modem ONT (${sn || 'GOGIGANET'})?\n\nKoneksi internet akan terputus selama kurang lebih 1-2 menit hingga modem selesai boot ulang.`)) {
+      if (!confirm(`Apakah Anda yakin ingin me-restart modem ONT (${sn || 'ONT'})?\n\nKoneksi internet akan terputus selama kurang lebih 1-2 menit hingga modem selesai boot ulang.`)) {
         return;
       }
 
@@ -12472,7 +12450,7 @@
         const m = reg.full_name.match(/\((.*?)\)/);
         if (m) siteName = m[1];
       }
-      let displayAddress = reg.address || 'Payakumbuh, Sumatera Barat';
+      let displayAddress = reg.address || '-';
       if (siteName && !displayAddress.toLowerCase().includes(siteName.toLowerCase())) {
         displayAddress = `${siteName} • ${displayAddress}`;
       }
@@ -13492,13 +13470,9 @@
           const odp = (r.nearest_odp_code || '').toUpperCase();
           const addr = (r.address || '').toUpperCase();
           const pcode = (r.partner_code || '').toUpperCase();
-          if (branchFilter === 'PYK') {
-            return odp.includes('PYK') || addr.includes('PAYAKUMBUH') || addr.includes('50 KOTA') || (!odp.includes('PAPUA') && !odp.includes('BIA') && !pcode.includes('BIARO'));
-          } else if (branchFilter === 'GNET-BIARO') {
-            return odp.includes('BIA') || odp.includes('BIO') || addr.includes('BIARO') || pcode.includes('BIARO');
-          } else if (branchFilter === 'PAPUA') {
-            return odp.includes('PAPUA') || addr.includes('PAPUA') || addr.includes('JAYAPURA');
-          }
+          const bf = branchFilter.toUpperCase();
+          if (r.cluster_area) return r.cluster_area.toUpperCase().includes(bf);
+          return odp.includes(bf) || addr.includes(bf) || pcode.includes(bf);
           return true;
         });
       }
@@ -13571,7 +13545,7 @@
           'ALL': 'database'
         };
         const branchMsg = branchFilter !== 'ALL' 
-          ? `<div class="mt-2 text-slate-500 font-sans">Filter cabang aktif: <strong>${branchFilter}</strong> (Total ${rawData.length} data registrasi berada di wilayah lain/Payakumbuh).</div>
+          ? `<div class="mt-2 text-slate-500 font-sans">Filter cabang aktif: <strong>${branchFilter}</strong> (Total ${rawData.length} data registrasi berada di wilayah cabang lain).</div>
              <button type="button" onclick="onGlobalBranchChange('ALL')" class="mt-3 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold rounded-md transition shadow-xs cursor-pointer inline-flex items-center gap-1.5">
                <i data-lucide="globe" class="w-3.5 h-3.5"></i>
                <span>Tampilkan Semua Wilayah (Nasional)</span>
@@ -13824,10 +13798,10 @@
       const mapContainer = document.getElementById('admin-custmap-canvas');
       if (!mapContainer) return;
 
-      // Default center at Payakumbuh (-0.2298, 100.6300), zoom 14
+      // Default center Indonesia [-6.2088, 106.8456], zoom 12
       adminCustomerMap = L.map('admin-custmap-canvas', {
-        center: [-0.2298, 100.6300],
-        zoom: 14,
+        center: [-6.2088, 106.8456],
+        zoom: 12,
         zoomControl: true
       });
 
@@ -13951,7 +13925,7 @@
       if (branch === 'PAPUA' && adminCustomerMap) {
         adminCustomerMap.setView([-2.53371, 140.71813], 12);
       } else if (branch === 'PYK' && adminCustomerMap) {
-        adminCustomerMap.setView([-0.2298, 100.6300], 14);
+        adminCustomerMap.setView([-6.2088, 106.8456], 12);
       }
 
       try {
@@ -14168,7 +14142,7 @@
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">${o.status || 'AKTIF'}</span>
               </div>
               <div class="font-bold text-slate-900 mb-0.5">${o.name}</div>
-              <div class="text-[10px] text-slate-400 font-mono mb-2">${o.provider_name || 'PT. GNET BIARO AKSES'}</div>
+              <div class="text-[10px] text-slate-400 font-mono mb-2">${o.provider_name || (window.__EARLY_BRAND_NAME__ || 'ISP')}</div>
               <div class="bg-orange-50/60 p-2 rounded-lg border border-orange-200 mb-2 text-[11px]">
                 <div class="flex justify-between text-slate-700 mb-1">
                   <span>Kapasitas Port:</span>
@@ -14319,7 +14293,7 @@
         if (branchFilter === 'PAPUA') {
           adminCustomerMap.setView([-2.53371, 140.71813], 12);
         } else {
-          adminCustomerMap.setView([-0.2298, 100.6300], 14);
+          adminCustomerMap.setView([-6.2088, 106.8456], 12);
         }
       }
     }
@@ -14360,7 +14334,7 @@
         if (branchFilter === 'PAPUA') {
           adminCustomerMap.setView([-2.53371, 140.71813], 12);
         } else {
-          adminCustomerMap.setView([-0.2298, 100.6300], 14);
+          adminCustomerMap.setView([-6.2088, 106.8456], 12);
         }
       }
     }
@@ -15041,7 +15015,7 @@
               if (invTotalEl) invTotalEl.innerText = `Rp ${Number(inv.total_amount).toLocaleString('id-ID')}`;
               const invLink = document.getElementById('detail-pricing-invoice-link');
               if (invLink) {
-                invLink.href = `https://portal.gogiga.net.id/?track=${encodeURIComponent(r.registration_no || r.phone)}`;
+                invLink.href = `/?track=${encodeURIComponent(r.registration_no || r.phone)}`;
               }
               if (window.lucide) lucide.createIcons();
             }
@@ -15149,7 +15123,7 @@
 
         const isGoldenSubcontract = Boolean(r.technician_name && r.technician_name.includes('Golden'));
         const techWaGreeting = isGoldenSubcontract 
-          ? `Halo Tim Mitra Teknisi Golden (PT GNET BIARO AKSES), mohon bantuan penanganan SPK Pasang Baru (Subkontrak OTC Rp 150.000) berikut:\n\n` +
+          ? `Halo Tim Mitra Teknisi Jartaplok Wholesale, mohon bantuan penanganan SPK Pasang Baru (Subkontrak OTC Rp 150.000) berikut:\n\n` +
             `• No. SPK: ${r.work_order_no || 'WO-BARU'}\n` +
             `• No. Reg: ${r.registration_no}\n` +
             `• Nama Pelanggan: ${r.full_name}\n` +
@@ -15160,7 +15134,7 @@
             (r.latitude && r.longitude ? `• Peta: https://maps.google.com/?q=${r.latitude},${r.longitude}\n\n` : '\n') +
             `Skema: Subkontrak Fulfillment Teknisi Golden (OTC Rp 150.000 tercatat di Rekap Wholesale).\n` +
             `Mohon penarikan kabel dropcore, tes redaman OPM (-16 s/d -24 dBm), dan foto BAST digital. Terima kasih.`
-          : `Halo Tim Teknisi Gogiganet, mohon proses SPK Pasang Baru berikut:\n\n` +
+          : `Halo Tim Teknisi Lapangan, mohon proses SPK Pasang Baru berikut:\n\n` +
             `• No. SPK: ${r.work_order_no || 'WO-BARU'}\n` +
             `• No. Reg: ${r.registration_no}\n` +
             `• Nama Pelanggan: ${r.full_name}\n` +
@@ -15231,12 +15205,10 @@
                 </div>
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <select id="detail-reassign-technician-select" onchange="onDetailReassignTechChange(this.value)" class="flex-grow bg-slate-50 border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-xs font-sans outline-none focus:border-slate-900">
-                    <option value="Job Pool (Terbuka)" ${curTech.toLowerCase().includes('pool') || curTech.toLowerCase().includes('terbuka') || curTech.toLowerCase().includes('lapangan') || curTech.toLowerCase().includes('payakumbuh') ? 'selected' : ''}>Job Pool (Terbuka) - Bebas diambil teknisi mana saja</option>
-                    <option value="Ricci" ${curTech.toLowerCase().includes('ricci') ? 'selected' : ''}>Ricci (RICCI-TECH - Payakumbuh)</option>
-                    <option value="Zikka" ${curTech.toLowerCase().includes('zikka') ? 'selected' : ''}>Zikka (ZIKKA-TECH - Payakumbuh)</option>
-                    <option value="Egi" ${curTech.toLowerCase().includes('egi') ? 'selected' : ''}>Egi (EGI-TECH - Payakumbuh)</option>
-                    <option value="Nando" ${curTech.toLowerCase().includes('nando') ? 'selected' : ''}>Nando (NANDO-TECH - Payakumbuh)</option>
-                    <option value="Mitra Teknisi Golden" ${isGoldenSubcontract ? 'selected' : ''}>Mitra Teknisi Golden (PT GNET BIARO AKSES - Subkontrak OTC Rp 150rb)</option>
+                    <option value="Job Pool (Terbuka)" ${curTech.toLowerCase().includes('pool') || curTech.toLowerCase().includes('terbuka') || curTech.toLowerCase().includes('lapangan')  ? 'selected' : ''}>Job Pool (Terbuka) - Bebas diambil teknisi mana saja</option>
+                    <option value="Teknisi Shift 1" ${curTech.toLowerCase().includes('shift 1') ? 'selected' : ''}>Tim Teknisi Lapangan 1</option>
+                    <option value="Teknisi Shift 2" ${curTech.toLowerCase().includes('shift 2') ? 'selected' : ''}>Tim Teknisi Lapangan 2</option>
+                    <option value="Mitra Subkontrak" ${isGoldenSubcontract ? 'selected' : ''}>Mitra Teknisi Rekanan (Subkontrak OTC)</option>
                   </select>
                   <button type="button" onclick="submitReassignTechnician('${r.work_order_id || r.id}', '${r.id}')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-mono font-bold shrink-0 transition shadow-xs flex items-center justify-center gap-1.5">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
@@ -15248,7 +15220,7 @@
                   <div>
                     <strong class="font-mono font-bold">SKEMA SUBKONTRAK KEMITRAAN (GOLDEN NET):</strong>
                     <p class="font-sans text-[10.5px] text-indigo-800 mt-0.5 leading-snug">
-                      Pekerjaan dialihkan ke armada PT GNET BIARO AKSES dengan biaya pasang baru (OTC) <strong>Rp 150.000 / titik</strong> (ditagihkan pada Berita Acara Rekonsiliasi bulanan).
+                      Pekerjaan dialihkan ke armada mitra rekanan dengan biaya pasang baru (OTC) sesuai kontrak kerjasama.
                     </p>
                   </div>
                 </div>
@@ -15287,18 +15259,16 @@
                 </div>
                 <select id="detail-assign-technician-select" onchange="onDetailAssignTechChange(this.value)" class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-xs font-sans outline-none focus:border-slate-900">
                   <option value="Job Pool (Terbuka)" selected>Job Pool (Terbuka) - Bursa Terbuka Seluruh Teknisi</option>
-                  <option value="Ricci">Ricci (RICCI-TECH - Tim Internal Payakumbuh)</option>
-                  <option value="Zikka">Zikka (ZIKKA-TECH - Tim Internal Payakumbuh)</option>
-                  <option value="Egi">Egi (EGI-TECH - Tim Internal Payakumbuh)</option>
-                  <option value="Nando">Nando (NANDO-TECH - Tim Internal Payakumbuh)</option>
-                  <option value="Mitra Teknisi Golden">Mitra Teknisi Golden (PT GNET BIARO AKSES - Subkontrak OTC Rp 150.000)</option>
+                  <option value="Tech-1">Tim Teknisi Lapangan 1</option>
+                  <option value="Tech-2">Tim Teknisi Lapangan 2</option>
+                  <option value="Mitra Teknisi Golden">Mitra Teknisi Jartaplok Wholesale</option>
                 </select>
                 <div id="detail-assign-golden-note" class="hidden p-2.5 bg-indigo-50 border border-indigo-200 rounded-md text-[11px] text-indigo-900 flex items-start gap-2">
                   <i data-lucide="info" class="w-4 h-4 text-indigo-700 shrink-0 mt-0.5"></i>
                   <div>
                     <strong class="font-mono font-bold">SKEMA SUBKONTRAK KEMITRAAN (GOLDEN NET):</strong>
                     <p class="font-sans text-[10.5px] text-indigo-800 mt-0.5 leading-snug">
-                      Teknisi internal sedang penuh. Pekerjaan dialihkan ke armada teknisi PT GNET BIARO AKSES dengan biaya pasang baru (OTC) <strong>Rp 150.000 / titik</strong> (ditagihkan pada Berita Acara Rekonsiliasi bulanan).
+                      Pekerjaan dialihkan ke armada teknisi mitra rekanan sesuai kontrak kerjasama.
                     </p>
                   </div>
                 </div>
@@ -15389,7 +15359,7 @@
       const partnerBadge = document.getElementById('admin-detail-partner-badge');
       const dispatchContainer = document.getElementById('admin-detail-dispatch-container');
       if (partnerBadge && dispatchContainer) {
-        const partnerName = r.partner_name || (r.nearest_odp_code ? 'PT. GNET BIARO AKSES' : 'Belum Terhubung');
+        const partnerName = r.partner_name || (r.nearest_odp_code ? (window.__EARLY_BRAND_NAME__ || 'ISP') : 'Belum Terhubung');
         const isTIF = partnerName.includes('Telkom');
         partnerBadge.className = `text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
           isTIF ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700 border border-slate-200'
@@ -15425,7 +15395,7 @@
               <div class="p-3 bg-amber-50 border border-amber-200 rounded-md text-[11px] text-amber-900 space-y-1">
                 <div class="flex items-center gap-1.5 font-bold">
                   <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
-                  <span>Perhatian: Di Luar Jangkauan FO Standar GNET (&gt; 250m)</span>
+                  <span>Perhatian: Di Luar Jangkauan FO Standar (&gt; 250m)</span>
                 </div>
                 <p class="text-amber-800 text-[10px] leading-relaxed">
                   Jika Telkom/TIF mengonfirmasi memiliki tiang terdekat, Anda dapat meng-attach pelanggan ke Bitstream TIF secara manual (tanpa perlu file KML).
@@ -15602,7 +15572,7 @@
 
       if (!wo && regId) {
         const techSelect = document.getElementById('detail-assign-technician-select');
-        const techName = techSelect ? techSelect.value : 'Tim Teknisi Payakumbuh';
+        const techName = techSelect ? techSelect.value : 'Tim Teknisi Lapangan';
         const isGolden = techName.includes('Golden');
         try {
           const res = await fetch('/api/v1/admin/work-orders', {
@@ -15699,7 +15669,7 @@
 
     async function triggerCreateWorkOrderForRegistration(regId) {
       const techSelect = document.getElementById('detail-assign-technician-select');
-      const techName = techSelect ? techSelect.value : 'Tim Teknisi Payakumbuh';
+      const techName = techSelect ? techSelect.value : 'Tim Teknisi Lapangan';
       const isGolden = techName.includes('Golden');
       const notes = isGolden 
         ? 'Penugasan Subkontrak Mitra Golden (Teknisi Internal Penuh - OTC Rp 150.000)' 
@@ -15763,7 +15733,7 @@
 
       const specsSection = (isCorporateCustomer(r) && r.custom_notes) ? `\nDetail Spesifikasi Kebutuhan:\n${r.custom_notes.replace(/ \| /g, '\n')}\n` : '';
 
-      const quotationMsg = `Halo Bapak/Ibu ${r.full_name}, kami dari Tim Account Executive GOGIGANET Enterprise terkait permohonan pasang internet korporat Anda (${r.registration_no} - ${r.selected_plan_name}).\n${specsSection}\nBerikut ringkasan penawaran resmi kami:${priceSection}\n\nProposal penawaran harga resmi (Quotation & BoQ) dan draf kontrak telah kami siapkan di sistem. Kapan waktu yang nyaman untuk kami survei teknis ke lokasi dan koordinasi lebih lanjut? Terima kasih.`;
+      const quotationMsg = `Halo Bapak/Ibu ${r.full_name}, kami dari Tim Account Executive ${window.__EARLY_BRAND_NAME__ || "ISP"} Enterprise terkait permohonan pasang internet korporat Anda (${r.registration_no} - ${r.selected_plan_name}).\n${specsSection}\nBerikut ringkasan penawaran resmi kami:${priceSection}\n\nProposal penawaran harga resmi (Quotation & BoQ) dan draf kontrak telah kami siapkan di sistem. Kapan waktu yang nyaman untuk kami survei teknis ke lokasi dan koordinasi lebih lanjut? Terima kasih.`;
 
       return `https://wa.me/${waNumber}?text=${encodeURIComponent(quotationMsg)}`;
     }
@@ -15941,7 +15911,7 @@
         if (reason === null) return;
         notes = reason.trim();
       } else {
-        const confirmApprove = confirm(`Setujui penarikan kabel khusus (${Math.round(reg.distance_to_odp_meters || 0)}m) untuk ${reg.full_name} (${reg.registration_no})?\n\nSistem akan menerbitkan SPK Instalasi dan Faktur Tagihan resmi di GOGIGABILL.`);
+        const confirmApprove = confirm(`Setujui penarikan kabel khusus (${Math.round(reg.distance_to_odp_meters || 0)}m) untuk ${reg.full_name} (${reg.registration_no})?\n\nSistem akan menerbitkan SPK Instalasi dan Faktur Tagihan resmi.`);
         if (!confirmApprove) return;
       }
 
@@ -16478,7 +16448,7 @@
       let providerId = (odp && odp.provider_id) || reg.partner_code || '';
       if (!providerId) {
         if (reg.nearest_odp_code && reg.nearest_odp_code.includes('TIF')) providerId = 'TIF';
-        else providerId = 'GNET-BIARO';
+        else providerId = 'INTERNAL';
       }
       let providerName = (odp && odp.provider_name) || (providerId.includes('TIF') ? 'PT Telkom Infrastruktur Indonesia' : 'PT GNET BIARO AKSES (Golden)');
 
@@ -16533,7 +16503,7 @@
       let providerId = (odp && odp.provider_id) || reg.partner_code || '';
       if (!providerId) {
         if (reg.nearest_odp_code && reg.nearest_odp_code.includes('TIF')) providerId = 'TIF';
-        else providerId = 'GNET-BIARO';
+        else providerId = 'INTERNAL';
       }
 
       jartaplokBox.classList.remove('hidden');
@@ -16551,7 +16521,7 @@
               </div>
               <div class="space-y-1">
                 <h5 class="font-bold text-xs text-emerald-900 flex items-center gap-2">
-                  <span class="font-sans">Bebas Lapor ke Golden (GNET-BIARO)</span>
+                  <span class="font-sans">Bebas Lapor (Kapasitas Port Standar)</span>
                   <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] rounded font-mono font-bold">100% Mandiri</span>
                 </h5>
                 <p class="text-[11px] text-emerald-800 leading-relaxed font-sans">
@@ -16568,7 +16538,8 @@
           if (speed === 200) wholesaleTierRate = 180000;
           if (speed >= 300) wholesaleTierRate = 270000;
 
-          const waMsg = `Yth. Tim Wholesale PT GNET BIARO AKSES,\n\nKami dari PT GoGiga Solusi Nusantara ingin menginformasikan penyesuaian tier kapasitas sewa port wholesale (Upgrade Bandwidth):\n\n• No. Registrasi: ${reg.registration_no}\n• Pelanggan: ${reg.full_name}\n• Titik ODP / Port: ${reg.nearest_odp_code || '-'}\n• Paket Lama: ${reg.selected_plan_name || '50M'}\n• Paket Baru: ${newPlanName} (${speed} Mbps)\n• Penyesuaian HPP Sewa: Tier ${speed}M (Rp ${wholesaleTierRate.toLocaleString('id-ID')}/bln)\n• Tanggal Efektif: ${document.getElementById('upgrade-plan-effective').value === 'AWAL_BULAN_DEPAN' ? 'Awal Bulan Depan' : 'Segera'}\n\nMohon dicatat dalam penyesuaian rekap tagihan bulanan rekanan. Terima kasih.\n\nSalam,\nAan Rizal, S.Kom.\nPT GoGiga Solusi Nusantara`;
+          const tenantLegal = (window.__ISPSYNC_TENANT__ && window.__ISPSYNC_TENANT__.name) || "Penyelenggara Jasa Internet";
+          const waMsg = `Yth. Tim Wholesale & Rekanan,\n\nKami dari ${tenantLegal} ingin menginformasikan penyesuaian tier kapasitas sewa port wholesale (Upgrade Bandwidth):\n\n• No. Registrasi: ${reg.registration_no}\n• Pelanggan: ${reg.full_name}\n• Titik ODP / Port: ${reg.nearest_odp_code || '-'}\n• Paket Lama: ${reg.selected_plan_name || '50M'}\n• Paket Baru: ${newPlanName} (${speed} Mbps)\n• Penyesuaian HPP Sewa: Tier ${speed}M (Rp ${wholesaleTierRate.toLocaleString('id-ID')}/bln)\n• Tanggal Efektif: ${document.getElementById('upgrade-plan-effective').value === 'AWAL_BULAN_DEPAN' ? 'Awal Bulan Depan' : 'Segera'}\n\nMohon dicatat dalam penyesuaian rekap tagihan bulanan rekanan. Terima kasih.\n\nSalam,\nTim Operasional & NOC\n${tenantLegal}`;
 
           jartaplokBox.className = 'rounded-md p-4 border bg-amber-50 text-amber-950 border-amber-200';
           jartaplokBox.innerHTML = `
@@ -16623,7 +16594,8 @@
           if (speed === 40) tifRate = 184000;
           if (speed >= 50) tifRate = 220000;
 
-          const tifMsg = `Yth. Tim Wholesale & NOC PT Telkom Infrastruktur Indonesia (TIF),\n\nPerihal: Permohonan Change Service Order (Upgrade Bandwidth Bitstream)\n\nMohon bantuan penyesuaian shaper profile sirkuit pelanggan kami:\n• No. Registrasi: ${reg.registration_no}\n• Nama Pelanggan: ${reg.full_name}\n• Titik ODP / Port: ${reg.nearest_odp_code || '-'}\n• Alamat: ${reg.address || '-'}\n• Paket Semula: ${reg.selected_plan_name || '20M'}\n• Paket Baru: ${newPlanName} (${speed} Mbps)\n• Estimasi HPP Bitstream Baru: Rp ${tifRate.toLocaleString('id-ID')}/bln\n• Tanggal Efektif: ${document.getElementById('upgrade-plan-effective').value === 'AWAL_BULAN_DEPAN' ? '01 Bulan Depan' : 'Segera'}\n\nMohon konfirmasi jika shaper di OLT telah di-update agar kami dapat melakukan uji terima speedtest. Terima kasih.\n\nSalam,\nAan Rizal, S.Kom.\nPT GoGiga Solusi Nusantara`;
+          const tenantLegal2 = (window.__ISPSYNC_TENANT__ && window.__ISPSYNC_TENANT__.name) || "Penyelenggara Jasa Internet";
+          const tifMsg = `Yth. Tim Wholesale & NOC Rekanan Bitstream,\n\nPerihal: Permohonan Change Service Order (Upgrade Bandwidth Bitstream)\n\nMohon bantuan penyesuaian shaper profile sirkuit pelanggan kami:\n• No. Registrasi: ${reg.registration_no}\n• Nama Pelanggan: ${reg.full_name}\n• Titik ODP / Port: ${reg.nearest_odp_code || '-'}\n• Alamat: ${reg.address || '-'}\n• Paket Semula: ${reg.selected_plan_name || '20M'}\n• Paket Baru: ${newPlanName} (${speed} Mbps)\n• Estimasi HPP Bitstream Baru: Rp ${tifRate.toLocaleString('id-ID')}/bln\n• Tanggal Efektif: ${document.getElementById('upgrade-plan-effective').value === 'AWAL_BULAN_DEPAN' ? '01 Bulan Depan' : 'Segera'}\n\nMohon konfirmasi jika shaper di OLT telah di-update agar kami dapat melakukan uji terima speedtest. Terima kasih.\n\nSalam,\nTim Operasional & NOC\n${tenantLegal2}`;
 
           jartaplokBox.className = 'rounded-md p-4 border bg-rose-50 text-rose-950 border-rose-200';
           jartaplokBox.innerHTML = `
@@ -16748,7 +16720,7 @@
       const partners = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
         ? superUserJartaplokPartners
         : [
-            { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
+            { code: 'GNET-BIARO', name: 'Mitra Jartaplok Wholesale', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
             { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)', service_type: 'BITSTREAM', max_distance_meters: 150 }
           ];
 
@@ -16771,7 +16743,7 @@
       const partners = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
         ? superUserJartaplokPartners
         : [
-            { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
+            { code: 'GNET-BIARO', name: 'Mitra Jartaplok Wholesale', service_type: 'SEWA_PORT_FO', max_distance_meters: 250 },
             { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)', service_type: 'BITSTREAM', max_distance_meters: 150 }
           ];
       const p = partners.find(x => x.code === partnerCode);
@@ -16796,7 +16768,7 @@
           upstreamBadge.innerText = 'Wajib / Rekomendasi Bitstream';
         }
         if (upstreamDesc) {
-          upstreamDesc.innerText = `Mitra Bitstream (${p.name || partnerCode}) umumnya memerlukan modem ONT mendial akun upstream milik mitra. Akun resmi GoGiga tetap tercatat sebagai master customer ID.`;
+          upstreamDesc.innerText = `Mitra Bitstream (${p.name || partnerCode}) umumnya memerlukan modem ONT mendial akun upstream milik mitra. Akun resmi ISP tetap tercatat sebagai master customer ID.`;
         }
       } else {
         if (upstreamBadge) {
@@ -16804,7 +16776,7 @@
           upstreamBadge.innerText = 'Opsional (Sewa Port FO Pasif)';
         }
         if (upstreamDesc) {
-          upstreamDesc.innerText = `Untuk sewa port pasif FO, ONT mendial langsung ke BNG/PPPoE Server GoGiga. Isi upstream dial di bawah hanya jika mitra mensyaratkan khusus.`;
+          upstreamDesc.innerText = `Untuk sewa port pasif FO, ONT mendial langsung ke BNG/PPPoE Server ISP. Isi upstream dial di bawah hanya jika mitra mensyaratkan khusus.`;
         }
       }
 
@@ -16923,7 +16895,7 @@
           const partnerList = (superUserJartaplokPartners && superUserJartaplokPartners.length > 0)
             ? superUserJartaplokPartners
             : [
-                { code: 'GNET-BIARO', name: 'PT. GNET BIARO DATA' },
+                { code: 'GNET-BIARO', name: 'Mitra Jartaplok Wholesale' },
                 { code: 'TELKO-PYK', name: 'PT Telkom Infrastruktur Indonesia (TIF)' }
               ];
           const partnerObj = partnerList.find(x => x.code === partnerCode);
@@ -16974,9 +16946,9 @@
 
       let msg = '';
       if (action === 'WISHLIST') {
-        msg = `Halo Bapak/Ibu ${name},\n\nTerima kasih atas minat Anda berlangganan internet resmi GOGIGANET (${regNo}).\n\nBerdasarkan hasil survei tim teknis kami, saat ini lokasi rumah Anda belum terjangkau jalur distribusi kabel Fiber Optik GOGIGANET dalam batas jarak aman.\n\nData permohonan Anda telah kami simpan ke dalam Daftar Prioritas Perluasan Jaringan GOGIGANET. Kami akan segera menghubungi Anda kembali begitu tiang baru resmi dibuka di wilayah Anda.\n\nSalam hormat,\nTim Layanan Pelanggan GOGIGANET`;
+        msg = `Halo Bapak/Ibu ${name},\n\nTerima kasih atas minat Anda berlangganan internet resmi ${window.__EARLY_BRAND_NAME__ || "ISP"} (${regNo}).\n\nBerdasarkan hasil survei tim teknis kami, saat ini lokasi rumah Anda belum terjangkau jalur distribusi kabel Fiber Optik ${window.__EARLY_BRAND_NAME__ || "ISP"} dalam batas jarak aman.\n\nData permohonan Anda telah kami simpan ke dalam Daftar Prioritas Perluasan Jaringan ${window.__EARLY_BRAND_NAME__ || "ISP"}. Kami akan segera menghubungi Anda kembali begitu tiang baru resmi dibuka di wilayah Anda.\n\nSalam hormat,\nTim Layanan Pelanggan ${window.__EARLY_BRAND_NAME__ || "ISP"}`;
       } else {
-        msg = `Halo Bapak/Ibu ${name},\n\nTerima kasih atas minat Anda berlangganan internet resmi GOGIGANET (${regNo}).\n\nSetelah dilakukan pengecekan teknis, mohon maaf permohonan pasang baru saat ini belum dapat diproses karena lokasi berada di luar jangkauan infrastruktur fiber optik kami.\n\nTerima kasih atas pengertiannya.\n\nSalam hormat,\nTim Layanan Pelanggan GOGIGANET`;
+        msg = `Halo Bapak/Ibu ${name},\n\nTerima kasih atas minat Anda berlangganan internet resmi ${window.__EARLY_BRAND_NAME__ || "ISP"} (${regNo}).\n\nSetelah dilakukan pengecekan teknis, mohon maaf permohonan pasang baru saat ini belum dapat diproses karena lokasi berada di luar jangkauan infrastruktur fiber optik kami.\n\nTerima kasih atas pengertiannya.\n\nSalam hormat,\nTim Layanan Pelanggan ${window.__EARLY_BRAND_NAME__ || "ISP"}`;
       }
 
       window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -17305,7 +17277,7 @@
             <td class="py-2.5 px-3 font-bold text-blue-600 font-mono">${o.code}</td>
             <td class="py-2.5 px-3 text-slate-900">
               <div class="font-bold text-xs">${o.name}</div>
-              <div class="text-[10px] text-slate-400 font-sans">${o.provider_name || 'PT. GNET BIARO AKSES'} • ${o.cluster_area || 'Payakumbuh'}</div>
+              <div class="text-[10px] text-slate-400 font-sans">${o.provider_name || (window.__EARLY_BRAND_NAME__ || 'ISP')} • ${o.cluster_area || 'Area Utama'}</div>
             </td>
             <td class="py-2.5 px-3 text-slate-500 font-mono text-[11px]">${o.latitude.toFixed(5)}, ${o.longitude.toFixed(5)}</td>
             <td class="py-2.5 px-3 font-mono">
@@ -17339,8 +17311,8 @@
     }
 
     async function confirmDeleteODP(id, code, name, usedPorts, providerId) {
-      if (providerId === 'GNET2') {
-        alert(`🔒 Tiang Terproteksi:\n\nTiang ODP ${code} adalah aset mitra Jartaplok (PT GNET BIARO AKSES (2)) yang disinkronkan otomatis via API FTTX.\n\nPenghapusan tiang harus dilakukan langsung dari sistem FTTX Management System penyedia.`);
+      if (providerId === 'GNET2' || providerId === 'MITRA') {
+        alert(`🔒 Tiang Terproteksi:\n\nTiang ODP ${code} adalah aset mitra Jartaplok Wholesale yang disinkronkan otomatis via API FTTX.\n\nPenghapusan tiang harus dilakukan langsung dari sistem FTTX Management System penyedia.`);
         return;
       }
       if (getActivePortalSession() !== 'superuser') {
@@ -17382,28 +17354,9 @@
     }
 
     function flyToCity(city) {
-      const btnPayakumbuh = document.getElementById('city-btn-payakumbuh');
-      const btnBukittinggi = document.getElementById('city-btn-bukittinggi');
-
-      const activeClass = "px-4 py-2 rounded-lg text-xs font-bold transition flex items-center justify-between sm:justify-start gap-2 bg-primary-600 text-white shadow-sm";
-      const inactiveClass = "px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between sm:justify-start gap-2 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200";
-
-      if (city === 'payakumbuh') {
-        currentLat = -0.223844;
-        currentLng = 100.629124;
-        if (btnPayakumbuh) btnPayakumbuh.className = activeClass;
-        if (btnBukittinggi) btnBukittinggi.className = inactiveClass;
-      } else {
-        currentLat = -0.28487;
-        currentLng = 100.43024;
-        if (btnBukittinggi) btnBukittinggi.className = activeClass;
-        if (btnPayakumbuh) btnPayakumbuh.className = inactiveClass;
+      if (typeof map !== 'undefined' && map && customerMarker) {
+        map.flyTo([currentLat, currentLng], 15, { duration: 1.2 });
       }
-
-      customerMarker.setLatLng([currentLat, currentLng]);
-      radiusCircle.setLatLng([currentLat, currentLng]);
-      map.flyTo([currentLat, currentLng], 15, { duration: 1.2 });
-      updateCustomerPosition(currentLat, currentLng);
     }
 
     window.adminClustersData = [];
@@ -17433,15 +17386,8 @@
       }
 
       container.innerHTML = clusters.map(c => {
-        const isPayakumbuh = c.name.includes("Payakumbuh");
-        const isBiaro = c.name.includes("Biaro");
-        const isGeringging = c.name.includes("Geringging");
-
         let displayName = c.name;
         let subtitle = "Cluster Fiber FTTH";
-        if (isPayakumbuh) { displayName = "Kota Payakumbuh"; subtitle = "Layanan Fiber Utama Perkotaan"; }
-        else if (isBiaro) { displayName = "Bukittinggi & Biaro"; subtitle = "Kab. Agam & Kota Bukittinggi"; }
-        else if (isGeringging) { displayName = "Sungai Geringging"; subtitle = "Kab. Padang Pariaman"; }
 
         const smartCfg = window.adminClusterSmartOLTMap ? window.adminClusterSmartOLTMap[c.name] : null;
         let smartBadge = '';
@@ -17654,7 +17600,7 @@
             }
           });
           const pJson = await pRes.json();
-          partnerSelect.innerHTML = '<option value="">-- Tanpa Rekanan / Internal GoGiga --</option>';
+          partnerSelect.innerHTML = '<option value="">-- Tanpa Rekanan / Jaringan Sendiri (Internal) --</option>';
           if (pJson.success && Array.isArray(pJson.data)) {
             pJson.data.forEach(p => {
               partnerSelect.innerHTML += `<option value="${p.code}">${p.name} (${p.code})</option>`;
@@ -17662,7 +17608,7 @@
           }
         } catch (e) {
           console.warn('Gagal memuat rekanan:', e);
-          partnerSelect.innerHTML = '<option value="">-- Tanpa Rekanan / Internal GoGiga --</option>';
+          partnerSelect.innerHTML = '<option value="">-- Tanpa Rekanan / Jaringan Sendiri (Internal) --</option>';
         }
       }
 
@@ -18052,7 +17998,7 @@
     async function executeFiberGridSync() {
       const serverUrl = document.getElementById('fg-sync-url')?.value?.trim();
       const apiKey = document.getElementById('fg-sync-key')?.value?.trim();
-      const clusterArea = document.getElementById('fg-sync-cluster')?.value?.trim() || 'Payakumbuh';
+      const clusterArea = document.getElementById('fg-sync-cluster')?.value?.trim() || 'Area Utama';
       const autoImport = document.getElementById('fg-sync-auto-import')?.checked !== false;
       const alertBox = document.getElementById('fg-sync-alert');
       const btn = document.getElementById('btn-fg-sync');
@@ -18759,13 +18705,7 @@
           // Update badge indikator wilayah aktif
           const branchBadge = document.getElementById('admin-staff-branch-badge');
           if (branchBadge) {
-            const labels = {
-              'ALL': 'NASIONAL (SEMUA CABANG)',
-              'PYK': 'CABANG PAYAKUMBUH',
-              'PAPUA': 'CABANG PAPUA',
-              'GNET-BIARO': 'MITRA GNET-BIARO'
-            };
-            branchBadge.textContent = labels[activeBranch] || activeBranch;
+            branchBadge.textContent = activeBranch === 'ALL' ? 'NASIONAL (SEMUA CABANG)' : ('WILAYAH ' + activeBranch);
           }
 
           // Lakukan pengelompokan / filtering staf
@@ -18809,19 +18749,10 @@
 
             // Wilayah / Cabang Badge
             let branchBadgeClass = 'bg-slate-100 text-slate-700 border border-slate-200';
-            let branchName = 'PUSAT / NASIONAL';
-            if (staf.branch_code === 'PAPUA') {
-              branchBadgeClass = 'bg-sky-50 text-sky-700 border border-sky-200 font-bold';
-              branchName = 'CABANG PAPUA';
-            } else if (staf.branch_code === 'PYK') {
-              branchBadgeClass = 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold';
-              branchName = 'CABANG PAYAKUMBUH';
-            } else if (staf.branch_code === 'GNET-BIARO') {
-              branchBadgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold';
-              branchName = 'MITRA GNET-BIARO';
-            } else if (staf.role === 'SUPER_ADMIN') {
+            let branchName = staf.branch_code ? ('WILAYAH ' + staf.branch_code) : 'PUSAT / NASIONAL';
+            if (staf.role === 'SUPER_ADMIN') {
               branchBadgeClass = 'bg-amber-50 text-amber-700 border border-amber-200 font-bold';
-              branchName = 'DIREKTUR (PUSAT)';
+              branchName = 'DIREKSI (PUSAT)';
             }
 
             const isAct = staf.status === 'ACTIVE';
@@ -19289,7 +19220,7 @@
           { name: 'Zikka', label: 'Zikka (ZIKKA-TECH - Teknisi Lapangan)', branch: 'PYK' },
           { name: 'Egi', label: 'Egi (EGI-TECH - Teknisi Lapangan)', branch: 'PYK' },
           { name: 'Melkias', label: 'Melkias (Teknisi Lapangan Papua)', branch: 'PAPUA' },
-          { name: 'Mitra Teknisi Golden', label: 'Mitra Teknisi Golden (PT GNET BIARO AKSES)', branch: 'GNET-BIARO' }
+          { name: 'Mitra Teknisi Rekanan', label: 'Mitra Teknisi Rekanan', branch: 'MITRA' }
         ];
         if (currentBranch !== 'ALL') {
           techList = techList.filter(t => t.branch === currentBranch);
@@ -19384,7 +19315,7 @@
       if (origRole === 'branch_manager') {
         localStorage.setItem('active_portal_role', 'branch_manager');
       } else {
-        localStorage.setItem('superuser_auth', JSON.stringify({ role: 'Super User (Owner)', name: 'Aan Rizal S.Kom' }));
+        localStorage.setItem('superuser_auth', JSON.stringify({ role: 'Super User (Owner)', name: (window.__EARLY_BRAND_NAME__ ? window.__EARLY_BRAND_NAME__ + ' Owner' : 'Super User') }));
         localStorage.setItem('admin_auth', JSON.stringify({ role: 'Super Administrator' }));
         localStorage.setItem('active_portal_role', 'superuser');
       }
@@ -19474,8 +19405,8 @@
             let branchBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">PUSAT / ALL</span>`;
             if (pBranch === 'PAPUA') {
               branchBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-50 text-sky-700 border border-sky-200">PAPUA</span>`;
-            } else if (pBranch === 'PYK') {
-              branchBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">PAYAKUMBUH</span>`;
+            } else if (pBranch === 'PYK' || pBranch === 'CABANG-1') {
+              branchBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">${pBranch}</span>`;
             }
 
             const canManage = isSuper || (isBranchManager && pBranch === branch);
@@ -20160,7 +20091,7 @@
       const r = (salesRegistrationsList || []).find(item => item.registration_no === regNo);
       if (!r) return '';
       const notes = (r.custom_notes || '').split(' | ').join('\n');
-      const msg = "Halo Bapak/Ibu " + (r.full_name || '') + ", kami dari Tim Sales & Account Executive GOGIGANET terkait permohonan pasang internet korporat (" + (r.registration_no || '') + " - " + (r.selected_plan_name || '') + ").\n\nDetail Spesifikasi Kebutuhan:\n" + notes + "\n\nKami siap memberikan penawaran harga terbaik (Quotation & BoQ) serta jadwal survei teknis. Apakah ada waktu luang untuk berdiskusi? Terima kasih.";
+      const msg = "Halo Bapak/Ibu " + (r.full_name || '') + ", kami dari Tim Sales & Account Executive ${window.__EARLY_BRAND_NAME__ || "ISP"} terkait permohonan pasang internet korporat (" + (r.registration_no || '') + " - " + (r.selected_plan_name || '') + ").\n\nDetail Spesifikasi Kebutuhan:\n" + notes + "\n\nKami siap memberikan penawaran harga terbaik (Quotation & BoQ) serta jadwal survei teknis. Apakah ada waktu luang untuk berdiskusi? Terima kasih.";
       return encodeURIComponent(msg);
     }
 
@@ -20697,7 +20628,7 @@
       if (!authRaw) return;
       const partner = JSON.parse(authRaw);
       const url = `${window.location.origin}/?ref=${encodeURIComponent(partner.code)}`;
-      const msg = `Halo! Mau pasang WiFi internet rumah unlimited super cepat & stabil di Payakumbuh?\n\nPaket mulai dari 10 Mbps hingga 100 Mbps murni fiber optik. Nikmati PROMO FREE PEMASANGAN untuk 50 pelanggan pertama!\n\nDaftar langsung lewat link resmi saya di sini:\n${url}\n\nInfo & konsultasi: ${partner.name} (${partner.contact_phone || ''})`;
+      const msg = `Halo! Mau pasang WiFi internet rumah unlimited super cepat & stabil ${window.__EARLY_BRAND_NAME__ || "Fiber"}?\n\nPaket mulai dari 10 Mbps hingga 100 Mbps murni fiber optik. Nikmati PROMO FREE PEMASANGAN untuk 50 pelanggan pertama!\n\nDaftar langsung lewat link resmi saya di sini:\n${url}\n\nInfo & konsultasi: ${partner.name} (${partner.contact_phone || ''})`;
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
@@ -20857,7 +20788,7 @@
       }
     }
 
-    function resetSalesMapPayakumbuh() {
+    function resetSalesMap() {
       if (!salesMap) return;
       salesCurrentLat = -0.2285;
       salesCurrentLng = 100.6320;
@@ -20877,7 +20808,7 @@
         }
       });
       const sorted = Array.from(areas).sort();
-      let html = '<option value="ALL">Semua Area Payakumbuh</option>';
+      let html = '<option value="ALL">Semua Area</option>';
       sorted.forEach(a => {
         html += `<option value="${a}">${a}</option>`;
       });
@@ -20966,8 +20897,8 @@
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${avail > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${avail > 0 ? avail + ' Port Sisa' : 'Port Penuh'}</span>
             </div>
             <div class="font-bold text-slate-900 mb-0.5">${o.name || '-'}</div>
-            <div class="text-[10px] text-slate-500 font-mono mb-1.5">${o.provider_name || 'PT. GNET BIARO AKSES'}</div>
-            <div class="text-[10px] text-slate-400 font-mono mb-2">Area: ${o.cluster_area || 'Payakumbuh'}</div>
+            <div class="text-[10px] text-slate-500 font-mono mb-1.5">${o.provider_name || (window.__EARLY_BRAND_NAME__ || 'ISP')}</div>
+            <div class="text-[10px] text-slate-400 font-mono mb-2">Area: ${o.cluster_area || 'Jaringan Utama'}</div>
             <button onclick="setSalesCustomerPinNearODP(${o.latitude}, ${o.longitude}, '${o.code}')" class="w-full py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-mono text-[11px] font-bold flex items-center justify-center gap-1 shadow-xs transition">
               <i data-lucide="crosshair" class="w-3 h-3"></i>
               <span>Tancapkan Radar di Sini</span>
@@ -21071,7 +21002,7 @@
         const availPorts = Math.max(0, (bestODP.total_ports || 8) - (bestODP.used_ports || 0));
         if (portsEl) portsEl.innerText = `${availPorts} / ${bestODP.total_ports || 8} Port Bebas`;
         if (providerEl) {
-          providerEl.innerText = bestODP.provider_name || 'PT. GNET BIARO AKSES';
+          providerEl.innerText = bestODP.provider_name || (window.__EARLY_BRAND_NAME__ || 'ISP');
           providerEl.title = bestODP.provider_name || '';
         }
 
@@ -21194,11 +21125,7 @@
             fields: ['geometry', 'name', 'formatted_address']
           });
 
-          const payakumbuhBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(-0.35, 100.50),
-            new google.maps.LatLng(-0.10, 100.75)
-          );
-          autocomplete.setBounds(payakumbuhBounds);
+          // Autocomplete pencarian alamat
 
           autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
@@ -21464,13 +21391,14 @@
     function shareTechnicianRefWA() {
       const code = getTechnicianReferralCode();
       const url = `${window.location.origin}/?ref=${code}`;
-      const msg = `Halo! Mau pasang WiFi internet rumah cepat Gogiganet di daerah Payakumbuh sekitarnya? Daftar melalui link rekomendasi teknisi resmi ini untuk promo pasang baru & gratis survei ODP terdekat:\n${url}`;
+      const brandName = window.__EARLY_BRAND_NAME__ || 'Internet';
+      const msg = `Halo! Mau pasang WiFi internet rumah cepat ${brandName}? Daftar melalui link rekomendasi teknisi resmi ini untuk promo pasang baru & gratis survei ODP terdekat:\n${url}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function registerViaTechnicianRef() {
       const code = getTechnicianReferralCode();
-      localStorage.setItem('gogiganet_referral_code', code);
+      localStorage.setItem('ispsync_referral_code', code);
       const refInput = document.getElementById('input-referral');
       if (refInput) refInput.value = code;
       const refDisplay = document.getElementById('referral-code-display');
@@ -21527,7 +21455,7 @@
       if (!wo) return false;
       const tn = (wo.technician_name || '').toLowerCase().trim();
       if (!tn) return true;
-      return tn.includes('pool') || tn.includes('terbuka') || tn.includes('belum') || tn.includes('tim teknisi payakumbuh') || tn.includes('tim lapangan');
+      return tn.includes('pool') || tn.includes('terbuka') || tn.includes('belum')  || tn.includes('tim lapangan');
     }
 
     function isWorkOrderMine(wo, myTechName) {
@@ -21688,22 +21616,9 @@
         const odp = (reg.nearest_odp_code || '').toUpperCase();
         const addr = (reg.address || '').toUpperCase();
 
-        if (activeRole === 'technician') {
-          const tName = myTechName.toLowerCase();
-          // Teknisi Payakumbuh hanya melihat Payakumbuh
-          if (tName.includes('ricci') || tName.includes('zikka') || tName.includes('egi') || tName.includes('nando')) {
-            if (odp.includes('PAPUA') || addr.includes('PAPUA')) return false;
-          } else if (tName.includes('papua')) {
-            if (!odp.includes('PAPUA') && !addr.includes('PAPUA')) return false;
-          }
-        } else if (activeRole === 'superuser' && branchFilter !== 'ALL') {
-          if (branchFilter === 'PYK') {
-            if (odp.includes('PAPUA') || addr.includes('PAPUA')) return false;
-          } else if (branchFilter === 'PAPUA') {
-            if (!odp.includes('PAPUA') && !addr.includes('PAPUA')) return false;
-          } else if (branchFilter === 'GNET-BIARO') {
-            if (!odp.includes('BIA') && !odp.includes('BIO') && !addr.includes('BIARO')) return false;
-          }
+        if (activeRole === 'superuser' && branchFilter !== 'ALL') {
+          const bfUpper = branchFilter.toUpperCase();
+          if (!odp.includes(bfUpper) && !addr.includes(bfUpper)) return false;
         }
 
         if (searchQuery) {
@@ -21752,8 +21667,8 @@
 
         // WA message for technician to on-site PIC
         const waGreeting = (reg.site_pic_name && reg.site_pic_name !== reg.full_name)
-          ? `Halo Bpk/Ibu ${reg.site_pic_name} (PIC di Lokasi: ${reg.address || ''}), kami tim teknisi Gogiganet terkait SPK Pasang Baru (${wo.order_no}) pelanggan Bpk/Ibu ${reg.full_name}. Kami siap melakukan instalasi di lokasi Anda.`
-          : `Halo Bpk/Ibu ${reg.full_name || ''}, kami tim teknisi Gogiganet terkait SPK Pasang Baru (${wo.order_no}). Kami siap melakukan instalasi di lokasi Anda.`;
+          ? `Halo Bpk/Ibu ${reg.site_pic_name} (PIC di Lokasi: ${reg.address || ''}), kami tim teknisi ${window.__EARLY_BRAND_NAME__ || "ISP"} terkait SPK Pasang Baru (${wo.order_no}) pelanggan Bpk/Ibu ${reg.full_name}. Kami siap melakukan instalasi di lokasi Anda.`
+          : `Halo Bpk/Ibu ${reg.full_name || ''}, kami tim teknisi ${window.__EARLY_BRAND_NAME__ || "ISP"} terkait SPK Pasang Baru (${wo.order_no}). Kami siap melakukan instalasi di lokasi Anda.`;
         const waMsg = encodeURIComponent(waGreeting);
         const waUrl = phoneFormatted ? `https://wa.me/${phoneFormatted}?text=${waMsg}` : '#';
 
@@ -22360,14 +22275,14 @@
         const upPassEl = document.getElementById('bast-pppoe-upstream-pass-val');
         if (upUserEl) upUserEl.innerText = reg.upstream_pppoe_username;
         if (upPassEl) upPassEl.innerText = reg.upstream_pppoe_password || '-';
-        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Master GoGiga (FreeRADIUS):';
+        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Master ' + (window.__EARLY_BRAND_NAME__ || 'ISP') + ' (FreeRADIUS):';
       } else {
         if (bastUpstreamCard) bastUpstreamCard.classList.add('hidden');
         if (bastBadgeType) {
           bastBadgeType.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30';
-          bastBadgeType.innerText = 'GOGIGANET FTTH';
+          bastBadgeType.innerText = (window.__EARLY_BRAND_NAME__ || 'ISP') + ' FTTH';
         }
-        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Dial WAN ONT (GoGiga FTTH):';
+        if (bastGogigaLabel) bastGogigaLabel.innerText = 'Akun Dial WAN ONT (' + (window.__EARLY_BRAND_NAME__ || 'ISP') + ' FTTH):';
       }
       
       removeBastHousePhoto();
@@ -22524,7 +22439,7 @@
         const json = await res.json();
         if (json.success) {
           closeTechnicianBastModal();
-          alert(`Sukses! BAST Terverifikasi.\n\nPelanggan ${currentBastWO.registration?.full_name || ''} telah resmi AKTIF dan terhubung ke Billing & Jaringan Gogiganet.`);
+          alert(`Sukses! BAST Terverifikasi.\n\nPelanggan ${currentBastWO.registration?.full_name || ''} telah resmi AKTIF dan terhubung ke Billing & Jaringan.`);
           loadTechnicianWorkOrders();
           if (typeof loadSalesRegistrations === 'function') loadSalesRegistrations();
         } else {
@@ -22581,7 +22496,7 @@
       document.getElementById('view-bast-ont-img').src = bast.proof_photo_url || '';
       document.getElementById('view-bast-signature-img').src = bast.customer_signature_url || '';
       document.getElementById('view-bast-sign-name').innerText = reg.full_name || '-';
-      document.getElementById('view-bast-technician-name').innerText = wo.technician_name || 'Tim Teknisi Gogiganet';
+      document.getElementById('view-bast-technician-name').innerText = wo.technician_name || ('Tim Teknisi ' + (window.__EARLY_BRAND_NAME__ || 'ISP'));
 
       document.getElementById('modal-view-bast').classList.remove('hidden');
       lucide.createIcons();
@@ -22736,7 +22651,7 @@
           roleBadge.innerText = "SUPER USER (ROOT / OWNER)";
           roleBadge.className = "text-[10px] font-mono font-black uppercase tracking-wider text-amber-900 bg-amber-200 px-2 py-0.5 rounded border border-amber-300";
         }
-        if (userName) userName.innerText = "Aan Rizal S.Kom (Owner)";
+        if (userName) { let n = 'Super User / Owner'; try { const su = JSON.parse(localStorage.getItem('superuser_auth')||'{}'); n = su.name || (window.__EARLY_BRAND_NAME__ ? window.__EARLY_BRAND_NAME__ + ' Owner' : n); } catch(e){} userName.innerText = n; }
         if (userId) userId.innerText = "Hak Akses Penuh (Root)";
       } else if (activeRole === 'branch_manager') {
         let name = "Kepala Cabang";
@@ -22823,7 +22738,7 @@
           roleBadge.className = "text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded";
         }
         if (userName) userName.innerText = name;
-        if (userId) userId.innerText = "Tim Lapangan Payakumbuh";
+        if (userId) userId.innerText = "Tim Teknisi Lapangan";
       } else if (activeRole === 'admin') {
         btn.className = "px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-md bg-slate-900 text-white hover:bg-slate-800 shadow-xs transition flex items-center gap-2";
         label.innerText = "NOC Admin";
@@ -22842,7 +22757,7 @@
           roleBadge.innerText = "MITRA JARTAPLOK";
           roleBadge.className = "text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded";
         }
-        if (userName) userName.innerText = "PT. GNET BIARO AKSES";
+        if (userName) userName.innerText = "Mitra Wholesale";
         if (userId) userId.innerText = "Penyelenggara JARTAPLOK";
       }
 
@@ -22881,8 +22796,8 @@
           branchBadge.classList.remove('hidden');
           branchBadge.classList.add('inline-flex');
           if (branchBadgeText) {
-            let branchName = 'Cabang Payakumbuh';
-            if (activeRole === 'jartaplok') branchName = 'Mitra PT GNET Biaro';
+            let branchName = 'Cabang Utama';
+            if (activeRole === 'jartaplok') branchName = 'Mitra Wholesale';
             branchBadgeText.innerText = branchName;
           }
         }
@@ -22930,11 +22845,11 @@
         }
         if (sideBranchTag) sideBranchTag.innerText = bCode;
       } else {
-        let lockedBranch = 'PYK';
-        let lockedName = 'PYK';
+        let lockedBranch = 'ALL';
+        let lockedName = 'ALL';
         if (activeRole === 'jartaplok') {
-          lockedBranch = 'GNET-BIARO';
-          lockedName = 'GNET';
+          lockedBranch = 'MITRA';
+          lockedName = 'MITRA';
         }
         if (sideBranchSel) {
           sideBranchSel.value = lockedBranch;
@@ -23055,7 +22970,7 @@
           sideRole.innerText = "SUPER USER / OWNER";
           sideRole.className = "text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider";
         }
-        if (sideName) sideName.innerText = "Aan Rizal S.Kom (Owner)";
+        if (sideName) { let n = 'Super User / Owner'; try { const su = JSON.parse(localStorage.getItem('superuser_auth')||'{}'); n = su.name || (window.__EARLY_BRAND_NAME__ ? window.__EARLY_BRAND_NAME__ + ' Owner' : n); } catch(e){} sideName.innerText = n; }
       } else {
         // Admin NOC
         if (suSidebarSection) suSidebarSection.classList.add('hidden');
@@ -23088,13 +23003,7 @@
 
     function onGlobalBranchChange(code) {
       localStorage.setItem('selected_branch_filter', code);
-      const branchLabels = {
-        'ALL': 'Semua Wilayah Operasional (Nasional)',
-        'PYK': 'Kantor Cabang Payakumbuh & 50 Kota',
-        'GNET-BIARO': 'Mitra PT GNET BIARO AKSES',
-        'PAPUA': 'Kantor Cabang Papua (Jayapura)'
-      };
-      const label = branchLabels[code] || code;
+      const label = code === 'ALL' ? 'Semua Wilayah Operasional (Nasional)' : ('Wilayah Operasional ' + code);
 
       // Sinkronisasi nilai seluruh selector wilayah (Navbar, Sidebar Admin NOC, & Header Tabel)
       const sel1 = document.getElementById('global-branch-selector');
@@ -23364,17 +23273,16 @@
       const drop = document.getElementById('nav-portal-dropdown');
       if (drop) drop.classList.add('hidden');
 
-      const isProd = window.location.hostname.includes('gogiga.net.id');
-      if (isProd) {
-        if (subdomain === 'portal') window.location.href = 'https://portal.gogiga.net.id';
-        else if (subdomain === 'sales') window.location.href = 'https://sales.gogiga.net.id';
-        else if (subdomain === 'technician') window.location.href = 'https://teknisi.gogiga.net.id';
-        else if (subdomain === 'noc-fo') window.location.href = 'https://noc-fo.gogiga.net.id';
-        else if (subdomain === 'rekan') window.location.href = 'https://rekan.gogiga.net.id';
+      const host = window.location.hostname;
+      if (host.includes('.')) {
+        const parts = host.split('.');
+        parts[0] = subdomain;
+        window.location.href = window.location.protocol + '//' + parts.join('.') + (window.location.port ? ':' + window.location.port : '');
       } else {
-        const tabMap = { 'noc-fo': 'admin', 'sales': 'sales', 'technician': 'technician', 'rekan': 'jartaplok', 'portal': 'track' };
+        const tabMap = { 'noc-fo': 'admin', 'noc': 'admin', 'sales': 'sales', 'technician': 'technician', 'teknisi': 'technician', 'rekan': 'jartaplok', 'portal': 'track' };
         switchTab(tabMap[subdomain] || 'admin');
       }
+    }
     }
 
     function quickFillStaffAuth(username, pin) {
@@ -23621,7 +23529,8 @@
 
     async function handleUnifiedJartaplokSubmit(e) {
       e.preventDefault();
-      const username = document.getElementById('unified-input-jartaplok-username')?.value.trim() || 'gnet_biaro';
+      const username = document.getElementById('unified-input-jartaplok-username')?.value.trim();
+      if (!username) return alert('Silakan masukkan ID Rekanan / Partner.');
       const password = document.getElementById('unified-input-jartaplok-pin')?.value.trim();
       if (!password) return alert('Silakan masukkan password atau PIN rekanan.');
 
@@ -23899,10 +23808,10 @@
         if (!hasNocAccess) {
           if (roles.includes('SALES')) {
             alert(`Akun Anda (${data.full_name}) adalah Akun Sales. Anda akan diarahkan ke Portal Sales.`);
-            window.location.href = 'https://sales.gogiga.net.id';
+            switchTab('sales');
           } else if (roles.includes('TECHNICIAN')) {
             alert(`Akun Anda (${data.full_name}) adalah Akun Teknisi. Anda akan diarahkan ke Portal Teknisi.`);
-            window.location.href = 'https://teknisi.gogiga.net.id';
+            switchTab('technician');
           } else {
             alert(`Akses Ditolak: Peran "${data.role}" tidak memiliki hak akses ke panel NOC Command Center.`);
           }
@@ -24303,7 +24212,7 @@
         }
       }
       if (elCapacity) elCapacity.innerText = Number(d.total_capacity_ports || 0).toLocaleString('id-ID');
-      if (elOdpsDesc) elOdpsDesc.innerText = `Terpasang pada ${d.total_odps || 0} titik tiang ODP Payakumbuh`;
+      if (elOdpsDesc) elOdpsDesc.innerText = `Terpasang pada ${d.total_odps || 0} titik tiang ODP distribusi`;
       if (elAvail) elAvail.innerText = Number(d.available_ports || 0).toLocaleString('id-ID');
       
       const occPct = Number(d.occupancy_pct || 0).toFixed(2);
@@ -24452,7 +24361,7 @@
             <td class="py-2.5 px-3 font-bold text-indigo-700">${o.code}</td>
             <td class="py-2.5 px-3">
               <span class="font-medium text-slate-800 block">${o.name}</span>
-              <span class="text-[10px] text-slate-400 block">${o.provider_name || 'PT. GNET BIARO AKSES'}</span>
+              <span class="text-[10px] text-slate-400 block">${o.provider_name || (window.__EARLY_BRAND_NAME__ || 'ISP')}</span>
             </td>
             <td class="py-2.5 px-3 font-sans text-slate-600">${o.cluster_area || '-'}</td>
             <td class="py-2.5 px-3 text-slate-500 text-[10px]">
@@ -24573,7 +24482,7 @@
       document.getElementById('new-odp-name').value = '';
       document.getElementById('new-odp-lat').value = '';
       document.getElementById('new-odp-lng').value = '';
-      document.getElementById('new-odp-cluster').value = 'Biaro';
+      document.getElementById('new-odp-cluster').value = 'Cluster-1';
     }
 
     function closeCreateODPModal() {
@@ -24603,7 +24512,7 @@
       const name = document.getElementById('new-odp-name').value.trim();
       const lat = parseFloat(document.getElementById('new-odp-lat').value);
       const lng = parseFloat(document.getElementById('new-odp-lng').value);
-      const cluster = document.getElementById('new-odp-cluster').value.trim() || 'Payakumbuh';
+      const cluster = document.getElementById('new-odp-cluster').value.trim() || 'Area Utama';
       const ports = parseInt(document.getElementById('new-odp-ports').value) || 8;
 
       if (!code || !name || isNaN(lat) || isNaN(lng)) {
@@ -25103,7 +25012,7 @@
 
       const covInput = document.getElementById('jp-coverage');
       if (covInput) {
-        covInput.placeholder = isBranchManager ? 'Jayapura & Sekitarnya' : 'Sumatera Barat / Payakumbuh';
+        covInput.placeholder = 'Wilayah / Area Operasional';
       }
 
       applyPresetPartnerForm('new', 'BITSTREAM');
@@ -25221,7 +25130,7 @@
       }
     }
 
-    let currentRekonPartnerMode = 'GNET-BIARO';
+    let currentRekonPartnerMode = 'MITRA';
 
     function changeRekonPartner(pKey) {
       currentRekonPartnerMode = pKey;
@@ -25229,12 +25138,12 @@
     }
 
     function renderCleanRekapDoc(partnerCode, billingData, portsData) {
-      partnerCode = partnerCode || currentRekonPartnerMode || 'GNET-BIARO';
+      partnerCode = partnerCode || currentRekonPartnerMode || 'MITRA';
       portsData = portsData || [];
       billingData = billingData || {};
 
       // Cari metadata partner
-      let partnerName = 'PT. GNET BIARO DATA';
+      let partnerName = 'Mitra Jartaplok Wholesale';
       let partnerDesc = 'Penyelenggara Jaringan Tetap Lokal (JARTAPLOK) Berizin Kominfo RI';
       let pricingModel = 'Packet Tiering Kapasitas FTTH (50M - 300M)';
       let picName = 'Direksi Rekanan JARTAPLOK';
@@ -25709,7 +25618,7 @@
         if (wrapper) wrapper.classList.add('hidden');
         if (badge) {
           badge.classList.remove('hidden');
-          badge.innerText = partnerAuth.name || 'PT. GNET BIARO DATA';
+          badge.innerText = partnerAuth.name || 'Mitra Jartaplok Wholesale';
         }
       } else {
         if (wrapper) wrapper.classList.remove('hidden');
@@ -25877,7 +25786,7 @@
 
       if (currentSubdomainMode === 'portal') {
         // 🌐 PORTAL PELANGGAN (portal.gogiga.net.id)
-        document.title = "GOGIGANET Broadband • Registrasi & Jangkauan Fiber Optik";
+        document.title = (window.__EARLY_BRAND_NAME__ || "ISP") + " Broadband • Registrasi & Jangkauan Fiber Optik";
         if (subtitle) subtitle.innerText = "Fiber Broadband & Gaming Network";
         if (topNocBar) topNocBar.classList.add('hidden'); // Sembunyikan status internal NOC untuk pelanggan umum
 
@@ -25927,7 +25836,7 @@
         switchTab('admin');
       } else if (currentSubdomainMode === 'rekan') {
         // 🤝 REKAN JARTAPLOK (rekan.gogiga.net.id)
-        document.title = "GOGIGANET • Portal Rekanan Jartaplok Wholesale";
+        document.title = (window.__EARLY_BRAND_NAME__ || "ISP") + " • Portal Rekanan Jartaplok Wholesale";
         if (subtitle) subtitle.innerText = "Portal Rekanan Jaringan Lokal (Jartaplok Wholesale)";
         if (topNocBar) topNocBar.classList.add('hidden');
 
@@ -25940,7 +25849,7 @@
         switchTab('jartaplok');
       } else if (currentSubdomainMode === 'technician') {
         // 🔧 PORTAL TEKNISI LAPANGAN (teknisi.gogiga.net.id)
-        document.title = "GOGIGANET • Portal Tugas Teknisi & BAST Digital";
+        document.title = (window.__EARLY_BRAND_NAME__ || "ISP") + " • Portal Tugas Teknisi & BAST Digital";
         if (subtitle) subtitle.innerText = "Portal Tugas Teknisi & BAST Digital Lapangan";
         if (topNocBar) topNocBar.classList.add('hidden');
 
@@ -25993,9 +25902,9 @@
       const urlParams = new URLSearchParams(window.location.search);
       let refCode = urlParams.get('ref') || urlParams.get('sales');
       if (refCode) {
-        localStorage.setItem('gogiganet_referral_code', refCode.toUpperCase());
+        localStorage.setItem('ispsync_referral_code', refCode.toUpperCase());
       } else {
-        refCode = localStorage.getItem('gogiganet_referral_code') || '';
+        refCode = localStorage.getItem('ispsync_referral_code') || '';
       }
 
       if (refCode) {
