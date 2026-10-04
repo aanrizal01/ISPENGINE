@@ -20091,7 +20091,8 @@
       const r = (salesRegistrationsList || []).find(item => item.registration_no === regNo);
       if (!r) return '';
       const notes = (r.custom_notes || '').split(' | ').join('\n');
-      const msg = "Halo Bapak/Ibu " + (r.full_name || '') + ", kami dari Tim Sales & Account Executive ${window.__EARLY_BRAND_NAME__ || "ISP"} terkait permohonan pasang internet korporat (" + (r.registration_no || '') + " - " + (r.selected_plan_name || '') + ").\n\nDetail Spesifikasi Kebutuhan:\n" + notes + "\n\nKami siap memberikan penawaran harga terbaik (Quotation & BoQ) serta jadwal survei teknis. Apakah ada waktu luang untuk berdiskusi? Terima kasih.";
+      const bName = window.__EARLY_BRAND_NAME__ || 'ISP';
+      const msg = "Halo Bapak/Ibu " + (r.full_name || '') + ", kami dari Tim Sales & Account Executive " + bName + " terkait permohonan pasang internet korporat (" + (r.registration_no || '') + " - " + (r.selected_plan_name || '') + ").\n\nDetail Spesifikasi Kebutuhan:\n" + notes + "\n\nKami siap memberikan penawaran harga terbaik (Quotation & BoQ) serta jadwal survei teknis. Apakah ada waktu luang untuk berdiskusi? Terima kasih.";
       return encodeURIComponent(msg);
     }
 
@@ -23282,7 +23283,6 @@
         const tabMap = { 'noc-fo': 'admin', 'noc': 'admin', 'sales': 'sales', 'technician': 'technician', 'teknisi': 'technician', 'rekan': 'jartaplok', 'portal': 'track' };
         switchTab(tabMap[subdomain] || 'admin');
       }
-    }
     }
 
     function quickFillStaffAuth(username, pin) {
