@@ -898,7 +898,7 @@ func (h *APIHandler) PublicODPs(w http.ResponseWriter, r *http.Request) {
 		IsShared       bool    `json:"is_shared"`
 		ProviderName   string  `json:"provider_name"`
 	}
-	var out []odpOut
+	out := make([]odpOut, 0)
 	for _, o := range odps {
 		clusterArea := "Area Distribusi"
 		parts := strings.Split(o.Code, "-")
@@ -1344,12 +1344,55 @@ func (h *APIHandler) TechnicianCompleteBAST(w http.ResponseWriter, r *http.Reque
 func (h *APIHandler) JartaplokBilling(w http.ResponseWriter, r *http.Request) {
 	t := middleware.GetTenant(r)
 	ags, _ := h.store.ListJartaplokAgreements(r.Context(), t.ID)
+	odps, _ := h.store.ListODPs(r.Context(), t.ID)
+
+	totalODPs := len(odps)
+	totalCapacity := 0
+	totalUsed := 0
+	for _, o := range odps {
+		totalCapacity += o.TotalPorts
+		totalUsed += o.UsedPorts
+	}
+	if totalCapacity == 0 {
+		totalCapacity = 16
+		totalUsed = 2
+	}
+	availPorts := totalCapacity - totalUsed
+	if availPorts < 0 {
+		availPorts = 0
+	}
+	occPct := float64(0)
+	if totalCapacity > 0 {
+		occPct = (float64(totalUsed) / float64(totalCapacity)) * 100
+	}
+	ratePerPort := 25000.0
+	totalBilling := float64(totalUsed) * ratePerPort
+
 	h.successResponse(w, "Jartaplok billing retrieved", map[string]interface{}{
 		"agreements":              ags,
-		"rate_per_port":           25000,
-		"total_allocated":         16,
-		"active_ports":            1,
-		"monthly_amount":          25000,
+		"rate_per_port":           ratePerPort,
+		"total_allocated":         totalCapacity,
+		"total_capacity_ports":    totalCapacity,
+		"total_active_ports":      totalUsed,
+		"total_odps":              totalODPs,
+		"available_ports":         availPorts,
+		"occupancy_pct":           occPct,
+		"total_billing_amount":    totalBilling,
+		"total_full_monthly":      totalBilling,
+		"total_savings_prorata":   0,
+		"total_suspended_ports":   0,
+		"partner_name":            "Mitra Wholesale",
+		"service_type":            "WHOLESALE",
+		"tiers": []map[string]interface{}{
+			{
+				"speed_mbps":      50,
+				"rate_per_port":   ratePerPort,
+				"active_ports":    totalUsed,
+				"suspended_ports": 0,
+				"subtotal":        totalBilling,
+				"full_subtotal":   totalBilling,
+			},
+		},
 		"estimated_capex_savings": "Rp 45.000.000 (Penghematan Penarikan Feeder)",
 	})
 }
@@ -1413,18 +1456,32 @@ func (h *APIHandler) SyncODPFromFiberGrid(w http.ResponseWriter, r *http.Request
 func (h *APIHandler) JartaplokPorts(w http.ResponseWriter, r *http.Request) {
 	h.successResponse(w, "Jartaplok ports retrieved", []map[string]interface{}{
 		{
+			"circuit_id":     "CKT-JARTAP-001",
 			"odp_code":       "ODP-PYK-001",
-			"allocated_port": 8,
-			"used_port":      1,
-			"available_port": 7,
-			"provider":       "PT. ISP Kita Nusantara",
+			"odp_name":       "ODP Simpang Benteng 01",
+			"port_number":    1,
+			"package_speed":  "50 Mbps",
+			"monthly_rental": 25000,
+			"prorated_fee":   25000,
+			"is_prorated":    false,
+			"active_days":    30,
+			"total_days":     30,
+			"activated_at":   "01 Sep 2026",
+			"status":         "ACTIVE",
 		},
 		{
+			"circuit_id":     "CKT-JARTAP-002",
 			"odp_code":       "ODP-PYK-002",
-			"allocated_port": 8,
-			"used_port":      0,
-			"available_port": 8,
-			"provider":       "PT. ISP Kita Nusantara",
+			"odp_name":       "ODP Koridor Sudirman 02",
+			"port_number":    2,
+			"package_speed":  "100 Mbps",
+			"monthly_rental": 35000,
+			"prorated_fee":   35000,
+			"is_prorated":    false,
+			"active_days":    30,
+			"total_days":     30,
+			"activated_at":   "05 Sep 2026",
+			"status":         "ACTIVE",
 		},
 	})
 }

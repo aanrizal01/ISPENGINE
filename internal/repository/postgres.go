@@ -478,6 +478,49 @@ func (s *PostgresStorage) seedDefaultTenant() error {
 		`, uuid.New().String(), devID)
 	}
 
+	// Always ensure dev tenant has initial testbed ODPs
+	if devID != "" {
+		devODPs := []struct {
+			c, n     string
+			lat, lng float64
+			tp, up   int
+		}{
+			{"ODP-DEV-001", "ODP Testbed NOC Core", -0.9400, 100.3700, 16, 2},
+			{"ODP-DEV-002", "ODP Cyber 1 Datacenter", -6.2383, 106.8227, 24, 6},
+			{"ODP-PYK-001", "ODP Simpang Benteng 01", -0.2245, 100.6321, 8, 1},
+			{"ODP-PYK-002", "ODP Koridor Sudirman 02", -0.2289, 100.6354, 8, 1},
+		}
+		for _, o := range devODPs {
+			_, _ = s.db.ExecContext(ctx, `
+				INSERT INTO odps (id, tenant_id, code, name, latitude, longitude, total_ports, used_ports, status)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ACTIVE')
+				ON CONFLICT (tenant_id, code) DO NOTHING
+			`, uuid.New().String(), devID, o.c, o.n, o.lat, o.lng, o.tp, o.up)
+		}
+	}
+
+	// ── 4. Kerjasama Jartaplok Bilateral (Postgres) ───
+	var countJartaplok int
+	_ = s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM jartaplok_agreements WHERE agreement_no = 'JARTAPLOK-PYK-2026-01'").Scan(&countJartaplok)
+	if countJartaplok == 0 && ispkuID != "" && ispmuID != "" {
+		agID := uuid.New().String()
+		_, _ = s.db.ExecContext(ctx, `
+			INSERT INTO jartaplok_agreements (id, agreement_no, provider_tenant_id, client_tenant_id, scope_area, total_shared_odps, allocated_ports, used_ports, settlement_rate_per_port, status, created_at)
+			VALUES ($1, 'JARTAPLOK-PYK-2026-01', $2, $3, 'Koridor Payakumbuh Metro & Simpang Benteng', 2, 16, 2, 25000, 'ACTIVE', $4)
+			ON CONFLICT (agreement_no) DO NOTHING
+		`, agID, ispkuID, ispmuID, now)
+
+		var odp1, odp2 string
+		_ = s.db.QueryRowContext(ctx, "SELECT id FROM odps WHERE tenant_id = $1 AND code = 'ODP-PYK-001'", ispkuID).Scan(&odp1)
+		_ = s.db.QueryRowContext(ctx, "SELECT id FROM odps WHERE tenant_id = $1 AND code = 'ODP-PYK-002'", ispkuID).Scan(&odp2)
+		if odp1 != "" {
+			_, _ = s.db.ExecContext(ctx, "INSERT INTO jartaplok_shared_odps (id, agreement_id, odp_id, allocated_ports, used_ports) VALUES ($1, $2, $3, 8, 1) ON CONFLICT (agreement_id, odp_id) DO NOTHING", uuid.New().String(), agID, odp1)
+		}
+		if odp2 != "" {
+			_, _ = s.db.ExecContext(ctx, "INSERT INTO jartaplok_shared_odps (id, agreement_id, odp_id, allocated_ports, used_ports) VALUES ($1, $2, $3, 8, 1) ON CONFLICT (agreement_id, odp_id) DO NOTHING", uuid.New().String(), agID, odp2)
+		}
+	}
+
 	return nil
 }
 

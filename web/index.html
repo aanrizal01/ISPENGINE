@@ -24359,16 +24359,16 @@
           headers: getJartaplokRequestHeaders()
         });
         const json = await res.json();
-        if (json.success && json.data) {
-          jartaplokODPsData = json.data;
+        if (json.success) {
+          jartaplokODPsData = Array.isArray(json.data) ? json.data : [];
           renderJartaplokODPs(jartaplokODPsData);
           if (badgeCount) badgeCount.innerText = `${jartaplokODPsData.length} Tiang Terdata`;
           if (infoCount) infoCount.innerText = `Total: ${jartaplokODPsData.length} tiang ODP`;
         } else {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-rose-500">Gagal memuat ODP.</td></tr>';
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-mono">Gagal memuat ODP: ${json.message || 'Sesi berakhir'}. <button onclick="loadJartaplokODPsTable()" class="underline font-bold text-slate-800 ml-2">Coba Lagi</button></td></tr>`;
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">Koneksi terganggu: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-mono">Koneksi terganggu: ${err.message}</td></tr>`;
       }
     }
 
