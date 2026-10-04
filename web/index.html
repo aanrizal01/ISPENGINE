@@ -2627,6 +2627,11 @@
               <span class="truncate">Peta Sebaran Pelanggan</span>
             </button>
 
+            <button id="admin-subtab-fibergrid-btn" type="button" onclick="openFiberGridSyncModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold text-cyan-800 bg-cyan-50/80 hover:bg-cyan-100 border border-cyan-200 transition text-left group">
+              <i data-lucide="cloud-download" class="w-4 h-4 text-cyan-600 shrink-0"></i>
+              <span class="truncate">Integrasi Jartaplok (FiberGrid)</span>
+            </button>
+
             <button id="admin-subtab-jartaplok-jump-btn" type="button" onclick="switchTab('jartaplok')" class="hidden w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition text-left group">
               <i data-lucide="calculator" class="w-4 h-4 text-sky-600 shrink-0"></i>
               <span class="truncate">Rekap &amp; Estimasi JARTAPLOK</span>
@@ -3014,6 +3019,10 @@
               <p class="text-xs text-slate-500 font-sans mt-0.5">Database persebaran titik tiang ODP (Optical Distribution Point) dan pemantauan kapasitas port.</p>
             </div>
             <div class="flex items-center gap-2">
+              <button type="button" onclick="openFiberGridSyncModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold rounded-md transition flex items-center gap-1.5 shadow-xs cursor-pointer" title="Hubungkan ke server FiberGrid Jartaplok & tarik data ODP otomatis">
+                <i data-lucide="cloud-download" class="w-3.5 h-3.5"></i>
+                <span>Tarik Data FiberGrid</span>
+              </button>
               <button type="button" onclick="openNewJartaplokPartnerModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-mono text-xs font-bold rounded-md transition flex items-center gap-1.5 shadow-xs">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                 <span>+ Tambah Rekanan / Penyedia Infra</span>
@@ -5149,6 +5158,215 @@
           <span>Data terisolasi murni ke Zone GOGIGA (Klien rekanan lain aman &amp; tidak terbaca)</span>
         </div>
         <button type="button" onclick="closeSmartOLTSyncModal()" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md font-mono text-xs font-semibold cursor-pointer">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INTEGRASI & SINKRONISASI FIBERGRID JARTAPLOK -->
+  <div id="modal-fibergrid-sync" class="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 hidden">
+    <div class="bg-white border border-slate-200 rounded-lg shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <!-- Header -->
+      <div class="px-5 py-4 bg-slate-900 text-white border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-md bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shrink-0">
+            <i data-lucide="cloud-download" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold font-mono text-white tracking-wide uppercase">INTEGRASI PROVIDER JARTAPLOK (FIBERGRID)</h3>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700">
+                1-KLIK GRAB DATA
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-300 font-sans mt-0.5">Koneksikan Engine Nexus ke server penyedia jaringan FiberGrid untuk sinkronisasi otomatis ODP pasif dan VLAN Layer 2.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeFiberGridSyncModal()" class="w-7 h-7 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable Container -->
+      <div class="p-5 overflow-y-auto space-y-4 flex-1 font-sans">
+        <!-- Form Connection Parameters -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 sm:p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="link-2" class="w-4 h-4 text-cyan-600"></i>
+              <span class="text-xs font-mono font-bold uppercase text-slate-800">Parameter Koneksi Server Jartaplok</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-500">Kredensial diberikan oleh Penyelenggara Jartaplok</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
+            <!-- Server URL -->
+            <div class="md:col-span-5 space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 font-mono">
+                Alamat Endpoint Server FiberGrid <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <i data-lucide="globe" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
+                <input type="text" id="fg-sync-url" placeholder="http://103.179.65.73:8082 atau https://fttx.ispku.ispsync.id" class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-md text-xs font-mono text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+              </div>
+            </div>
+
+            <!-- API / Wholesale Key -->
+            <div class="md:col-span-4 space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 font-mono">
+                Kode Akses Rekanan (X-Wholesale-Key) <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <i data-lucide="key" class="w-4 h-4 absolute left-3 top-2.5 text-cyan-600"></i>
+                <input type="password" id="fg-sync-key" placeholder="Ketik atau tempel kode akses..." class="w-full pl-9 pr-8 py-2 bg-white border border-slate-300 rounded-md text-xs font-mono text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                <button type="button" onclick="toggleFiberGridKeyVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <i data-lucide="eye" id="fg-key-eye-icon" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cluster / Wilayah Tujuan -->
+            <div class="md:col-span-3 space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 font-mono">
+                Klaster Wilayah Nexus <span class="text-rose-500">*</span>
+              </label>
+              <select id="fg-sync-cluster" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                <option value="Payakumbuh">Payakumbuh</option>
+                <option value="Biaro">Biaro &amp; Bukittinggi</option>
+                <option value="Jayapura">Jayapura (Papua)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+            <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
+              <input type="checkbox" id="fg-sync-auto-import" class="w-4 h-4 rounded text-cyan-600 focus:ring-cyan-500 border-slate-300" checked>
+              <span>Otomatis simpan titik ODP yang ditarik ke Database Coverage Nexus (siap untuk sales &amp; teknisi)</span>
+            </label>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="testFiberGridConnection()" id="btn-fg-test" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md text-xs font-mono font-semibold inline-flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
+                <i data-lucide="activity" class="w-3.5 h-3.5 text-cyan-600"></i>
+                <span>Uji Handshake</span>
+              </button>
+              <button type="button" onclick="executeFiberGridSync()" id="btn-fg-sync" class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md text-xs font-mono font-bold inline-flex items-center gap-1.5 transition shadow-xs cursor-pointer">
+                <i data-lucide="cloud-download" class="w-3.5 h-3.5"></i>
+                <span>Tarik Data &amp; Sinkronkan</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="fg-sync-alert" class="hidden p-3 rounded-md text-xs font-mono"></div>
+        </div>
+
+        <!-- Result Box (Hidden by default, shown upon successful sync) -->
+        <div id="fg-result-container" class="hidden space-y-4">
+          <!-- Stat Grid 4 Columns -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200">
+              <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700">STATUS KONEKSI</div>
+              <div class="text-sm font-bold text-slate-900 truncate mt-0.5" id="fg-res-partner-name">-</div>
+              <div class="text-[11px] font-mono text-emerald-600 mt-0.5" id="fg-res-status">TERHUBUNG</div>
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-cyan-50 border border-cyan-200">
+              <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700">VLAN DEMARKASI (L2)</div>
+              <div class="text-sm font-mono font-bold text-cyan-800 mt-0.5" id="fg-res-vlan">VLAN -</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">802.1Q Tagged Trunk</div>
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-indigo-50 border border-indigo-200">
+              <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700">TIANG ODP DISINKRON</div>
+              <div class="text-sm font-mono font-bold text-indigo-900 mt-0.5" id="fg-res-odp-count">0 Tiang</div>
+              <div class="text-[11px] text-slate-500 mt-0.5" id="fg-res-port-quota">Kuota: 0 Port</div>
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-purple-50 border border-purple-200">
+              <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-700">PELANGGAN ONT AKTIF</div>
+              <div class="text-sm font-mono font-bold text-purple-900 mt-0.5" id="fg-res-ont-count">0 Pelanggan</div>
+              <div class="text-[11px] text-slate-500 mt-0.5" id="fg-res-synced-at">-</div>
+            </div>
+          </div>
+
+          <!-- Result Tabs -->
+          <div class="border border-slate-200 rounded-lg overflow-hidden bg-white">
+            <div class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2">
+              <div class="flex items-center gap-1">
+                <button type="button" onclick="switchFiberGridResultTab('odps')" id="fg-tab-btn-odps" class="px-3 py-1.5 rounded-md text-xs font-mono font-bold bg-white text-slate-900 border border-slate-200 shadow-2xs">
+                  Daftar Tiang ODP Pasif (<span id="fg-res-badge-odps">0</span>)
+                </button>
+                <button type="button" onclick="switchFiberGridResultTab('onts')" id="fg-tab-btn-onts" class="px-3 py-1.5 rounded-md text-xs font-mono font-bold text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                  Pelanggan ONT (<span id="fg-res-badge-onts">0</span>)
+                </button>
+                <button type="button" onclick="switchFiberGridResultTab('mikrotik')" id="fg-tab-btn-mikrotik" class="px-3 py-1.5 rounded-md text-xs font-mono font-bold text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                  Command Router MikroTik (L2)
+                </button>
+              </div>
+              <button type="button" onclick="copyFiberGridMikrotikScript()" id="btn-copy-fg-script" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-mono font-semibold flex items-center gap-1 transition cursor-pointer">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>Salin Script Router</span>
+              </button>
+            </div>
+
+            <!-- Tab Content 1: ODPs -->
+            <div id="fg-pane-odps" class="p-4 space-y-2">
+              <div class="overflow-x-auto border border-slate-200 rounded-md">
+                <table class="w-full text-left text-xs text-slate-700">
+                  <thead class="bg-slate-50 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3">KODE ODP</th>
+                      <th class="py-2.5 px-3">NAMA TITIK PASIF</th>
+                      <th class="py-2.5 px-3 text-center">TOTAL PORT</th>
+                      <th class="py-2.5 px-3">KOORDINAT (LAT, LONG)</th>
+                      <th class="py-2.5 px-3 text-right">AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fg-res-odp-table-body" class="divide-y divide-slate-100 font-mono">
+                    <tr><td colspan="5" class="text-center py-6 text-slate-400">Belum ada data ODP.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Content 2: ONTs -->
+            <div id="fg-pane-onts" class="p-4 space-y-2 hidden">
+              <div class="overflow-x-auto border border-slate-200 rounded-md">
+                <table class="w-full text-left text-xs text-slate-700">
+                  <thead class="bg-slate-50 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3">SERIAL NUMBER (SN)</th>
+                      <th class="py-2.5 px-3">NAMA PELANGGAN</th>
+                      <th class="py-2.5 px-3">PON PORT</th>
+                      <th class="py-2.5 px-3 text-center">SINYAL RX</th>
+                      <th class="py-2.5 px-3 text-center">STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fg-res-ont-table-body" class="divide-y divide-slate-100 font-mono">
+                    <tr><td colspan="5" class="text-center py-6 text-slate-400">Belum ada pelanggan ONT terdaftar.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Content 3: MikroTik Script -->
+            <div id="fg-pane-mikrotik" class="p-4 space-y-2 hidden">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span>Konfigurasi Layer 2 VLAN Trunking untuk interface SFP router MikroTik ISP:</span>
+                <span class="text-[10px] font-mono bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-600">802.1Q Demarcation</span>
+              </div>
+              <pre id="fg-res-mikrotik-script" class="p-3.5 rounded-lg bg-slate-950 text-cyan-400 font-mono text-[11px] border border-slate-800 overflow-x-auto leading-relaxed select-all"># Memuat script...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-sans shrink-0">
+        <div class="flex items-center gap-1.5 font-mono text-[11px]">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-cyan-600"></i>
+          <span>Batas Demarkasi: Jartaplok Layer 1/2 Fisik &amp; Transport. IP Pool &amp; PPPoE dikelola internal ISP.</span>
+        </div>
+        <button type="button" onclick="closeFiberGridSyncModal()" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md font-mono text-xs font-semibold cursor-pointer">
           Tutup
         </button>
       </div>
@@ -8186,11 +8404,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium">
             <button type="button" onclick="applyPresetPartnerForm('new', 'BITSTREAM')" class="px-2.5 py-1.5 rounded-md bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-900 font-bold transition flex items-center gap-1.5 text-left shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-purple-600"></span>
-              <span>⚡ Bitstream TIF (Zona-2 Sumatera)</span>
+              <span>Bitstream TIF (Zona-2 Sumatera)</span>
             </button>
             <button type="button" onclick="applyPresetPartnerForm('new', 'SEWA_PORT_FO')" class="px-2.5 py-1.5 rounded-md bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-900 font-bold transition flex items-center gap-1.5 text-left shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-              <span>🔌 Sewa Port FO Pasif (GNET)</span>
+              <span>Sewa Port FO Pasif (GNET)</span>
             </button>
           </div>
         </div>
@@ -8221,8 +8439,8 @@
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Model Layanan Wholesale <span class="text-rose-500">*</span></label>
             <select id="jp-service-type" onchange="syncServiceTypePlaceholder('new')" class="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-indigo-600">
-              <option value="BITSTREAM">⚡ Bitstream Access (Intra Standard 1:1)</option>
-              <option value="SEWA_PORT_FO">🔌 Sewa Port FO Pasif (Jartaplok)</option>
+              <option value="BITSTREAM">Bitstream Access (Intra Standard 1:1)</option>
+              <option value="SEWA_PORT_FO">Sewa Port FO Pasif (Jartaplok)</option>
             </select>
           </div>
           <div>
@@ -17304,6 +17522,283 @@
         if (btn) btn.disabled = false;
       }
     }
+
+    // ── FIBERGRID JARTAPLOK WHOLESALE INTEGRATION JAVASCRIPT ──────
+    let currentFiberGridSyncResult = null;
+
+    function openFiberGridSyncModal() {
+      const modal = document.getElementById('modal-fibergrid-sync');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Populate cluster dropdown if available
+      const clusterSelect = document.getElementById('fg-sync-cluster');
+      if (clusterSelect && Array.isArray(window.appClusters) && window.appClusters.length > 0) {
+        clusterSelect.innerHTML = window.appClusters.map(c => 
+          `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`
+        ).join('');
+      }
+
+      // Default URL if empty
+      const urlInput = document.getElementById('fg-sync-url');
+      if (urlInput && !urlInput.value) {
+        urlInput.value = 'http://103.179.65.73:8082';
+      }
+
+      // Refresh lucide icons
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeFiberGridSyncModal() {
+      document.getElementById('modal-fibergrid-sync')?.classList.add('hidden');
+    }
+
+    function toggleFiberGridKeyVisibility() {
+      const input = document.getElementById('fg-sync-key');
+      const icon = document.getElementById('fg-key-eye-icon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        if (icon) icon.setAttribute('data-lucide', 'eye');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function switchFiberGridResultTab(tabName) {
+      const tabs = ['odps', 'onts', 'mikrotik'];
+      tabs.forEach(t => {
+        const pane = document.getElementById('fg-pane-' + t);
+        const btn = document.getElementById('fg-tab-btn-' + t);
+        if (t === tabName) {
+          pane?.classList.remove('hidden');
+          btn?.classList.add('bg-white', 'text-slate-900', 'border', 'border-slate-200', 'shadow-2xs');
+          btn?.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
+        } else {
+          pane?.classList.add('hidden');
+          btn?.classList.remove('bg-white', 'text-slate-900', 'border', 'border-slate-200', 'shadow-2xs');
+          btn?.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function testFiberGridConnection() {
+      const serverUrl = document.getElementById('fg-sync-url')?.value?.trim();
+      const apiKey = document.getElementById('fg-sync-key')?.value?.trim();
+      const alertBox = document.getElementById('fg-sync-alert');
+      const btn = document.getElementById('btn-fg-test');
+
+      if (!serverUrl || !apiKey) {
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-rose-50 text-rose-700 border border-rose-200 block';
+          alertBox.textContent = 'Harap isi Alamat Server dan Kode Akses Rekanan (X-Wholesale-Key).';
+        }
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="inline-block animate-spin mr-1">o</span> Menguji...`;
+      }
+      if (alertBox) alertBox.className = 'hidden';
+
+      try {
+        const res = await fetch('/api/v1/admin/fibergrid/test', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
+            'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
+            'X-User-Role': localStorage.getItem('active_portal_role') || ''
+          },
+          body: JSON.stringify({ server_url: serverUrl, api_key: apiKey })
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || 'Koneksi ke FiberGrid gagal');
+        }
+        const data = json.data;
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+          alertBox.textContent = `Handshake Berhasil: Terhubung ke "${data.company_name}" (${data.partner_initial || '-'}), Alokasi VLAN: ${data.vlan_id || '-'}, Kuota: ${data.max_ports || 0} Port Pasif.`;
+        }
+      } catch (err) {
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-rose-50 text-rose-700 border border-rose-200 block';
+          alertBox.textContent = `Uji Koneksi Gagal: ${err.message}`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="activity" class="w-3.5 h-3.5 text-cyan-600"></i><span>Uji Handshake</span>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    }
+
+    async function executeFiberGridSync() {
+      const serverUrl = document.getElementById('fg-sync-url')?.value?.trim();
+      const apiKey = document.getElementById('fg-sync-key')?.value?.trim();
+      const clusterArea = document.getElementById('fg-sync-cluster')?.value?.trim() || 'Payakumbuh';
+      const autoImport = document.getElementById('fg-sync-auto-import')?.checked !== false;
+      const alertBox = document.getElementById('fg-sync-alert');
+      const btn = document.getElementById('btn-fg-sync');
+
+      if (!serverUrl || !apiKey) {
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-rose-50 text-rose-700 border border-rose-200 block';
+          alertBox.textContent = 'Harap isi Alamat Server dan Kode Akses Rekanan (X-Wholesale-Key).';
+        }
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="inline-block animate-spin mr-1">o</span> Menarik Data...`;
+      }
+      if (alertBox) alertBox.className = 'hidden';
+
+      try {
+        const res = await fetch('/api/v1/admin/fibergrid/sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
+            'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
+            'X-User-Role': localStorage.getItem('active_portal_role') || ''
+          },
+          body: JSON.stringify({
+            server_url: serverUrl,
+            api_key: apiKey,
+            cluster_area: clusterArea,
+            auto_import_odps: autoImport
+          })
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || 'Sinkronisasi FiberGrid gagal');
+        }
+
+        const data = json.data;
+        currentFiberGridSyncResult = data;
+
+        // Render Summary Stats
+        const partnerNameEl = document.getElementById('fg-res-partner-name');
+        if (partnerNameEl) partnerNameEl.textContent = data.contract?.company_name || 'Mitra Jartaplok';
+
+        const statusEl = document.getElementById('fg-res-status');
+        if (statusEl) statusEl.textContent = 'TERHUBUNG (' + (data.contract?.status || 'ACTIVE') + ')';
+
+        const vlanEl = document.getElementById('fg-res-vlan');
+        if (vlanEl) vlanEl.textContent = 'VLAN ' + (data.contract?.vlan_id || '-');
+
+        const odpCountEl = document.getElementById('fg-res-odp-count');
+        if (odpCountEl) odpCountEl.textContent = (data.total_odps_fetched || 0) + ' Tiang Disinkron';
+
+        const quotaEl = document.getElementById('fg-res-port-quota');
+        if (quotaEl) quotaEl.textContent = 'Kuota: ' + (data.contract?.max_ports || 0) + ' Port';
+
+        const ontCountEl = document.getElementById('fg-res-ont-count');
+        if (ontCountEl) ontCountEl.textContent = (data.total_onts_fetched || 0) + ' Pelanggan';
+
+        const syncedAtEl = document.getElementById('fg-res-synced-at');
+        if (syncedAtEl) syncedAtEl.textContent = 'Sinkron: ' + (data.connected_at || '-');
+
+        const badgeOdps = document.getElementById('fg-res-badge-odps');
+        if (badgeOdps) badgeOdps.textContent = data.odps ? data.odps.length : 0;
+
+        const badgeOnts = document.getElementById('fg-res-badge-onts');
+        if (badgeOnts) badgeOnts.textContent = data.onts ? data.onts.length : 0;
+
+        // Render ODP Table
+        const odpBody = document.getElementById('fg-res-odp-table-body');
+        if (odpBody) {
+          if (!data.odps || data.odps.length === 0) {
+            odpBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">Tidak ada tiang ODP yang dialokasikan di server Jartaplok.</td></tr>`;
+          } else {
+            odpBody.innerHTML = data.odps.map(o => `
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-2.5 px-3 font-bold text-cyan-700">${escapeHtml(o.code)}</td>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-800">${escapeHtml(o.name || '-')}</td>
+                <td class="py-2.5 px-3 text-center">${o.total_ports || 8} Port</td>
+                <td class="py-2.5 px-3 text-slate-500 text-[11px]">${o.latitude ? (o.latitude + ', ' + o.longitude) : '-'}</td>
+                <td class="py-2.5 px-3 text-right">
+                  ${o.latitude ? `<a href="https://www.google.com/maps/search/?api=1&query=${o.latitude},${o.longitude}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center gap-1 font-sans text-xs">Peta</a>` : '-'}
+                </td>
+              </tr>
+            `).join('');
+          }
+        }
+
+        // Render ONT Table
+        const ontBody = document.getElementById('fg-res-ont-table-body');
+        if (ontBody) {
+          if (!data.onts || data.onts.length === 0) {
+            ontBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">Belum ada pelanggan ONT aktif pada alokasi ini.</td></tr>`;
+          } else {
+            ontBody.innerHTML = data.onts.map(ont => `
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(ont.serial_number)}</td>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-800">${escapeHtml(ont.customer_name || '-')}</td>
+                <td class="py-2.5 px-3">${escapeHtml(ont.pon_port || '-')}</td>
+                <td class="py-2.5 px-3 text-center ${ont.rx_power_dbm && ont.rx_power_dbm < -27 ? 'text-rose-600 font-bold' : 'text-emerald-600'}">
+                  ${ont.rx_power_dbm != null ? ont.rx_power_dbm.toFixed(1) + ' dBm' : '-'}
+                </td>
+                <td class="py-2.5 px-3 text-center font-sans">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${ont.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">
+                    ${ont.is_active ? 'ONLINE' : 'OFFLINE'}
+                  </span>
+                </td>
+              </tr>
+            `).join('');
+          }
+        }
+
+        // Render MikroTik Script
+        const scriptBox = document.getElementById('fg-res-mikrotik-script');
+        if (scriptBox) {
+          scriptBox.textContent = data.mikrotik_script || '# Script tidak tersedia.';
+        }
+
+        // Show Result Container
+        document.getElementById('fg-result-container')?.classList.remove('hidden');
+
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+          alertBox.textContent = json.message || 'Sinkronisasi FiberGrid berhasil!';
+        }
+
+        // Otomatis refresh ODP di panel Nexus jika auto-import aktif
+        if (autoImport && typeof loadAdminODPs === 'function') {
+          loadAdminODPs();
+        }
+
+      } catch (err) {
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-md text-xs font-mono bg-rose-50 text-rose-700 border border-rose-200 block';
+          alertBox.textContent = `Gagal Sinkronisasi: ${err.message}`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="cloud-download" class="w-3.5 h-3.5"></i><span>Tarik Data &amp; Sinkronkan</span>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    }
+
+    function copyFiberGridMikrotikScript() {
+      if (!currentFiberGridSyncResult || !currentFiberGridSyncResult.mikrotik_script) {
+        alert('Script konfigurasi belum tersedia. Harap jalankan sinkronisasi terlebih dahulu.');
+        return;
+      }
+      navigator.clipboard.writeText(currentFiberGridSyncResult.mikrotik_script);
+      alert('Command Router MikroTik (Layer 2 Handover) berhasil disalin ke clipboard!');
+    }
+
 
     function switchAdminSubTab(sub) {
       const currentRole = getActivePortalSession();

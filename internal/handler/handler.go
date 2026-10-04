@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -35,20 +36,20 @@ type Server struct {
 	smartOLTClient  *smartoltclient.Client
 	adminAPIKey     string
 	fttxBaseURL     string
-	fttxAdminKey    string
+	fttxInternalKey string
 	authLimiter     *customMiddleware.IPRateLimiter
 	registerLimiter *customMiddleware.IPRateLimiter
 	coverageLimiter *customMiddleware.IPRateLimiter
 }
 
-func NewServer(svc *service.OnboardingService, repo repository.Storage, client *billingclient.Client, adminKey, fttxBaseURL, fttxAdminKey string) *Server {
+func NewServer(svc *service.OnboardingService, repo repository.Storage, client *billingclient.Client, adminKey, fttxBaseURL, fttxInternalKey string) *Server {
 	return &Server{
 		svc:             svc,
 		repo:            repo,
 		client:          client,
 		adminAPIKey:     adminKey,
 		fttxBaseURL:     strings.TrimRight(fttxBaseURL, "/"),
-		fttxAdminKey:    fttxAdminKey,
+		fttxInternalKey: fttxInternalKey,
 		authLimiter:     customMiddleware.NewIPRateLimiter(60, 1*time.Minute),
 		registerLimiter: customMiddleware.NewIPRateLimiter(30, 5*time.Minute),
 		coverageLimiter: customMiddleware.NewIPRateLimiter(100, 1*time.Minute),
@@ -205,8 +206,10 @@ func (s *Server) Routes() http.Handler {
 		r.Get("/clusters/smartolt-configs", s.handleListClusterSmartOLTConfigs)
 		r.Get("/clusters/{clusterName}/smartolt-config", s.handleGetClusterSmartOLTConfig)
 		r.Post("/clusters/smartolt-config", s.handleSaveClusterSmartOLTConfig)
-		r.Delete("/clusters/{clusterName}/smartolt-config", s.handleDeleteClusterSmartOLTConfig)
 		r.Post("/clusters/smartolt-test", s.handleTestSmartOLTConnection)
+		// FiberGrid Jartaplok Wholesale Integration
+		r.Post("/fibergrid/sync", s.handleFiberGridSync)
+		r.Post("/fibergrid/test", s.handleFiberGridTest)
 	})
 
 	// ── SUPERUSER / EXECUTIVE ROUTES ──────────────────────────
@@ -241,6 +244,9 @@ func (s *Server) Routes() http.Handler {
 		r.Post("/clusters/smartolt-config", s.handleSaveClusterSmartOLTConfig)
 		r.Delete("/clusters/{clusterName}/smartolt-config", s.handleDeleteClusterSmartOLTConfig)
 		r.Post("/clusters/smartolt-test", s.handleTestSmartOLTConnection)
+		// FiberGrid Jartaplok Wholesale Integration
+		r.Post("/fibergrid/sync", s.handleFiberGridSync)
+		r.Post("/fibergrid/test", s.handleFiberGridTest)
 	})
 
 	// ── JARTAPLOK PARTNER B2B ROUTES ──────────────────────────
@@ -771,30 +777,20 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &http.Client{Timeout: 5 * time.Second}
-	if sn == "" {
-		req, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/fttx/ont", s.fttxBaseURL), nil)
+	if sn == "" && reg.RegistrationNo != "" {
+		req, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/internal/ont/lookup?registration_no=%s", s.fttxBaseURL, url.QueryEscape(reg.RegistrationNo)), nil)
 		if err == nil {
-			req.Header.Set("X-Admin-Key", s.fttxAdminKey)
+			req.Header.Set("X-Internal-Key", s.fttxInternalKey)
 			if resp, err := client.Do(req); err == nil {
 				defer resp.Body.Close()
-				var ontListRes struct {
+				var ontRes struct {
 					Success bool `json:"success"`
-					Data    []struct {
-						SerialNumber   string `json:"serial_number"`
-						RegistrationNo string `json:"registration_no"`
-						CustomerName   string `json:"customer_name"`
-						ODPCode        string `json:"odp_code"`
+					Data    struct {
+						SerialNumber string `json:"serial_number"`
 					} `json:"data"`
 				}
-				if err := json.NewDecoder(resp.Body).Decode(&ontListRes); err == nil && ontListRes.Success {
-					for _, ont := range ontListRes.Data {
-						if (ont.RegistrationNo != "" && ont.RegistrationNo == reg.RegistrationNo) ||
-							(reg.NearestODPCode != nil && ont.ODPCode != "" && ont.ODPCode == *reg.NearestODPCode) ||
-							strings.EqualFold(ont.CustomerName, reg.FullName) {
-							sn = ont.SerialNumber
-							break
-						}
-					}
+				if err := json.NewDecoder(resp.Body).Decode(&ontRes); err == nil && ontRes.Success {
+					sn = ontRes.Data.SerialNumber
 				}
 			}
 		}
@@ -856,12 +852,12 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Query ACS CPE Data from FTTX
-	reqCPE, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/fttx/acs/cpe/%s", s.fttxBaseURL, sn), nil)
+	reqCPE, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/internal/acs/cpe/%s", s.fttxBaseURL, sn), nil)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Gagal membuat request ke FTTX", "internal_error")
 		return
 	}
-	reqCPE.Header.Set("X-Admin-Key", s.fttxAdminKey)
+	reqCPE.Header.Set("X-Internal-Key", s.fttxInternalKey)
 	respCPE, err := client.Do(reqCPE)
 	if err != nil {
 		response.Error(w, http.StatusBadGateway, "Gagal menghubungi FTTX Command Center: "+err.Error(), "gateway_error")
@@ -891,14 +887,14 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 	var vendor = cpeRes.Data.Manufacturer
 	var model = cpeRes.Data.Model
 
-	reqOnt, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/fttx/ont", s.fttxBaseURL), nil)
+	reqOnt, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/internal/ont/lookup?sn=%s", s.fttxBaseURL, url.QueryEscape(sn)), nil)
 	if err == nil {
-		reqOnt.Header.Set("X-Admin-Key", s.fttxAdminKey)
+		reqOnt.Header.Set("X-Internal-Key", s.fttxInternalKey)
 		if respOnt, err := client.Do(reqOnt); err == nil {
 			defer respOnt.Body.Close()
-			var ontListRes struct {
+			var ontRes struct {
 				Success bool `json:"success"`
-				Data    []struct {
+				Data    struct {
 					SerialNumber string  `json:"serial_number"`
 					Brand        string  `json:"brand"`
 					Model        string  `json:"model"`
@@ -906,19 +902,14 @@ func (s *Server) handleCustomerGetONT(w http.ResponseWriter, r *http.Request) {
 					Status       string  `json:"status"`
 				} `json:"data"`
 			}
-			if err := json.NewDecoder(respOnt.Body).Decode(&ontListRes); err == nil && ontListRes.Success {
-				for _, ont := range ontListRes.Data {
-					if ont.SerialNumber == sn {
-						rxPower = ont.SignalRxDBM
-						ontStatus = ont.Status
-						if vendor == "" {
-							vendor = ont.Brand
-						}
-						if model == "" {
-							model = ont.Model
-						}
-						break
-					}
+			if err := json.NewDecoder(respOnt.Body).Decode(&ontRes); err == nil && ontRes.Success && ontRes.Data.SerialNumber != "" {
+				rxPower = ontRes.Data.SignalRxDBM
+				ontStatus = ontRes.Data.Status
+				if vendor == "" {
+					vendor = ontRes.Data.Brand
+				}
+				if model == "" {
+					model = ontRes.Data.Model
 				}
 			}
 		}
@@ -1022,13 +1013,13 @@ func (s *Server) handleCustomerUpdateONTWifi(w http.ResponseWriter, r *http.Requ
 	})
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	fttxReq, err := http.NewRequestWithContext(r.Context(), "PUT", fmt.Sprintf("%s/api/v1/fttx/acs/cpe/%s/wifi", s.fttxBaseURL, sn), bytes.NewReader(fttxReqBody))
+	fttxReq, err := http.NewRequestWithContext(r.Context(), "PUT", fmt.Sprintf("%s/api/v1/internal/acs/cpe/%s/wifi", s.fttxBaseURL, sn), bytes.NewReader(fttxReqBody))
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Gagal membuat request ke FTTX", "internal_error")
 		return
 	}
 	fttxReq.Header.Set("Content-Type", "application/json")
-	fttxReq.Header.Set("X-Admin-Key", s.fttxAdminKey)
+	fttxReq.Header.Set("X-Internal-Key", s.fttxInternalKey)
 
 	resp, err := client.Do(fttxReq)
 	if err != nil {
@@ -1104,12 +1095,12 @@ func (s *Server) handleCustomerRebootONT(w http.ResponseWriter, r *http.Request)
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	fttxReq, err := http.NewRequestWithContext(r.Context(), "POST", fmt.Sprintf("%s/api/v1/fttx/acs/cpe/%s/reboot", s.fttxBaseURL, sn), nil)
+	fttxReq, err := http.NewRequestWithContext(r.Context(), "POST", fmt.Sprintf("%s/api/v1/internal/acs/cpe/%s/reboot", s.fttxBaseURL, sn), nil)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Gagal membuat request ke FTTX", "internal_error")
 		return
 	}
-	fttxReq.Header.Set("X-Admin-Key", s.fttxAdminKey)
+	fttxReq.Header.Set("X-Internal-Key", s.fttxInternalKey)
 
 	resp, err := client.Do(fttxReq)
 	if err != nil {
@@ -3088,6 +3079,257 @@ func (s *Server) handleTestSmartOLTConnection(w http.ResponseWriter, r *http.Req
 		"status":   "CONNECTED",
 	})
 }
+
+// ── FIBERGRID JARTAPLOK WHOLESALE INTEGRATION HANDLERS ──────
+
+func (s *Server) handleFiberGridTest(w http.ResponseWriter, r *http.Request) {
+	var req domain.FiberGridSyncRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Format JSON tidak valid: "+err.Error(), "bad_request")
+		return
+	}
+
+	serverURL := strings.TrimRight(strings.TrimSpace(req.ServerURL), "/")
+	apiKey := strings.TrimSpace(req.APIKey)
+	if serverURL == "" || apiKey == "" {
+		response.Error(w, http.StatusBadRequest, "Alamat Server dan Kode Akses Rekanan (X-Wholesale-Key) wajib diisi", "missing_parameters")
+		return
+	}
+
+	if !strings.HasPrefix(serverURL, "http://") && !strings.HasPrefix(serverURL, "https://") {
+		serverURL = "http://" + serverURL
+	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	testReq, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/wholesale/me/profile", serverURL), nil)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal menyusun request: "+err.Error(), "internal_error")
+		return
+	}
+	testReq.Header.Set("X-Wholesale-Key", apiKey)
+	testReq.Header.Set("Accept", "application/json")
+
+	resp, err := client.Do(testReq)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "Gagal menghubungi server FiberGrid: "+err.Error(), "gateway_error")
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		response.Error(w, http.StatusUnauthorized, "Kode Akses Rekanan (X-Wholesale-Key) tidak valid atau masa kontrak tidak aktif di server FiberGrid", "auth_failed")
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		response.Error(w, http.StatusBadGateway, fmt.Sprintf("Server FiberGrid merespon dengan HTTP %d: %s", resp.StatusCode, http.StatusText(resp.StatusCode)), "upstream_error")
+		return
+	}
+
+	var resData struct {
+		Success bool                            `json:"success"`
+		Data    domain.FiberGridContractProfile `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&resData); err != nil {
+		response.Error(w, http.StatusBadGateway, "Respon profil dari FiberGrid tidak dapat dibaca: "+err.Error(), "parse_error")
+		return
+	}
+
+	response.Success(w, "Koneksi ke FiberGrid berhasil diverifikasi", resData.Data)
+}
+
+func (s *Server) handleFiberGridSync(w http.ResponseWriter, r *http.Request) {
+	var req domain.FiberGridSyncRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Format JSON tidak valid: "+err.Error(), "bad_request")
+		return
+	}
+
+	serverURL := strings.TrimRight(strings.TrimSpace(req.ServerURL), "/")
+	apiKey := strings.TrimSpace(req.APIKey)
+	clusterArea := strings.TrimSpace(req.ClusterArea)
+	if clusterArea == "" {
+		clusterArea = "Payakumbuh"
+	}
+
+	if serverURL == "" || apiKey == "" {
+		response.Error(w, http.StatusBadRequest, "Alamat Server dan Kode Akses Rekanan (X-Wholesale-Key) wajib diisi", "missing_parameters")
+		return
+	}
+
+	if !strings.HasPrefix(serverURL, "http://") && !strings.HasPrefix(serverURL, "https://") {
+		serverURL = "http://" + serverURL
+	}
+
+	client := &http.Client{Timeout: 15 * time.Second}
+
+	// 1. Ambil Profil Kontrak Rekanan
+	profReq, err := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/wholesale/me/profile", serverURL), nil)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Gagal membuat request profil: "+err.Error(), "internal_error")
+		return
+	}
+	profReq.Header.Set("X-Wholesale-Key", apiKey)
+	profReq.Header.Set("Accept", "application/json")
+
+	profResp, err := client.Do(profReq)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "Gagal menghubungi server FiberGrid: "+err.Error(), "gateway_error")
+		return
+	}
+	defer profResp.Body.Close()
+
+	if profResp.StatusCode == http.StatusUnauthorized || profResp.StatusCode == http.StatusForbidden {
+		response.Error(w, http.StatusUnauthorized, "Kode Akses Rekanan (X-Wholesale-Key) tidak valid atau masa kontrak tidak aktif di server FiberGrid", "auth_failed")
+		return
+	}
+
+	if profResp.StatusCode != http.StatusOK {
+		response.Error(w, http.StatusBadGateway, fmt.Sprintf("Server FiberGrid merespon dengan HTTP %d", profResp.StatusCode), "upstream_error")
+		return
+	}
+
+	var profBody struct {
+		Success bool                            `json:"success"`
+		Data    domain.FiberGridContractProfile `json:"data"`
+	}
+	if err := json.NewDecoder(profResp.Body).Decode(&profBody); err != nil {
+		response.Error(w, http.StatusBadGateway, "Respon profil dari FiberGrid tidak valid: "+err.Error(), "parse_error")
+		return
+	}
+	contract := profBody.Data
+
+	// 2. Ambil Daftar ODP yang dialokasikan oleh FiberGrid
+	odpReq, _ := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/wholesale/me/odps", serverURL), nil)
+	odpReq.Header.Set("X-Wholesale-Key", apiKey)
+	odpReq.Header.Set("Accept", "application/json")
+
+	var rawODPs []domain.FiberGridODP
+	if odpResp, err := client.Do(odpReq); err == nil {
+		defer odpResp.Body.Close()
+		if odpResp.StatusCode == http.StatusOK {
+			var odpBody struct {
+				Success bool                  `json:"success"`
+				Data    []domain.FiberGridODP `json:"data"`
+			}
+			if err := json.NewDecoder(odpResp.Body).Decode(&odpBody); err == nil && odpBody.Success {
+				rawODPs = odpBody.Data
+			}
+		}
+	}
+
+	// 3. Ambil Daftar ONT yang dialokasikan
+	ontReq, _ := http.NewRequestWithContext(r.Context(), "GET", fmt.Sprintf("%s/api/v1/wholesale/me/onts", serverURL), nil)
+	ontReq.Header.Set("X-Wholesale-Key", apiKey)
+	ontReq.Header.Set("Accept", "application/json")
+
+	var rawONTs []domain.FiberGridONT
+	if ontResp, err := client.Do(ontReq); err == nil {
+		defer ontResp.Body.Close()
+		if ontResp.StatusCode == http.StatusOK {
+			var ontBody struct {
+				Success bool                  `json:"success"`
+				Data    []domain.FiberGridONT `json:"data"`
+			}
+			if err := json.NewDecoder(ontResp.Body).Decode(&ontBody); err == nil && ontBody.Success {
+				rawONTs = ontBody.Data
+			}
+		}
+	}
+
+	// 4. Auto-Import ODPs ke Database Nexus jika diminta
+	importedCount := 0
+	partnerTag := contract.PartnerInitial
+	if partnerTag == "" {
+		partnerTag = "FIBERGRID"
+	}
+	providerName := "FiberGrid - " + contract.CompanyName
+	if contract.CompanyName == "" {
+		providerName = "FiberGrid Wholesale"
+	}
+
+	if req.AutoImportODPs && len(rawODPs) > 0 {
+		for _, o := range rawODPs {
+			node := &domain.ODPNode{
+				ID:           uuid.NewString(),
+				Code:         o.Code,
+				Name:         o.Name,
+				Latitude:     o.Latitude,
+				Longitude:    o.Longitude,
+				TotalPorts:   o.TotalPorts,
+				UsedPorts:    o.UsedPorts,
+				Status:       "AVAILABLE",
+				ClusterArea:  clusterArea,
+				ProviderID:   partnerTag,
+				ProviderName: providerName,
+			}
+			if o.Status != "" {
+				node.Status = o.Status
+			}
+			if err := s.svc.CreateODP(r.Context(), node); err == nil {
+				importedCount++
+			}
+		}
+	}
+
+	// 5. Generate Script MikroTik L2 Demarcation (802.1Q VLAN Trunk)
+	vlanID := contract.VlanID
+	if vlanID <= 0 {
+		vlanID = 200
+	}
+	iptvVlanID := contract.IPTVVlanID
+	nowStr := time.Now().Format("02/01/2006 15:04:05 MST")
+
+	script := fmt.Sprintf(`# ===================================================================
+# ISPSYNC NEXUS - FIBERGRID WHOLESALE LAYER 2 INTERCONNECTION (VLAN TRUNK)
+# Mitra Rekanan       : %s (%s)
+# Dedicated VLAN ID   : VLAN %d (802.1Q Tagged)
+`, contract.CompanyName, partnerTag, vlanID)
+
+	if iptvVlanID > 0 {
+		script += fmt.Sprintf("# Multicast IPTV VLAN : VLAN %d (Opsional)\n", iptvVlanID)
+	}
+
+	script += fmt.Sprintf(`# Alokasi Port Pasif  : %d Port FO Pasif
+# Server Endpoint     : %s
+# Tanggal Sinkron     : %s
+# ===================================================================
+
+# 1. Tambahkan VLAN Interface Handover di Router Core ISP (Layer 2 Trunk)
+/interface vlan
+add name="vlan%d-jartaplok" vlan-id=%d interface=sfp-sfpplus1 mtu=1508 comment="Handover L2 Wholesale Jartaplok - %s"
+`, contract.MaxPorts, serverURL, nowStr, vlanID, vlanID, contract.CompanyName)
+
+	if iptvVlanID > 0 {
+		script += fmt.Sprintf("add name=\"vlan%d-iptv\" vlan-id=%d interface=sfp-sfpplus1 mtu=1500 comment=\"Handover IPTV Jartaplok - %s\"\n", iptvVlanID, iptvVlanID, contract.CompanyName)
+	}
+
+	script += `
+# ===================================================================
+# BATAS DEMARKASI TELEKOMUNIKASI (TELECOM DEMARCATION POINT):
+# - Tanggung Jawab Jartaplok : Layer 1 Fisik & Layer 2 Transport (OLT -> ODC -> ODP -> ONT).
+# - Tanggung Jawab Mitra ISP : Layer 3 ke atas (IP Public/Private, IP Pool, PPPoE/Radius BRAS,
+#                              Bandwidth Queues, DNS Server, & Billing Pelanggan Ritel).
+# Provider Jartaplok TIDAK mengintervensi IP Address atau PPPoE Server ISP.
+# ===================================================================
+`
+
+	result := domain.FiberGridSyncResult{
+		ConnectedAt:       nowStr,
+		ServerURL:         serverURL,
+		Contract:          contract,
+		TotalODPsFetched:  len(rawODPs),
+		TotalODPsImported: importedCount,
+		TotalONTsFetched:  len(rawONTs),
+		MikrotikScript:    script,
+		ODPs:              rawODPs,
+		ONTs:              rawONTs,
+	}
+
+	msg := fmt.Sprintf("Sinkronisasi FiberGrid berhasil! %d ODP terambil (%d disimpan ke database), %d ONT aktif.", len(rawODPs), importedCount, len(rawONTs))
+	response.Success(w, msg, result)
+}
+
 
 
 

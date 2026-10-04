@@ -16,7 +16,7 @@ type Config struct {
 	MaxCoverageMeters float64
 	AdminAPIKey       string
 	FTTXBaseURL       string
-	FTTXAdminKey      string
+	FTTXInternalKey   string
 	SmartOLTEnabled   bool
 	SmartOLTBaseURL   string
 	SmartOLTAPIKey    string
@@ -36,7 +36,7 @@ func Load() *Config {
 		MaxCoverageMeters: getEnvFloat("MAX_COVERAGE_METERS", 250.0), // Standard dropcore limit
 		AdminAPIKey:       getEnv("ADMIN_API_KEY", "isp-onboarding-admin-key"),
 		FTTXBaseURL:       getEnv("FTTX_BASE_URL", "http://localhost:8082"),
-		FTTXAdminKey:      getEnv("FTTX_ADMIN_KEY", "gogiga-noc-admin-99a8f27c3d14"),
+		FTTXInternalKey:   getEnv("FTTX_INTERNAL_KEY", ""),
 		SmartOLTEnabled:   getEnv("SMARTOLT_ENABLED", "false") == "true" || getEnv("SMARTOLT_ENABLED", "false") == "1",
 		SmartOLTBaseURL:   getEnv("SMARTOLT_BASE_URL", "https://gnet-biaro.smartolt.com"),
 		SmartOLTAPIKey:    getEnv("SMARTOLT_API_KEY", "b71455fab579457d98d8f4b6d28cfdff"),

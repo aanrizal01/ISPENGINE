@@ -69,7 +69,7 @@ func main() {
 	onboardingSvc := service.NewOnboardingService(storage, billingClient, cfg.MaxCoverageMeters)
 
 	// 4. Inisialisasi HTTP Handler & Router
-	server := handler.NewServer(onboardingSvc, storage, billingClient, cfg.AdminAPIKey, cfg.FTTXBaseURL, cfg.FTTXAdminKey).WithSmartOLT(smartOLTClient)
+	server := handler.NewServer(onboardingSvc, storage, billingClient, cfg.AdminAPIKey, cfg.FTTXBaseURL, cfg.FTTXInternalKey).WithSmartOLT(smartOLTClient)
 
 	httpServer := &http.Server{
 		Addr:         ":" + cfg.Port,

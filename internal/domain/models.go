@@ -637,5 +637,61 @@ type TestSmartOLTRequest struct {
 	APIToken    string `json:"api_token,omitempty"`
 }
 
+// FiberGridSyncRequest parameter koneksi dari ISP ke FiberGrid Jartaplok
+type FiberGridSyncRequest struct {
+	ServerURL      string `json:"server_url"`
+	APIKey         string `json:"api_key"`
+	ClusterArea    string `json:"cluster_area"`
+	AutoImportODPs bool   `json:"auto_import_odps"`
+}
+
+// FiberGridContractProfile profil kemitraan wholesale di server FiberGrid
+type FiberGridContractProfile struct {
+	ID             string `json:"id"`
+	CompanyName    string `json:"company_name"`
+	PartnerInitial string `json:"partner_initial"`
+	VlanID         int    `json:"vlan_id"`
+	IPTVVlanID     int    `json:"iptv_vlan_id"`
+	MaxPorts       int    `json:"max_ports"`
+	Status         string `json:"status"`
+	BillingModel   string `json:"billing_model"`
+}
+
+// FiberGridODP DTO titik pasif ODP yang disewakan oleh FiberGrid
+type FiberGridODP struct {
+	ID         string  `json:"id"`
+	Code       string  `json:"code"`
+	Name       string  `json:"name"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	TotalPorts int     `json:"total_ports"`
+	UsedPorts  int     `json:"used_ports"`
+	Status     string  `json:"status"`
+}
+
+// FiberGridONT DTO perangkat ONT yang dialokasikan ke kontrak wholesale
+type FiberGridONT struct {
+	ID           string   `json:"id"`
+	SerialNumber string   `json:"serial_number"`
+	CustomerName string   `json:"customer_name"`
+	PONPort      string   `json:"pon_port"`
+	RxPowerDBM   *float64 `json:"rx_power_dbm"`
+	TxPowerDBM   *float64 `json:"tx_power_dbm"`
+	IsActive     bool     `json:"is_active"`
+}
+
+// FiberGridSyncResult hasil tarikan data otomatis dari FiberGrid
+type FiberGridSyncResult struct {
+	ConnectedAt       string                   `json:"connected_at"`
+	ServerURL         string                   `json:"server_url"`
+	Contract          FiberGridContractProfile `json:"contract"`
+	TotalODPsFetched  int                      `json:"total_odps_fetched"`
+	TotalODPsImported int                      `json:"total_odps_imported"`
+	TotalONTsFetched  int                      `json:"total_onts_fetched"`
+	MikrotikScript    string                   `json:"mikrotik_script"`
+	ODPs              []FiberGridODP           `json:"odps"`
+	ONTs              []FiberGridONT           `json:"onts"`
+}
+
 
 
