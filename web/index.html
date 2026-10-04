@@ -19600,29 +19600,18 @@
           dev: 'Laboratorium ISPSYNC R&D'
         };
 
-        let brandName = injected.name || injected.brand_name || '';
-        if (!brandName) {
-          if (slug && slug !== 'dev') {
-            brandName = slug.toUpperCase();
-          } else {
-            brandName = 'ISPSYNC';
-          }
-        }
-
-        const upper = (slug && slug !== 'dev') ? slug.toUpperCase() : '';
-        const legalName = injected.company_name || legalMap[slug] || (upper ? ('PT. ' + upper + ' Data Nusantara') : 'PT. Mitra Usaha Data');
+        let brandName = injected.short_name || (slug ? slug.toUpperCase() : 'DEV');
+        if (brandName === 'DEVLAB') brandName = 'DEV';
+        const upper = (slug || 'dev').toUpperCase();
+        const legalName = injected.company_name || legalMap[slug] || ('PT. ' + upper + ' Data Nusantara');
         const copyrightText = '© 2026 ' + legalName + '. All rights reserved.';
-        const supportEmail = injected.email || (slug && slug !== 'dev' ? ('sales@' + slug + '.ispsync.id') : 'sales@ispsync.id');
-        const logoSrc = (slug && slug !== 'dev') ? ('/web/' + slug + '_logo.svg') : '/logo.png';
+        const supportEmail = injected.email || ('sales@' + (slug || 'dev') + '.ispsync.id');
+        const logoSrc = '/web/' + (slug || 'dev') + '_logo.svg';
 
         const elLogo = document.getElementById('sales-login-brand-logo');
         if (elLogo) {
-          if (slug && slug !== 'dev') {
-            elLogo.src = logoSrc;
-            elLogo.classList.remove('brightness-0', 'invert');
-          } else {
-            elLogo.src = '/logo.png';
-          }
+          elLogo.src = logoSrc;
+          elLogo.classList.add('brightness-0', 'invert');
         }
         const elMobileLogo = document.getElementById('sales-mobile-brand-logo');
         if (elMobileLogo) elMobileLogo.src = logoSrc;
@@ -23476,30 +23465,19 @@
           dev: 'Laboratorium ISPSYNC R&D'
         };
 
-        let brandName = injected.name || injected.brand_name || '';
-        if (!brandName) {
-          if (slug && slug !== 'dev') {
-            brandName = slug.toUpperCase();
-          } else {
-            brandName = 'ISPSYNC';
-          }
-        }
-
-        const upper = (slug && slug !== 'dev') ? slug.toUpperCase() : '';
-        const legalName = injected.company_name || legalMap[slug] || (upper ? ('PT. ' + upper + ' Data Nusantara') : 'PT. Mitra Usaha Data');
+        let brandName = injected.short_name || (slug ? slug.toUpperCase() : 'DEV');
+        if (brandName === 'DEVLAB') brandName = 'DEV';
+        const upper = (slug || 'dev').toUpperCase();
+        const legalName = injected.company_name || legalMap[slug] || ('PT. ' + upper + ' Data Nusantara');
         const copyrightText = '© 2026 ' + legalName + '. All rights reserved.';
-        const supportEmail = injected.email || (slug && slug !== 'dev' ? ('noc@' + slug + '.ispsync.id') : 'noc@ispsync.id');
-        const logoSrc = (slug && slug !== 'dev') ? ('/web/' + slug + '_logo.svg') : '/logo.png';
-        const fgUrl = (slug && slug !== 'dev') ? ('https://fibergrid.' + slug + '.ispsync.id') : 'https://fibergrid.dev.ispsync.id';
+        const supportEmail = injected.email || ('noc@' + (slug || 'dev') + '.ispsync.id');
+        const logoSrc = '/web/' + (slug || 'dev') + '_logo.svg';
+        const fgUrl = 'https://fibergrid.' + (slug || 'dev') + '.ispsync.id';
 
         const elLogo = document.getElementById('noc-login-brand-logo');
         if (elLogo) {
-          if (slug && slug !== 'dev') {
-            elLogo.src = logoSrc;
-            elLogo.classList.remove('brightness-0', 'invert');
-          } else {
-            elLogo.src = '/logo.png';
-          }
+          elLogo.src = logoSrc;
+          elLogo.classList.add('brightness-0', 'invert');
         }
         const elMobileLogo = document.getElementById('noc-mobile-brand-logo');
         if (elMobileLogo) {
