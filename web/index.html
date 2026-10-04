@@ -151,8 +151,13 @@
     /* Saat belum login di subdomain operasional atau portal login pelanggan: sembunyikan navbar & footer seketika (pusatkan login form) */
     html.subdomain-login-mode:not([data-subdomain="unified"]) #main-header,
     html.subdomain-login-mode:not([data-subdomain="unified"]) #main-footer,
+    html.subdomain-login-mode #ispsync-topbar,
     html.is-portal-track:not(.subdomain-logged-in) #main-header,
-    html.is-portal-track:not(.subdomain-logged-in) #main-footer {
+    html.is-portal-track:not(.subdomain-logged-in) #main-footer,
+    html.is-portal-track:not(.subdomain-logged-in) #ispsync-topbar {
+      display: none !important;
+    }
+    #admin-login-container.hidden {
       display: none !important;
     }
     html.subdomain-login-mode:not([data-subdomain="unified"]) body > main,
@@ -2441,108 +2446,185 @@
     <!-- 4. TAB PANEL NOC & SUPER USER (SIDEBAR LAYOUT)            -->
     <!-- ══════════════════════════════════════════════════════════ -->
     <section id="tab-admin" class="hidden">
-      <!-- 1. ADMIN NOC DIRECT LOGIN (Shown when unauthenticated) -->
-      <div id="admin-login-container" class="max-w-4xl mx-auto my-4 sm:my-8 overflow-hidden rounded-lg bg-white border border-slate-200 shadow-sm">
-        <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
-          
-          <!-- LEFT HERO BRANDING PANEL (lg:col-span-5) -->
-          <div class="lg:col-span-5 bg-slate-950 text-white p-6 sm:p-8 flex flex-col justify-between">
-            <div class="space-y-6">
-              <!-- Brand Header -->
-              <div class="space-y-3">
-                <div class="flex items-center gap-3">
-                  <img src="/logo.png" alt="GOGIGA" class="h-9 w-auto object-contain" />
-                  <div>
-                    <h2 class="text-lg font-bold tracking-tight text-white">GOGIGANET</h2>
-                    <p class="text-[11px] text-sky-400 font-mono font-semibold">NOC Core &amp; Command Center</p>
-                  </div>
+      <!-- 1. ADMIN NOC DIRECT LOGIN (Shown when unauthenticated - Polished to match FiberGrid split-screen) -->
+      <div id="admin-login-container" class="fixed inset-0 z-[9999999] overflow-y-auto bg-slate-50 font-sans selection:bg-blue-600 selection:text-white">
+        <div class="min-h-screen w-full flex flex-col lg:flex-row">
+
+          <!-- LEFT SHOWCASE / HERO PANEL (lg:flex) -->
+          <div class="hidden lg:flex lg:w-1/2 xl:w-7/12 relative flex-col justify-between p-12 xl:p-16 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950/40 text-white overflow-hidden border-r border-slate-800">
+            <!-- Ambient decorative blur glows -->
+            <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-1/2 -right-32 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-32 left-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Top: Brand Header (Uniform with Ledger & Nexus) -->
+            <div class="relative z-10">
+              <div class="flex items-center gap-3.5">
+                <img id="noc-login-brand-logo" src="/logo.png" alt="Logo" class="h-10 w-auto brightness-0 invert object-contain shrink-0" onerror="this.style.display='none'; var fb = document.getElementById('noc-login-fallback-logo'); if (fb) fb.classList.remove('hidden');" />
+                <div id="noc-login-fallback-logo" class="hidden w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 ring-1 ring-white/20 shrink-0">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
-                <p class="text-xs text-slate-400 leading-relaxed font-sans pt-1">
-                  Pusat otentikasi dan kontrol infrastruktur jaringan untuk Owner, Network Operations Center (NOC), dan Keuangan / Billing.
-                </p>
+                <div>
+                  <div class="flex items-center gap-2.5">
+                    <h2 id="noc-login-brand-name" class="text-2xl font-black tracking-tight text-white uppercase cust-brand-name-dynamic">ISPSYNC</h2>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700">
+                      NOC COMMAND CENTER
+                    </span>
+                  </div>
+                  <p id="noc-login-brand-desc" class="text-xs text-slate-400 font-sans mt-0.5">Pusat Kontrol Operasional &amp; Infrastruktur Jaringan</p>
+                </div>
               </div>
+            </div>
 
-              <!-- Feature Highlights -->
-              <div class="space-y-2 pt-1">
-                <div class="flex items-start gap-3 p-3 rounded-md bg-white/5 border border-white/10">
-                  <div class="w-7 h-7 rounded-md bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <i data-lucide="server" class="w-3.5 h-3.5"></i>
+            <!-- Hero Central Headline -->
+            <div class="relative z-10 my-10 max-w-xl space-y-6">
+              <h1 class="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                Dashboard Operasional &amp; <span id="noc-login-brand-highlight" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent">NOC Command Center</span>.
+              </h1>
+              <p id="noc-login-hero-sub" class="text-slate-300 text-sm leading-relaxed">
+                Akses backoffice terpusat untuk monitoring perangkat OLT, uplink backbone, sesi aktif RADIUS, pemetaan distribusi ODP/FO, disposisi teknisi lapangan, dan audit validasi BAST.
+              </p>
+
+              <!-- 3 Feature Highlight Cards (Dark Glassmorphism) -->
+              <div class="mt-8 space-y-3.5">
+                <!-- Feature 1: Core Network & Telemetri OLT / BRAS -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-start gap-3.5 shadow-sm">
+                  <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
                   </div>
                   <div>
-                    <h4 class="text-xs font-semibold text-white">Core Network &amp; OLT PON</h4>
-                    <p class="text-[11px] text-slate-400">Monitoring status OLT, uplink, redaman kabel optik, dan sesi aktif RADIUS.</p>
+                    <h4 class="text-xs font-bold text-slate-100">Core Network &amp; Telemetri OLT / BRAS</h4>
+                    <p class="text-[11px] text-slate-400 leading-normal mt-0.5">Pemantauan real-time status uplink BGP, interface BRAS, sesi online PPPoE/IPoE RADIUS, dan telemetri redaman optik ONT secara berkala.</p>
                   </div>
                 </div>
 
-                <div class="flex items-start gap-3 p-3 rounded-md bg-white/5 border border-white/10">
-                  <div class="w-7 h-7 rounded-md bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                <!-- Feature 2: Disposisi Lapangan & SPK Validasi BAST -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-start gap-3.5 shadow-sm">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                   </div>
                   <div>
-                    <h4 class="text-xs font-semibold text-white">Disposisi &amp; SPK Teknisi</h4>
-                    <p class="text-[11px] text-slate-400">Penugasan tim instalasi, survei kendala, dan audit validasi BAST digital.</p>
+                    <h4 class="text-xs font-bold text-slate-100">Disposisi Lapangan &amp; SPK Validasi BAST</h4>
+                    <p class="text-[11px] text-slate-400 leading-normal mt-0.5">Penugasan tim teknisi instalasi &amp; troubleshooting, presensi GPS lapangan, audit redaman OPM, dan pengesahan BAST digital.</p>
                   </div>
                 </div>
 
-                <div class="flex items-start gap-3 p-3 rounded-md bg-white/5 border border-white/10">
-                  <div class="w-7 h-7 rounded-md bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                <!-- Feature 3: Manajemen Radius, Billing & Rekap Pajak B2B -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-start gap-3.5 shadow-sm">
+                  <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   </div>
                   <div>
-                    <h4 class="text-xs font-semibold text-white">Billing, Kas &amp; PPN 11%</h4>
-                    <p class="text-[11px] text-slate-400">Rekonsiliasi transaksi pembayaran, saldo deposit jaminan, dan rekapitulasi pajak.</p>
+                    <h4 class="text-xs font-bold text-slate-100">Manajemen RADIUS, Billing &amp; Rekap Pajak B2B</h4>
+                    <p class="text-[11px] text-slate-400 leading-normal mt-0.5">Otomasi isolir pelanggan jatuh tempo, rekonsiliasi payment gateway, pencatatan kas/bank, kalkulasi PPN 11%, dan rekapitulasi fiskal.</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Trust / Security Footer -->
-            <div class="pt-4 mt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-              <div class="flex items-center gap-1.5 text-slate-300">
-                <i data-lucide="lock" class="w-3.5 h-3.5 text-sky-400"></i>
-                <span>Enkripsi Akses Berlapis (RBAC)</span>
-              </div>
-              <span class="text-slate-400 text-[11px]">Audit Trail 24/7</span>
+            <!-- Left Panel Footer -->
+            <div class="relative z-10 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <p id="noc-login-copyright" class="text-[11px] text-slate-400">© 2026 PT. Mitra Usaha Data. All rights reserved.</p>
+              <span class="font-mono text-[11px] text-slate-500">v3.2-carrier &bull; NOC Engine Nexus</span>
             </div>
           </div>
 
-          <!-- RIGHT LOGIN FORM PANEL (lg:col-span-7) -->
-          <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white relative">
-            <div class="space-y-5">
-              
-              <!-- Form Top Bar -->
-              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Otorisasi Internal</h3>
-                  <p class="text-xs text-slate-500 font-sans mt-0.5">Masuk dengan kredensial akun staf internal yang sah</p>
+          <!-- RIGHT LOGIN FORM PANEL (White background matching billing) -->
+          <div class="w-full lg:w-1/2 xl:w-5/12 flex items-center justify-center p-6 sm:p-12 xl:p-16 bg-white min-h-screen relative text-slate-900">
+            <div class="w-full max-w-md">
+
+              <!-- Mobile Header Brand (lg:hidden) -->
+              <div class="lg:hidden flex items-center gap-3 mb-8 pb-6 border-b border-slate-200">
+                <img id="noc-mobile-brand-logo" src="/logo.png" alt="Logo" class="h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'; var mfb = document.getElementById('noc-mobile-fallback-logo'); if (mfb) mfb.classList.remove('hidden');" />
+                <div id="noc-mobile-fallback-logo" class="hidden w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm text-white shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
-                <div class="w-9 h-9 rounded-md bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200 shrink-0">
-                  <i data-lucide="shield-check" class="w-4 h-4 text-sky-700"></i>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span id="noc-mobile-brand-name" class="font-black text-xl text-slate-900 tracking-tight uppercase">ISPSYNC</span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200">
+                      NOC COMMAND CENTER
+                    </span>
+                  </div>
+                  <p id="noc-mobile-brand-desc" class="text-[11px] text-slate-500 font-sans mt-0.5">Pusat Operasional Jaringan &amp; Core Network</p>
                 </div>
               </div>
 
-              <form onsubmit="handleAdminDirectLogin(event)" class="space-y-3.5">
+              <!-- Welcome Heading -->
+              <div class="mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Masuk ke Akun NOC</h2>
+                <p class="text-slate-500 text-sm mt-2 leading-relaxed">Masukkan username dan kata sandi akun operator NOC atau administrator Anda untuk mengakses dashboard operasional.</p>
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200">
+                    SSO Terintegrasi
+                  </span>
+                  <span class="text-xs text-slate-500 font-normal">Autentikasi Terpusat Staf NOC &amp; Administrator</span>
+                </div>
+              </div>
+
+              <!-- Login Form -->
+              <form onsubmit="handleAdminDirectLogin(event)" class="space-y-5">
                 <div>
-                  <label class="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Username Akun</label>
-                  <input type="text" id="admin-direct-username" placeholder="Masukkan username akun" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-md px-3 py-2 text-xs font-mono outline-none focus:bg-white focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition" required />
+                  <label for="admin-direct-username" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Username Operator</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <input id="admin-direct-username" type="text" required autocomplete="username" placeholder="Masukkan username"
+                           class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-300 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm transition-all shadow-sm">
+                  </div>
                 </div>
 
                 <div>
-                  <label class="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Password</label>
-                  <input type="password" id="admin-direct-password" placeholder="Masukkan password Anda" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-md px-3 py-2 text-xs font-mono outline-none focus:bg-white focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition" required />
+                  <div class="flex items-center justify-between mb-2">
+                    <label for="admin-direct-password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Kata Sandi</label>
+                  </div>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <input id="admin-direct-password" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi"
+                           class="w-full pl-10 pr-11 py-2.5 rounded-md border border-slate-300 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm transition-all shadow-sm">
+                    <button type="button" onclick="toggleAdminLoginPassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-600 focus:outline-none cursor-pointer" title="Tampilkan kata sandi">
+                      <svg id="admin-pwd-eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </button>
+                  </div>
                 </div>
 
-                <button type="submit" id="btn-admin-direct-login" class="w-full py-2.5 px-4 rounded-md text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-98">
-                  <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                  <span>AUTENTIKASI &amp; MASUK PANEL</span>
+                <div class="flex items-center text-xs">
+                  <label class="flex items-center gap-2 cursor-pointer select-none text-slate-600">
+                    <input type="checkbox" id="admin-remember-session" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" checked>
+                    <span>Ingat sesi login saya</span>
+                  </label>
+                </div>
+
+                <button type="submit" id="btn-admin-direct-login" class="w-full bg-gradient-to-r from-cyan-600 via-blue-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2 mt-4 shadow-md shadow-cyan-600/20 cursor-pointer disabled:opacity-50">
+                  <span id="btn-admin-direct-login-text">Masuk ke Dashboard NOC</span>
+                  <svg id="btn-admin-direct-login-arrow" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
               </form>
 
-            </div>
+              <!-- Quick Switcher to FiberGrid Engine -->
+              <div class="mt-5 pt-5 border-t border-slate-100 text-center space-y-2">
+                <p class="text-xs text-slate-500">Perlu mengelola topologi FO atau sewa jartaplok wholesale?</p>
+                <a id="noc-fibergrid-link" href="https://fibergrid.dev.ispsync.id" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 transition-colors shadow-sm cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  <span>Buka Platform FiberGrid OLT &amp; GIS Map</span>
+                  <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+              </div>
 
-            <!-- Footer Help Note -->
-            <div class="pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
-              Akses tercatat dan diawasi otomatis oleh sistem keamanan internal.
+              <!-- Security badge and Support Contact -->
+              <div class="mt-8 pt-6 border-t border-slate-100">
+                <div class="flex items-center gap-2 text-slate-500 text-xs justify-center">
+                  <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                  <span>Enkripsi Sesi End-to-End &bull; TLS 1.3 &amp; RBAC Multi-Factor</span>
+                </div>
+                <p class="text-center text-[11px] text-slate-500 mt-2">
+                  Mengalami kendala login? Hubungi Super Admin di <span id="noc-support-email" class="text-slate-600 font-medium font-mono">noc@ispsync.id</span>
+                </p>
+              </div>
+
             </div>
           </div>
 
@@ -23177,7 +23259,105 @@
       if (typeof updatePortalAuthChromeVisibility === 'function') updatePortalAuthChromeVisibility();
     }
 
+    function toggleAdminLoginPassword() {
+      const input = document.getElementById('admin-direct-password');
+      const icon = document.getElementById('admin-pwd-eye-icon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) {
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>';
+        }
+      } else {
+        input.type = 'password';
+        if (icon) {
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+        }
+      }
+    }
+
+    function applyNocDynamicBranding() {
+      try {
+        const injected = window.__ISPSYNC_TENANT__ || {};
+        const h = window.location.hostname.toLowerCase();
+        const p = h.split('.');
+        let slug = injected.slug || injected.short_name || '';
+        if (!slug) {
+          if (p.length >= 4) {
+            if (p[0] === 'noc' || p[0] === 'noc-fo' || p[0] === 'fibergrid' || p[0] === 'fttx' || p[0] === 'ledger') {
+              slug = p[1];
+            } else if (p[1] === 'noc' || p[1] === 'noc-fo' || p[1] === 'fibergrid' || p[1] === 'fttx' || p[1] === 'ledger') {
+              slug = p[0];
+            } else {
+              slug = p[1];
+            }
+          } else if (p.length === 3 && p[1] === 'ispsync') {
+            slug = p[0];
+          }
+        }
+        if (!slug || slug === 'dev' || slug === 'localhost' || slug === '103') {
+          slug = 'dev';
+        }
+
+        const legalMap = {
+          ispmu: 'PT. Mitra Usaha Data',
+          ispku: 'PT. ISP Kita Nusantara',
+          dev: 'Laboratorium ISPSYNC R&D'
+        };
+
+        let brandName = injected.name || injected.brand_name || '';
+        if (!brandName) {
+          if (slug && slug !== 'dev') {
+            brandName = slug.toUpperCase();
+          } else {
+            brandName = 'ISPSYNC';
+          }
+        }
+
+        const upper = (slug && slug !== 'dev') ? slug.toUpperCase() : '';
+        const legalName = injected.company_name || legalMap[slug] || (upper ? ('PT. ' + upper + ' Data Nusantara') : 'PT. Mitra Usaha Data');
+        const copyrightText = '© 2026 ' + legalName + '. All rights reserved.';
+        const supportEmail = injected.email || (slug && slug !== 'dev' ? ('noc@' + slug + '.ispsync.id') : 'noc@ispsync.id');
+        const logoSrc = (slug && slug !== 'dev') ? ('/web/' + slug + '_logo.svg') : '/logo.png';
+        const fgUrl = (slug && slug !== 'dev') ? ('https://fibergrid.' + slug + '.ispsync.id') : 'https://fibergrid.dev.ispsync.id';
+
+        const elLogo = document.getElementById('noc-login-brand-logo');
+        if (elLogo) {
+          if (slug && slug !== 'dev') {
+            elLogo.src = logoSrc;
+            elLogo.classList.remove('brightness-0', 'invert');
+          } else {
+            elLogo.src = '/logo.png';
+          }
+        }
+        const elMobileLogo = document.getElementById('noc-mobile-brand-logo');
+        if (elMobileLogo) {
+          elMobileLogo.src = logoSrc;
+        }
+        const elBrandName = document.getElementById('noc-login-brand-name');
+        if (elBrandName) elBrandName.textContent = brandName;
+        const elMobileBrandName = document.getElementById('noc-mobile-brand-name');
+        if (elMobileBrandName) elMobileBrandName.textContent = brandName;
+        const elBrandHighlight = document.getElementById('noc-login-brand-highlight');
+        if (elBrandHighlight) elBrandHighlight.textContent = brandName + ' Command Center';
+        const elHeroSub = document.getElementById('noc-login-hero-sub');
+        if (elHeroSub) elHeroSub.textContent = 'Akses backoffice terpusat ' + brandName + ' untuk monitoring perangkat OLT, uplink backbone, sesi aktif RADIUS, pemetaan distribusi ODP/FO, disposisi teknisi lapangan, dan audit validasi BAST.';
+        const elCopyright = document.getElementById('noc-login-copyright');
+        if (elCopyright) elCopyright.textContent = copyrightText;
+        const elSupportEmail = document.getElementById('noc-support-email');
+        if (elSupportEmail) elSupportEmail.textContent = supportEmail;
+        const elFgLink = document.getElementById('noc-fibergrid-link');
+        if (elFgLink) elFgLink.href = fgUrl;
+
+        // Set carrier document.title without trailing ISPSYNC duplication
+        document.title = 'Masuk | ' + brandName + ' NOC Command Center';
+      } catch (e) {
+        console.warn('Failed applying NOC dynamic branding:', e);
+      }
+    }
+
     function initAdminPortal() {
+      applyNocDynamicBranding();
       const token = localStorage.getItem('auth_session_token') || sessionStorage.getItem('auth_session_token');
       const loginBox = document.getElementById('admin-login-container');
       const dashBox = document.getElementById('admin-dashboard-container');
@@ -25257,8 +25437,8 @@
         localStorage.setItem('active_portal_role', 'sales');
         switchTab('sales');
       } else if (currentSubdomainMode === 'noc-fo') {
-        // 🛠️ NOC COMMAND CENTER (noc-fo.gogiga.net.id)
-        document.title = "GOGIGANET • NOC Core & Infrastructure Command Center";
+        // NOC COMMAND CENTER
+        applyNocDynamicBranding();
         if (topNocBar) topNocBar.classList.add('hidden');
 
         if (adminBtn) adminBtn.classList.add('hidden');
