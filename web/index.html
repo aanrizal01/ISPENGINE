@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <meta name="version" content="2026.09.30.02" />
-  <title>GOGIGANET Broadband • Registrasi & Jangkauan Fiber Optik</title>
+  <title></title>
   <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="/web/dev_favicon.svg" />
-  
-  <!-- ZERO-FOUC EARLY SUBDOMAIN & ROUTING INITIALIZER -->
   <script>
     (function() {
       try {
@@ -51,6 +48,12 @@
         if (elFav) {
           elFav.href = '/web/' + favSlug + '_favicon.svg';
           elFav.type = 'image/svg+xml';
+        }
+
+        if (mode === 'sales') {
+          document.title = 'Masuk | ' + earlyBrand + ' Sales';
+        } else if (mode === 'noc-fo' || mode === 'noc') {
+          document.title = 'Masuk | ' + earlyBrand + ' NOC Command Center';
         }
 
         // Cek apakah di portal pelanggan sedang meminta mode login/tracking atau sudah ada sesi
@@ -2000,6 +2003,10 @@
                     var hl = document.getElementById('sales-login-brand-highlight'); if (hl) hl.textContent = 'Mitra Sales ' + b;
                     var desc = document.getElementById('sales-login-brand-desc'); if (desc) desc.textContent = 'Pusat Kemitraan Penjualan & Pertumbuhan ' + b;
                     var sub = document.getElementById('sales-login-hero-sub'); if (sub) sub.textContent = 'Satu pintu backoffice ' + b + ' bagi Account Executive & Mitra Agen resmi untuk membagikan tautan referral, verifikasi cakupan tiang ODP, memantau siklus instalasi prospek, dan rekapitulasi komisi.';
+                    var legalMap = { ispmu: 'PT. Mitra Usaha Data', ispku: 'PT. ISP Kita Nusantara', dev: 'Laboratorium ISPSYNC R&D' };
+                    var leg = (window.__ISPSYNC_TENANT__ && (window.__ISPSYNC_TENANT__.company_name || window.__ISPSYNC_TENANT__.name)) || legalMap[s] || ('PT. ' + b + ' Data Nusantara');
+                    var c = document.getElementById('sales-login-copyright'); if (c) c.textContent = '© 2026 ' + leg + '. All rights reserved.';
+                    var em = document.getElementById('sales-support-email'); if (em) em.textContent = 'sales@' + s + '.ispsync.id';
                   } catch(e) {}
                 })();
               </script>
@@ -2043,7 +2050,7 @@
 
             <!-- Left Panel Footer -->
             <div class="relative z-10 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <p id="sales-login-copyright" class="text-[11px] text-slate-400">© 2026 PT. Mitra Usaha Data. All rights reserved.</p>
+              <p id="sales-login-copyright" class="text-[11px] text-slate-400"></p>
               <span class="font-mono text-[11px] text-slate-500">v3.2-carrier &bull; Sales Nexus Portal</span>
             </div>
           </div>
@@ -2142,8 +2149,17 @@
                   <span>Enkripsi Sesi End-to-End &bull; TLS 1.3 &amp; Proteksi Data Agen</span>
                 </div>
                 <p class="text-center text-[11px] text-slate-500 mt-2">
-                  Mengalami kendala login? Hubungi Koordinator Sales di <span id="sales-support-email" class="text-slate-600 font-medium font-mono">sales@ispmu.ispsync.id</span>
+                  Mengalami kendala login? Hubungi Koordinator Sales di <span id="sales-support-email" class="text-slate-600 font-medium font-mono"></span>
                 </p>
+                <script>
+                  (function() {
+                    try {
+                      var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                      var em = document.getElementById('sales-support-email');
+                      if (em) em.textContent = 'sales@' + s + '.ispsync.id';
+                    } catch(e) {}
+                  })();
+                </script>
               </div>
 
             </div>
@@ -2614,6 +2630,9 @@
                     var hl = document.getElementById('noc-login-brand-highlight'); if (hl) hl.textContent = 'Command Center ' + b;
                     var desc = document.getElementById('noc-login-brand-desc'); if (desc) desc.textContent = 'Pusat Kontrol Operasional & Infrastruktur ' + b;
                     var sub = document.getElementById('noc-login-hero-sub'); if (sub) sub.textContent = 'Akses backoffice terpusat ' + b + ' untuk monitoring perangkat OLT, uplink backbone, sesi aktif RADIUS, pemetaan distribusi ODP/FO, disposisi teknisi lapangan, dan audit validasi BAST.';
+                    var legalMap = { ispmu: 'PT. Mitra Usaha Data', ispku: 'PT. ISP Kita Nusantara', dev: 'Laboratorium ISPSYNC R&D' };
+                    var leg = (window.__ISPSYNC_TENANT__ && (window.__ISPSYNC_TENANT__.company_name || window.__ISPSYNC_TENANT__.name)) || legalMap[s] || ('PT. ' + b + ' Data Nusantara');
+                    var c = document.getElementById('noc-login-copyright'); if (c) c.textContent = '© 2026 ' + leg + '. All rights reserved.';
                   } catch(e) {}
                 })();
               </script>
@@ -2657,7 +2676,7 @@
 
             <!-- Left Panel Footer -->
             <div class="relative z-10 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <p id="noc-login-copyright" class="text-[11px] text-slate-400">© 2026 PT. Mitra Usaha Data. All rights reserved.</p>
+              <p id="noc-login-copyright" class="text-[11px] text-slate-400"></p>
               <span class="font-mono text-[11px] text-slate-500">v3.2-carrier &bull; NOC Engine Nexus</span>
             </div>
           </div>
@@ -2752,7 +2771,7 @@
               <!-- Quick Switcher to FiberGrid Engine -->
               <div class="mt-5 pt-5 border-t border-slate-100 text-center space-y-2">
                 <p class="text-xs text-slate-500">Perlu mengelola topologi FO atau sewa jartaplok wholesale?</p>
-                <a id="noc-fibergrid-link" href="https://fibergrid.dev.ispsync.id" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 transition-colors shadow-sm cursor-pointer">
+                <a id="noc-fibergrid-link" href="#" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 transition-colors shadow-sm cursor-pointer">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                   <span>Buka Platform FiberGrid OLT &amp; GIS Map</span>
                   <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -2766,8 +2785,19 @@
                   <span>Enkripsi Sesi End-to-End &bull; TLS 1.3 &amp; RBAC Multi-Factor</span>
                 </div>
                 <p class="text-center text-[11px] text-slate-500 mt-2">
-                  Mengalami kendala login? Hubungi Super Admin di <span id="noc-support-email" class="text-slate-600 font-medium font-mono">noc@ispsync.id</span>
+                  Mengalami kendala login? Hubungi Super Admin di <span id="noc-support-email" class="text-slate-600 font-medium font-mono"></span>
                 </p>
+                <script>
+                  (function() {
+                    try {
+                      var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                      var em = document.getElementById('noc-support-email');
+                      if (em) em.textContent = 'noc@' + s + '.ispsync.id';
+                      var fgl = document.getElementById('noc-fibergrid-link');
+                      if (fgl) fgl.href = 'https://fibergrid.' + s + '.ispsync.id';
+                    } catch(e) {}
+                  })();
+                </script>
               </div>
 
             </div>
