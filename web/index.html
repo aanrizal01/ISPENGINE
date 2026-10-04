@@ -297,6 +297,42 @@
         font-size: 16px !important;
       }
     }
+    @media (max-width: 767.98px) {
+      #exec-jartaplok-partners-table thead { display: none; }
+      #exec-jartaplok-partners-table,
+      #exec-jartaplok-partners-table tbody { display: block; width: 100%; }
+      #exec-jartaplok-partners-table tbody tr {
+        display: block;
+        margin: 0 0 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        background: #fff;
+        padding: 0.25rem 0;
+      }
+      #exec-jartaplok-partners-table tbody td {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        text-align: right;
+        padding: 0.5rem 0.875rem !important;
+        border: 0;
+      }
+      #exec-jartaplok-partners-table tbody td[data-label]::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-align: left;
+      }
+      #exec-jartaplok-partners-table tbody td:not([data-label]) { display: block !important; text-align: center; }
+      #exec-jartaplok-partners-table .jp-subline { display: none; }
+      #exec-jartaplok-partners-table td[data-label="Aksi"] { flex-direction: column; align-items: stretch; }
+      #exec-jartaplok-partners-table td[data-label="Aksi"] button { min-height: 44px; justify-content: center; flex: 1 1 auto; }
+    }
     @media (prefers-reduced-motion: reduce) {
       #admin-sidebar { transition: none !important; }
     }
@@ -2903,12 +2939,20 @@
         <!-- SIDEBAR NAVIGATION -->
         <aside id="admin-sidebar" role="navigation" aria-label="Navigasi NOC" class="w-full lg:w-64 xl:w-72 shrink-0 bg-white border border-slate-200/90 rounded-lg p-3.5 shadow-2xs lg:sticky lg:top-6 space-y-4">
           <!-- Sidebar Brand Header -->
-          <div class="flex items-center gap-2.5 px-1 pb-1 border-b border-slate-100">
-            <img src="/logo.png" alt="GOGIGA" class="h-7 w-auto object-contain" />
-            <div class="min-w-0">
-              <div class="font-bold text-sm tracking-tight text-slate-900 font-mono leading-none">GOGIGA<span class="text-sky-600">NET</span></div>
-              <div class="text-[10px] text-slate-500 font-mono mt-0.5 font-semibold">NOC COMMAND CENTER</div>
+          <div class="flex items-center gap-2.5 px-1 pb-3 border-b border-slate-100">
+            <img id="admin-sidebar-brand-logo" src="/logo.png" alt="Logo" class="h-7 w-auto object-contain shrink-0" />
+            <div class="min-w-0 flex items-center gap-2 flex-wrap">
+              <span id="admin-sidebar-brand-name" class="font-black text-base tracking-tight text-slate-900 uppercase leading-none"></span>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700 whitespace-nowrap">NOC</span>
             </div>
+            <script>
+              (function() {
+                try {
+                  var l = document.getElementById('admin-sidebar-brand-logo'); if (l && window.__EARLY_LOGO_URL__) l.src = window.__EARLY_LOGO_URL__;
+                  var n = document.getElementById('admin-sidebar-brand-name'); if (n) n.textContent = window.__EARLY_BRAND_NAME__ || 'DEV';
+                } catch(e) {}
+              })();
+            </script>
           </div>
 
           <!-- User Info Banner in Sidebar -->
@@ -2926,10 +2970,6 @@
               <button type="button" onclick="openChangePasswordModal()" class="text-slate-400 hover:text-white font-medium flex items-center gap-1 transition">
                 <i data-lucide="key" class="w-3 h-3"></i>
                 <span>Ganti Sandi</span>
-              </button>
-              <button type="button" onclick="handleUniversalLogout()" class="text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1 transition">
-                <i data-lucide="log-out" class="w-3 h-3"></i>
-                <span>Keluar</span>
               </button>
             </div>
           </div>
@@ -3795,25 +3835,25 @@
             </div>
 
             <div class="overflow-x-auto border border-slate-200 rounded-md">
-              <table class="w-full text-left text-xs text-slate-700">
-                <thead class="bg-slate-50 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <table id="exec-jartaplok-partners-table" class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50 text-xs font-mono font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr>
-                    <th class="py-2.5 px-3">KODE MITRA</th>
-                    <th class="py-2.5 px-3">NAMA PERUSAHAAN REKANAN</th>
-                    <th class="py-2.5 px-3 text-center">MODEL WHOLESALE</th>
-                    <th class="py-2.5 px-3 text-center">KEBIJAKAN JEDA</th>
-                    <th class="py-2.5 px-3 text-center">BATAS ODP / OTC</th>
-                    <th class="py-2.5 px-3">WILAYAH CAKUPAN</th>
-                    <th class="py-2.5 px-3">NO. KONTAK</th>
-                    <th class="py-2.5 px-3 text-center">TOTAL ODP</th>
-                    <th class="py-2.5 px-3 text-center">TOTAL PORT</th>
-                    <th class="py-2.5 px-3 text-center">PORT AKTIF</th>
-                    <th class="py-2.5 px-3 text-center">STATUS</th>
-                    <th class="py-2.5 px-3 text-center">AKSI / TARIF</th>
+                    <th class="py-2.5 px-3 whitespace-nowrap">Kode</th>
+                    <th class="py-2.5 px-3">Rekanan</th>
+                    <th class="py-2.5 px-3 text-center" title="Model wholesale">Model</th>
+                    <th class="py-2.5 px-3 text-center" title="Kebijakan jeda layanan">Jeda</th>
+                    <th class="py-2.5 px-3 text-center whitespace-nowrap" title="Batas jarak ODP dan biaya OTC">ODP / OTC</th>
+                    <th class="py-2.5 px-3 hidden 2xl:table-cell">Wilayah</th>
+                    <th class="py-2.5 px-3 hidden 2xl:table-cell">Kontak</th>
+                    <th class="py-2.5 px-3 text-center hidden 2xl:table-cell" title="Total titik ODP">ODP</th>
+                    <th class="py-2.5 px-3 text-center hidden 2xl:table-cell" title="Total port">Port</th>
+                    <th class="py-2.5 px-3 text-center whitespace-nowrap" title="Port aktif">Aktif</th>
+                    <th class="py-2.5 px-3 text-center">Status</th>
+                    <th class="py-2.5 px-3 text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody id="exec-jartaplok-partners-tbody" class="divide-y divide-slate-100 font-mono text-[11px]">
-                  <tr><td colspan="12" class="text-center py-6 text-slate-400">Memuat daftar rekanan JARTAPLOK & Bitstream...</td></tr>
+                <tbody id="exec-jartaplok-partners-tbody" class="divide-y divide-slate-100 font-mono text-xs">
+                  <tr><td colspan="12" class="py-4 px-3"><div class="space-y-2 animate-pulse"><div class="h-4 bg-slate-100 rounded w-1/3"></div><div class="h-4 bg-slate-100 rounded w-2/3"></div><div class="h-4 bg-slate-100 rounded w-1/2"></div></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -24801,7 +24841,7 @@
     async function loadSuperUserJartaplokPartners() {
       const tbody = document.getElementById('exec-jartaplok-partners-tbody');
       if (!tbody) return;
-      tbody.innerHTML = '<tr><td colspan="12" class="text-center py-6 text-slate-400 font-mono">Memuat data rekanan JARTAPLOK & Bitstream...</td></tr>';
+      tbody.innerHTML = [1,2,3].map(() => '<tr><td colspan="12" class="py-3 px-3"><div class="animate-pulse h-8 rounded-md bg-slate-100"></div></td></tr>').join('');
       try {
         const role = getActivePortalSession();
         let branch = 'ALL';
@@ -24827,46 +24867,47 @@
           updateExecJartaplokPartnerSelector();
           if (superUserJartaplokPartners.length === 0) {
             const branchLabel = branch === 'ALL' ? 'seluruh wilayah' : `wilayah operasional ${branch}`;
-            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-slate-400 font-sans text-xs">Belum ada rekanan JARTAPLOK/Bitstream terdaftar di ${branchLabel}.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 font-sans"><div class="text-sm font-bold text-slate-700">Belum ada rekanan</div><div class="text-xs text-slate-500 mt-1">Belum ada rekanan JARTAPLOK/Bitstream terdaftar di ${branchLabel}.</div><button type="button" onclick="openNewJartaplokPartnerModal()" class="mt-3 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold">Tambah Rekanan</button></td></tr>`;
             return;
           }
           tbody.innerHTML = json.data.map(p => `
             <tr class="hover:bg-slate-50 transition">
-              <td class="py-2.5 px-3 font-bold font-mono text-indigo-700">${p.code}</td>
-              <td class="py-2.5 px-3">
+              <td data-label="Kode" class="py-2.5 px-3 font-bold font-mono text-indigo-700">${p.code}</td>
+              <td data-label="Rekanan" class="py-2.5 px-3">
                 <span class="font-bold text-slate-900 block">${p.name}</span>
-                <span class="text-[10px] text-slate-400 font-mono block">Key: ${p.api_key || '-'}</span>
+                <span class="text-xs text-slate-400 font-mono block">Key: ${p.api_key || '-'}</span>
+                <span class="jp-subline text-xs text-slate-500 font-sans block 2xl:hidden">${p.coverage_area || '-'} &bull; ${p.contact_phone || '-'}</span>
               </td>
-              <td class="py-2.5 px-3 text-center">
+              <td data-label="Model" class="py-2.5 px-3 text-center">
                 ${p.service_type === 'BITSTREAM'
-                  ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>BITSTREAM</span><span class="text-[9px] text-slate-500 block truncate max-w-[120px] mx-auto mt-0.5" title="${p.pricing_model || 'Zona-2 Sumatera'}">${p.pricing_model || 'Zona-2 Sumatera'}</span>`
-                  : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>SEWA PORT FO</span><span class="text-[9px] text-slate-500 block mt-0.5">Jartaplok Pasif</span>`
+                  ? `<span class="px-2 py-0.5 rounded text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>BITSTREAM</span><span class="text-xs text-slate-500 block truncate max-w-[120px] mx-auto mt-0.5" title="${p.pricing_model || 'Zona-2 Sumatera'}">${p.pricing_model || 'Zona-2 Sumatera'}</span>`
+                  : `<span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>SEWA PORT FO</span><span class="text-xs text-slate-500 block mt-0.5">Jartaplok Pasif</span>`
                 }
               </td>
-              <td class="py-2.5 px-3 text-center">
+              <td data-label="Jeda" class="py-2.5 px-3 text-center">
                 ${p.suspension_policy === 'DISALLOWED'
-                  ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1"><i data-lucide="lock" class="w-2.5 h-2.5"></i>DILARANG</span><span class="text-[9px] text-slate-500 block mt-0.5">Komitmen 12 Bln</span>`
+                  ? `<span class="px-2 py-0.5 rounded text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1"><i data-lucide="lock" class="w-2.5 h-2.5"></i>DILARANG</span><span class="text-xs text-slate-500 block mt-0.5">Komitmen 12 Bln</span>`
                   : (p.suspension_policy === 'ALLOWED_FULL_BILLING'
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-1"><i data-lucide="dollar-sign" class="w-2.5 h-2.5"></i>BAYAR PENUH</span><span class="text-[9px] text-slate-500 block mt-0.5">Wholesale Tetap 100%</span>`
-                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1"><i data-lucide="check" class="w-2.5 h-2.5"></i>BEBAS BIAYA</span><span class="text-[9px] text-slate-500 block mt-0.5">Rp 0 / Prorata</span>`
+                    ? `<span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-1"><i data-lucide="dollar-sign" class="w-2.5 h-2.5"></i>BAYAR PENUH</span><span class="text-xs text-slate-500 block mt-0.5">Wholesale Tetap 100%</span>`
+                    : `<span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1"><i data-lucide="check" class="w-2.5 h-2.5"></i>BEBAS BIAYA</span><span class="text-xs text-slate-500 block mt-0.5">Rp 0 / Prorata</span>`
                   )
                 }
               </td>
-              <td class="py-2.5 px-3 text-center font-mono">
+              <td data-label="ODP / OTC" class="py-2.5 px-3 text-center font-mono">
                 <span class="font-bold text-slate-800">≤ ${p.max_distance_meters || (p.service_type === 'BITSTREAM' ? 150 : 250)}m</span>
-                <span class="text-[10px] ${p.otc_fee > 0 ? 'text-purple-700 font-bold' : 'text-slate-400'} block">OTC: Rp ${Number(p.otc_fee || 0).toLocaleString('id-ID')}</span>
+                <span class="text-xs ${p.otc_fee > 0 ? 'text-purple-700 font-bold' : 'text-slate-400'} block">OTC: Rp ${Number(p.otc_fee || 0).toLocaleString('id-ID')}</span>
               </td>
-              <td class="py-2.5 px-3 text-slate-600 font-sans">${p.coverage_area || '-'}</td>
-              <td class="py-2.5 px-3 text-slate-600 font-mono">${p.contact_phone || '-'}</td>
-              <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-800">${Number(p.total_odps || 0).toLocaleString('id-ID')}</td>
-              <td class="py-2.5 px-3 text-center font-mono text-slate-600">${Number(p.total_ports || 0).toLocaleString('id-ID')}</td>
-              <td class="py-2.5 px-3 text-center font-mono font-bold text-indigo-700">${p.active_ports || 0}</td>
-              <td class="py-2.5 px-3 text-center">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
+              <td data-label="Wilayah" class="py-2.5 px-3 text-slate-600 font-sans hidden 2xl:table-cell">${p.coverage_area || '-'}</td>
+              <td data-label="Kontak" class="py-2.5 px-3 text-slate-600 font-mono hidden 2xl:table-cell">${p.contact_phone || '-'}</td>
+              <td data-label="ODP" class="py-2.5 px-3 text-center font-mono font-bold text-slate-800 hidden 2xl:table-cell">${Number(p.total_odps || 0).toLocaleString('id-ID')}</td>
+              <td data-label="Port" class="py-2.5 px-3 text-center font-mono text-slate-600 hidden 2xl:table-cell">${Number(p.total_ports || 0).toLocaleString('id-ID')}</td>
+              <td data-label="Aktif" class="py-2.5 px-3 text-center font-mono font-bold text-indigo-700">${p.active_ports || 0}</td>
+              <td data-label="Status" class="py-2.5 px-3 text-center">
+                <span class="px-2 py-0.5 rounded text-xs font-bold ${p.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
                   ${p.is_active ? 'AKTIF' : 'NON-AKTIF'}
                 </span>
               </td>
-              <td class="py-2.5 px-3 text-center flex items-center justify-center gap-1.5">
+              <td data-label="Aksi" class="py-2.5 px-3 text-center"><div class="flex items-center justify-center gap-1.5 flex-wrap">
                 <button type="button" onclick="printJartaplokInvoice('${p.code}')" class="px-2.5 py-1 rounded-md bg-white hover:bg-emerald-50 text-emerald-700 border border-slate-200 text-[11px] font-bold inline-flex items-center gap-1 transition shadow-xs" title="Cetak Berita Acara Rekapitulasi & Estimasi Pemakaian ${p.name}">
                   <i data-lucide="file-spreadsheet" class="w-3 h-3 text-emerald-600"></i>
                   <span>Rekap & Estimasi</span>
@@ -24875,13 +24916,13 @@
                   <i data-lucide="edit-3" class="w-3 h-3 text-amber-600"></i>
                   <span>Edit Rekanan</span>
                 </button>
-              </td>
+              </div></td>
             </tr>
           `).join('');
           lucide.createIcons();
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-6 text-rose-500">Gagal memuat rekanan: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-6 text-rose-500">Gagal memuat rekanan: ${err.message}<br><button type="button" onclick="loadSuperUserJartaplokPartners()" class="mt-2 px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-bold">Coba Lagi</button></td></tr>`;
       }
     }
 
