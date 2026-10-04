@@ -18739,6 +18739,7 @@
             'X-Client-Platform': 'web'
           }
         });
+        const json = await res.json();
         if (json.success) {
           superUserStaffList = Array.isArray(json.data) ? json.data : (json.data && Array.isArray(json.data.users) ? json.data.users : []);
 
