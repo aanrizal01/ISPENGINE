@@ -13766,8 +13766,8 @@
           loadAdminLiveRadiusSessions()
         ]);
         const json = await regRes.json();
-        if (json.success && json.data) {
-          adminRegistrationsList = json.data;
+        if (json.success) {
+          adminRegistrationsList = Array.isArray(json.data) ? json.data : [];
           renderAdminRegistrationsTable();
         } else {
           if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-600 font-mono text-xs">Gagal memuat: ${json.message || 'Sesi otentikasi kedaluwarsa'}. <button onclick="loadAdminRegistrations()" class="underline font-bold text-slate-800 ml-2">Coba Lagi</button></td></tr>`;
@@ -17079,11 +17079,13 @@
           }
         });
         const json = await res.json();
-        if (json.success && json.data) {
-          adminODPsList = json.data;
+        if (json.success) {
+          adminODPsList = Array.isArray(json.data) ? json.data : [];
           adminODPCurrentPage = 1;
           populateAdminODPFilters();
           renderAdminODPsTable();
+        } else {
+          if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-600 font-mono">Gagal memuat ODP: ${json.message || 'Sesi berakhir'}. <button onclick="loadAdminODPs()" class="underline font-bold text-slate-800 ml-2">Coba Lagi</button></td></tr>`;
         }
       } catch (err) {
         if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-600 font-mono">Gagal memuat ODP: ${err.message}</td></tr>`;
@@ -18572,9 +18574,18 @@
           }
 
           lucide.createIcons();
+        } else {
+          const techBody = document.getElementById('kpi-tech-table-body');
+          if (techBody) techBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada data teknisi.</td></tr>';
+          const salesBody = document.getElementById('kpi-sales-table-body');
+          if (salesBody) salesBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada data sales.</td></tr>';
         }
       } catch (e) {
         console.error('Error loading KPI data:', e);
+        const techBody = document.getElementById('kpi-tech-table-body');
+        if (techBody) techBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada data teknisi.</td></tr>';
+        const salesBody = document.getElementById('kpi-sales-table-body');
+        if (salesBody) salesBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada data sales.</td></tr>';
       }
     }
 
@@ -18699,9 +18710,8 @@
             'X-Client-Platform': 'web'
           }
         });
-        const json = await res.json();
-        if (json.success && json.data) {
-          superUserStaffList = json.data;
+        if (json.success) {
+          superUserStaffList = Array.isArray(json.data) ? json.data : (json.data && Array.isArray(json.data.users) ? json.data.users : []);
 
           // Ambil wilayah aktif saat ini dari selector
           const activeBranch = localStorage.getItem('selected_branch_filter') || 'ALL';

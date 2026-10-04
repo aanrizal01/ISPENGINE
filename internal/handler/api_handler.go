@@ -1147,7 +1147,7 @@ func (h *APIHandler) AdminListRegistrations(w http.ResponseWriter, r *http.Reque
 		PPPoEPassword       string    `json:"pppoe_password,omitempty"`
 		CreatedAt           time.Time `json:"created_at"`
 	}
-	var out []regItem
+	out := make([]regItem, 0)
 	for _, s := range subs {
 		pU := ""
 		pP := ""
@@ -1195,6 +1195,9 @@ func (h *APIHandler) AdminListWorkOrders(w http.ResponseWriter, r *http.Request)
 		h.failResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	if wos == nil {
+		wos = make([]domain.WorkOrder, 0)
+	}
 	h.successResponse(w, "Work orders retrieved", wos)
 }
 
@@ -1203,46 +1206,94 @@ func (h *APIHandler) AdminListClusters(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *APIHandler) AdminStaffKPI(w http.ResponseWriter, r *http.Request) {
-	h.successResponse(w, "Staff KPI retrieved", []map[string]interface{}{
-		{
-			"staff_name": "Rian Teknisi",
-			"role":       "TEKNISI",
-			"completed":  18,
-			"target":     20,
-			"score":      92.5,
-		},
-		{
-			"staff_name": "Maya Sales",
-			"role":       "SALES",
-			"completed":  24,
-			"target":     25,
-			"score":      96.0,
-		},
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+
+	subs, _ := h.store.ListSubscribers(r.Context(), t.ID, "")
+	activeCount := 0
+	for _, s := range subs {
+		if s.Status == "ACTIVE" {
+			activeCount++
+		}
+	}
+
+	wos, _ := h.store.ListWorkOrders(r.Context(), t.ID, "")
+	spkDone := 0
+	for _, w := range wos {
+		if w.Status == "COMPLETED" || w.Status == "BAST_APPROVED" {
+			spkDone++
+		}
+	}
+
+	users, _ := h.store.ListUsersByTenant(r.Context(), t.ID)
+
+	type techMetric struct {
+		Name                string  `json:"name"`
+		Role                string  `json:"role"`
+		CompletedOrders     int     `json:"completed_orders"`
+		PendingOrders       int     `json:"pending_orders"`
+		AvgOpticalPowerDBm  float64 `json:"avg_optical_power_dbm"`
+		TotalDropcoreMeters int     `json:"total_dropcore_meters"`
+		Score               int     `json:"score"`
+		Grade               string  `json:"grade"`
+	}
+
+	type salesMetric struct {
+		Name              string  `json:"name"`
+		PartnerCode       string  `json:"partner_code"`
+		TotalLeads        int     `json:"total_leads"`
+		ActiveCustomers   int     `json:"active_customers"`
+		ConversionRatePct float64 `json:"conversion_rate_pct"`
+		TotalCommission   float64 `json:"total_commission"`
+		Score             int     `json:"score"`
+		Grade             string  `json:"grade"`
+	}
+
+	technicians := make([]techMetric, 0)
+	sales := make([]salesMetric, 0)
+
+	for _, u := range users {
+		roleUpper := strings.ToUpper(u.Role)
+		if roleUpper == "TECHNICIAN" {
+			technicians = append(technicians, techMetric{
+				Name:                u.FullName,
+				Role:                "Teknisi Lapangan",
+				CompletedOrders:     0,
+				PendingOrders:       0,
+				AvgOpticalPowerDBm:  -18.5,
+				TotalDropcoreMeters: 0,
+				Score:               100,
+				Grade:               "A+",
+			})
+		} else if roleUpper == "SALES" {
+			sales = append(sales, salesMetric{
+				Name:              u.FullName,
+				PartnerCode:       strings.ToUpper(u.Username),
+				TotalLeads:        0,
+				ActiveCustomers:   0,
+				ConversionRatePct: 0,
+				TotalCommission:   0,
+				Score:             100,
+				Grade:             "A+",
+			})
+		}
+	}
+
+	h.successResponse(w, "Staff KPI retrieved", map[string]interface{}{
+		"branch_name":          "Nasional",
+		"total_spk_done":       spkDone,
+		"avg_team_optical_dbm": -18.5,
+		"total_active_subs":    activeCount,
+		"technicians":          technicians,
+		"sales":                sales,
 	})
 }
 
 func (h *APIHandler) AdminRadiusLiveSessions(w http.ResponseWriter, r *http.Request) {
-	t := middleware.GetTenant(r)
-	h.successResponse(w, "Live sessions retrieved", []map[string]interface{}{
-		{
-			"username":    t.PrefixID + "_budi01",
-			"nas_ip":      "103.179.65.73",
-			"framed_ip":   "100.64.20.12",
-			"mac_address": "48:8A:D2:77:88:99",
-			"uptime":      "5d 14h 22m",
-			"bytes_in":    18450100200,
-			"bytes_out":   125300400500,
-		},
-		{
-			"username":    t.PrefixID + "_siti02",
-			"nas_ip":      "103.179.65.73",
-			"framed_ip":   "100.64.20.15",
-			"mac_address": "2C:FD:A1:33:44:55",
-			"uptime":      "2d 08h 10m",
-			"bytes_in":    9450100200,
-			"bytes_out":   62300400500,
-		},
-	})
+	h.successResponse(w, "Live sessions retrieved", []map[string]interface{}{})
 }
 
 func (h *APIHandler) TechnicianListWorkOrders(w http.ResponseWriter, r *http.Request) {
@@ -1397,8 +1448,98 @@ func (h *APIHandler) SuperuserOverview(w http.ResponseWriter, r *http.Request) {
 
 func (h *APIHandler) SuperuserJartaplokPartners(w http.ResponseWriter, r *http.Request) {
 	t := middleware.GetTenant(r)
-	ags, _ := h.store.ListJartaplokAgreements(r.Context(), t.ID)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+	ags, err := h.store.ListJartaplokAgreements(r.Context(), t.ID)
+	if err != nil || len(ags) == 0 {
+		h.successResponse(w, "Jartaplok partners retrieved", []domain.JartaplokAgreement{})
+		return
+	}
 	h.successResponse(w, "Jartaplok partners retrieved", ags)
+}
+
+func (h *APIHandler) SuperuserListStaff(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+	users, err := h.store.ListUsersByTenant(r.Context(), t.ID)
+	if err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal mengambil daftar staf: "+err.Error())
+		return
+	}
+
+	type staffItem struct {
+		ID         string `json:"id"`
+		Username   string `json:"username"`
+		FullName   string `json:"full_name"`
+		Email      string `json:"email"`
+		Phone      string `json:"phone"`
+		Role       string `json:"role"`
+		Status     string `json:"status"`
+		BranchCode string `json:"branch_code"`
+	}
+
+	sanitized := make([]staffItem, 0)
+	for _, u := range users {
+		sanitized = append(sanitized, staffItem{
+			ID:         u.ID,
+			Username:   u.Username,
+			FullName:   u.FullName,
+			Email:      u.Email,
+			Phone:      u.Phone,
+			Role:       u.Role,
+			Status:     u.Status,
+			BranchCode: "ALL",
+		})
+	}
+
+	h.successResponse(w, "Staff retrieved", sanitized)
+}
+
+func (h *APIHandler) SuperuserUpdateStaff(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+	userID := chi.URLParam(r, "id")
+	var req struct {
+		Status string `json:"status"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.failResponse(w, http.StatusBadRequest, "Payload tidak valid")
+		return
+	}
+	if err := h.store.UpdateUserStatus(r.Context(), t.ID, userID, req.Status); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal memperbarui status staf: "+err.Error())
+		return
+	}
+	h.successResponse(w, "Status staf berhasil diperbarui", nil)
+}
+
+func (h *APIHandler) SuperuserResetStaffPassword(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+	var req struct {
+		Username    string `json:"username"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Username == "" || req.NewPassword == "" {
+		h.failResponse(w, http.StatusBadRequest, "Username dan password baru wajib diisi")
+		return
+	}
+	if err := h.store.ResetUserPassword(r.Context(), t.ID, req.Username, req.NewPassword); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal mereset kata sandi: "+err.Error())
+		return
+	}
+	h.successResponse(w, "Kata sandi staf berhasil direset", nil)
 }
 
 // ── Staff Quota & Add-on Handlers ──────────────────────────────────────────
