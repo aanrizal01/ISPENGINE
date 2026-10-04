@@ -26,16 +26,27 @@
 
         document.documentElement.setAttribute('data-subdomain', mode);
 
-        // Dynamic early favicon resolver
+        // Dynamic early tenant brand & favicon resolver
         var favSlug = '';
         if (window.__ISPSYNC_TENANT__ && window.__ISPSYNC_TENANT__.slug) {
           favSlug = window.__ISPSYNC_TENANT__.slug;
         } else {
           var hp = host.split('.');
-          if (hp.length >= 4) favSlug = (hp[0] === 'sales' || hp[0] === 'noc' || hp[0] === 'fibergrid' || hp[0] === 'ledger') ? hp[1] : hp[0];
+          if (hp.length >= 4) favSlug = (hp[0] === 'sales' || hp[0] === 'noc' || hp[0] === 'noc-fo' || hp[0] === 'fibergrid' || hp[0] === 'ledger') ? hp[1] : hp[0];
           else if (hp.length === 3 && hp[1] === 'ispsync') favSlug = hp[0];
         }
         if (!favSlug || favSlug === 'localhost' || favSlug === '103') favSlug = 'dev';
+
+        var earlyBrand = (favSlug && favSlug !== 'dev') ? favSlug.toUpperCase() : 'DEV';
+        var tCtxEarly = window.__ISPSYNC_TENANT__ || {};
+        if (tCtxEarly.short_name && tCtxEarly.short_name !== 'DEVLAB' && !tCtxEarly.short_name.toUpperCase().startsWith('PT')) {
+          earlyBrand = tCtxEarly.short_name.toUpperCase();
+        }
+
+        window.__EARLY_TENANT_SLUG__ = favSlug;
+        window.__EARLY_BRAND_NAME__ = earlyBrand;
+        window.__EARLY_LOGO_URL__ = '/web/' + favSlug + '_logo.svg';
+
         var elFav = document.getElementById('dynamic-favicon');
         if (elFav) {
           elFav.href = '/web/' + favSlug + '_favicon.svg';
@@ -1954,18 +1965,18 @@
             <!-- Top: Brand Header (Uniform with Ledger, NOC & Nexus) -->
             <div class="relative z-10">
               <div class="flex items-center gap-3.5">
-                <img id="sales-login-brand-logo" src="/logo.png" alt="Logo" class="h-10 w-auto brightness-0 invert object-contain shrink-0" onerror="this.style.display='none'; var fb = document.getElementById('sales-login-fallback-logo'); if (fb) fb.classList.remove('hidden');" />
+                <img id="sales-login-brand-logo" src="" alt="Logo" class="h-10 w-auto brightness-0 invert object-contain shrink-0" onerror="this.style.display='none'; var fb = document.getElementById('sales-login-fallback-logo'); if (fb) fb.classList.remove('hidden');" />
                 <div id="sales-login-fallback-logo" class="hidden w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 ring-1 ring-white/20 shrink-0">
                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <div>
                   <div class="flex items-center gap-2.5">
-                    <h2 id="sales-login-brand-name" class="text-2xl font-black tracking-tight text-white uppercase cust-brand-name-dynamic">ISPMU</h2>
+                    <h2 id="sales-login-brand-name" class="text-2xl font-black tracking-tight text-white uppercase cust-brand-name-dynamic"></h2>
                     <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700 shrink-0 whitespace-nowrap">
                       SALES PORTAL
                     </span>
                   </div>
-                  <p id="sales-login-brand-desc" class="text-xs text-slate-400 font-sans mt-0.5">Pusat Kemitraan Penjualan &amp; Pertumbuhan Pelanggan</p>
+                  <p id="sales-login-brand-desc" class="text-xs text-slate-400 font-sans mt-0.5"></p>
                 </div>
               </div>
             </div>
@@ -1973,11 +1984,25 @@
             <!-- Hero Central Headline -->
             <div class="relative z-10 my-10 max-w-xl space-y-6">
               <h1 class="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Dashboard Penjualan &amp; <span id="sales-login-brand-highlight" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent">Mitra Sales ISPMU</span>.
+                Dashboard Penjualan &amp; <span id="sales-login-brand-highlight" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent"></span>.
               </h1>
-              <p id="sales-login-hero-sub" class="text-slate-300 text-sm leading-relaxed">
-                Satu pintu backoffice bagi Account Executive &amp; Mitra Agen resmi untuk membagikan tautan referral, verifikasi cakupan tiang ODP, memantau siklus instalasi prospek, dan rekapitulasi komisi.
-              </p>
+              <p id="sales-login-hero-sub" class="text-slate-300 text-sm leading-relaxed"></p>
+
+              <!-- Synchronous Zero-FOUC Brand Resolver for Sales Hero -->
+              <script>
+                (function() {
+                  try {
+                    var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
+                    var img = document.getElementById('sales-login-brand-logo'); if (img) img.src = logo;
+                    var h2 = document.getElementById('sales-login-brand-name'); if (h2) h2.textContent = b;
+                    var hl = document.getElementById('sales-login-brand-highlight'); if (hl) hl.textContent = 'Mitra Sales ' + b;
+                    var desc = document.getElementById('sales-login-brand-desc'); if (desc) desc.textContent = 'Pusat Kemitraan Penjualan & Pertumbuhan ' + b;
+                    var sub = document.getElementById('sales-login-hero-sub'); if (sub) sub.textContent = 'Satu pintu backoffice ' + b + ' bagi Account Executive & Mitra Agen resmi untuk membagikan tautan referral, verifikasi cakupan tiang ODP, memantau siklus instalasi prospek, dan rekapitulasi komisi.';
+                  } catch(e) {}
+                })();
+              </script>
 
               <!-- 3 Feature Highlight Cards (Dark Glassmorphism) -->
               <div class="mt-8 space-y-3.5">
@@ -2029,20 +2054,32 @@
 
               <!-- Mobile Header Brand (lg:hidden) -->
               <div class="lg:hidden flex items-center gap-3 mb-8 pb-6 border-b border-slate-200">
-                <img id="sales-mobile-brand-logo" src="/logo.png" alt="Logo" class="h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'; var mfb = document.getElementById('sales-mobile-fallback-logo'); if (mfb) mfb.classList.remove('hidden');" />
+                <img id="sales-mobile-brand-logo" src="" alt="Logo" class="h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'; var mfb = document.getElementById('sales-mobile-fallback-logo'); if (mfb) mfb.classList.remove('hidden');" />
                 <div id="sales-mobile-fallback-logo" class="hidden w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm text-white shrink-0">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span id="sales-mobile-brand-name" class="font-black text-xl text-slate-900 tracking-tight uppercase">ISPMU</span>
+                    <span id="sales-mobile-brand-name" class="font-black text-xl text-slate-900 tracking-tight uppercase"></span>
                     <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200 shrink-0 whitespace-nowrap">
                       PORTAL SALES
                     </span>
                   </div>
-                  <p id="sales-mobile-brand-desc" class="text-[11px] text-slate-500 font-sans mt-0.5">Portal Agen &amp; Account Executive</p>
+                  <p id="sales-mobile-brand-desc" class="text-[11px] text-slate-500 font-sans mt-0.5"></p>
                 </div>
               </div>
+              <script>
+                (function() {
+                  try {
+                    var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
+                    var mImg = document.getElementById('sales-mobile-brand-logo'); if (mImg) mImg.src = logo;
+                    var mH2 = document.getElementById('sales-mobile-brand-name'); if (mH2) mH2.textContent = b;
+                    var mDesc = document.getElementById('sales-mobile-brand-desc'); if (mDesc) mDesc.textContent = 'Portal Agen & Account Executive ' + b;
+                  } catch(e) {}
+                })();
+              </script>
 
               <!-- Welcome Heading (Uniform with FiberGrid) -->
               <div class="mb-8">
@@ -2542,18 +2579,18 @@
             <!-- Top: Brand Header (Uniform with Ledger & Nexus) -->
             <div class="relative z-10">
               <div class="flex items-center gap-3.5">
-                <img id="noc-login-brand-logo" src="/logo.png" alt="Logo" class="h-10 w-auto brightness-0 invert object-contain shrink-0" onerror="this.style.display='none'; var fb = document.getElementById('noc-login-fallback-logo'); if (fb) fb.classList.remove('hidden');" />
+                <img id="noc-login-brand-logo" src="" alt="Logo" class="h-10 w-auto brightness-0 invert object-contain shrink-0" onerror="this.style.display='none'; var fb = document.getElementById('noc-login-fallback-logo'); if (fb) fb.classList.remove('hidden');" />
                 <div id="noc-login-fallback-logo" class="hidden w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 ring-1 ring-white/20 shrink-0">
                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <div>
                   <div class="flex items-center gap-2.5">
-                    <h2 id="noc-login-brand-name" class="text-2xl font-black tracking-tight text-white uppercase cust-brand-name-dynamic">ISPSYNC</h2>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700">
+                    <h2 id="noc-login-brand-name" class="text-2xl font-black tracking-tight text-white uppercase cust-brand-name-dynamic"></h2>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700 shrink-0 whitespace-nowrap">
                       NOC COMMAND CENTER
                     </span>
                   </div>
-                  <p id="noc-login-brand-desc" class="text-xs text-slate-400 font-sans mt-0.5">Pusat Kontrol Operasional &amp; Infrastruktur Jaringan</p>
+                  <p id="noc-login-brand-desc" class="text-xs text-slate-400 font-sans mt-0.5"></p>
                 </div>
               </div>
             </div>
@@ -2561,11 +2598,25 @@
             <!-- Hero Central Headline -->
             <div class="relative z-10 my-10 max-w-xl space-y-6">
               <h1 class="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Dashboard Operasional &amp; <span id="noc-login-brand-highlight" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent">NOC Command Center</span>.
+                Pusat Kendali Operasi &amp; <span id="noc-login-brand-highlight" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent"></span>.
               </h1>
-              <p id="noc-login-hero-sub" class="text-slate-300 text-sm leading-relaxed">
-                Akses backoffice terpusat untuk monitoring perangkat OLT, uplink backbone, sesi aktif RADIUS, pemetaan distribusi ODP/FO, disposisi teknisi lapangan, dan audit validasi BAST.
-              </p>
+              <p id="noc-login-hero-sub" class="text-slate-300 text-sm leading-relaxed"></p>
+
+              <!-- Synchronous Zero-FOUC Brand Resolver for NOC Hero -->
+              <script>
+                (function() {
+                  try {
+                    var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
+                    var img = document.getElementById('noc-login-brand-logo'); if (img) img.src = logo;
+                    var h2 = document.getElementById('noc-login-brand-name'); if (h2) h2.textContent = b;
+                    var hl = document.getElementById('noc-login-brand-highlight'); if (hl) hl.textContent = 'Command Center ' + b;
+                    var desc = document.getElementById('noc-login-brand-desc'); if (desc) desc.textContent = 'Pusat Kontrol Operasional & Infrastruktur ' + b;
+                    var sub = document.getElementById('noc-login-hero-sub'); if (sub) sub.textContent = 'Akses backoffice terpusat ' + b + ' untuk monitoring perangkat OLT, uplink backbone, sesi aktif RADIUS, pemetaan distribusi ODP/FO, disposisi teknisi lapangan, dan audit validasi BAST.';
+                  } catch(e) {}
+                })();
+              </script>
 
               <!-- 3 Feature Highlight Cards (Dark Glassmorphism) -->
               <div class="mt-8 space-y-3.5">
@@ -2617,28 +2668,40 @@
 
               <!-- Mobile Header Brand (lg:hidden) -->
               <div class="lg:hidden flex items-center gap-3 mb-8 pb-6 border-b border-slate-200">
-                <img id="noc-mobile-brand-logo" src="/logo.png" alt="Logo" class="h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'; var mfb = document.getElementById('noc-mobile-fallback-logo'); if (mfb) mfb.classList.remove('hidden');" />
+                <img id="noc-mobile-brand-logo" src="" alt="Logo" class="h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'; var mfb = document.getElementById('noc-mobile-fallback-logo'); if (mfb) mfb.classList.remove('hidden');" />
                 <div id="noc-mobile-fallback-logo" class="hidden w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm text-white shrink-0">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span id="noc-mobile-brand-name" class="font-black text-xl text-slate-900 tracking-tight uppercase">ISPSYNC</span>
-                    <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200">
+                    <span id="noc-mobile-brand-name" class="font-black text-xl text-slate-900 tracking-tight uppercase"></span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200 shrink-0 whitespace-nowrap">
                       NOC COMMAND CENTER
                     </span>
                   </div>
-                  <p id="noc-mobile-brand-desc" class="text-[11px] text-slate-500 font-sans mt-0.5">Pusat Operasional Jaringan &amp; Core Network</p>
+                  <p id="noc-mobile-brand-desc" class="text-[11px] text-slate-500 font-sans mt-0.5"></p>
                 </div>
               </div>
+              <script>
+                (function() {
+                  try {
+                    var s = window.__EARLY_TENANT_SLUG__ || 'dev';
+                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
+                    var mImg = document.getElementById('noc-mobile-brand-logo'); if (mImg) mImg.src = logo;
+                    var mH2 = document.getElementById('noc-mobile-brand-name'); if (mH2) mH2.textContent = b;
+                    var mDesc = document.getElementById('noc-mobile-brand-desc'); if (mDesc) mDesc.textContent = 'Pusat Operasional Jaringan & Core Network ' + b;
+                  } catch(e) {}
+                })();
+              </script>
 
-              <!-- Welcome Heading -->
+              <!-- Welcome Heading (Uniform with FiberGrid) -->
               <div class="mb-8">
-                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Masuk ke Akun NOC</h2>
+                <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Masuk ke Akun</h2>
                 <p class="text-slate-500 text-sm mt-2 leading-relaxed">Masukkan username dan kata sandi akun operator NOC atau administrator Anda untuk mengakses dashboard operasional.</p>
                 <div class="mt-3 flex items-center gap-2">
-                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-cyan-700 border border-slate-200">
-                    SSO Terintegrasi
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-700 border border-cyan-200">
+                    SSO TERINTEGRASI
                   </span>
                   <span class="text-xs text-slate-500 font-normal">Autentikasi Terpusat Staf NOC &amp; Administrator</span>
                 </div>
