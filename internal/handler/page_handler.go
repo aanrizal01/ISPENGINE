@@ -231,6 +231,14 @@ func (h *PageHandler) ServeApp(w http.ResponseWriter, r *http.Request) {
 		html = strings.Replace(html, "/logo.png", tCtx.Tenant.LogoURL, -1)
 	}
 
+	// Dynamic Address Replacements
+	tenantAddr := tCtx.Tenant.Address
+	if tenantAddr == "" {
+		tenantAddr = "Gedung Kantor Operasional & NOC Provider"
+	}
+	html = strings.Replace(html, "Depan kantor Wali, Jalan Pulutan, Koto Tuo, Kec. Harau, Kab. Lima Puluh Kota, Sumbar 26271", tenantAddr, -1)
+	html = strings.Replace(html, "Depan kantor Wali, Jalan Pulutan, Koto Tuo, Kec. Harau, Kabupaten Lima Puluh Kota, Sumatera Barat 26271", tenantAddr, -1)
+
 	// Dynamic Brand Entity Replacements
 	html = strings.Replace(html, "PT GOGIGA MEDIA TEKNOLOGI", tCtx.Tenant.Name, -1)
 	html = strings.Replace(html, "PT GoGiga Solusi Nusantara", tCtx.Tenant.Name, -1)

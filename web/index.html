@@ -17532,10 +17532,20 @@
 
           if (window.adminClustersData.length === 0) {
             container.innerHTML = `
-              <div class="col-span-1 md:col-span-2 bg-slate-50 border border-slate-200 rounded-lg p-8 text-center">
-                <i data-lucide="map-pin-off" class="w-8 h-8 mx-auto mb-2 text-slate-400"></i>
-                <div class="text-sm font-bold text-slate-700 font-sans">Tidak Ada Cluster Jaringan</div>
-                <p class="text-xs text-slate-500 font-sans mt-1">Belum ada titik tiang ODP atau cluster jaringan yang terdaftar di wilayah ini.</p>
+              <div class="col-span-1 md:col-span-2 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-8 text-center">
+                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-500">
+                  <i data-lucide="map-pin-off" class="w-6 h-6"></i>
+                </div>
+                <div class="text-sm font-bold text-slate-800 font-sans">Belum Ada Klaster Jaringan</div>
+                <p class="text-xs text-slate-500 font-sans mt-1 max-w-md mx-auto leading-relaxed">
+                  Tenant ISP baru belum memiliki titik ODP atau klaster jaringan aktif. Tambahkan titik tiang ODP atau import file peta KML/KMZ untuk membentuk klaster jaringan secara otomatis.
+                </p>
+                <div class="mt-4 flex items-center justify-center gap-2">
+                  <button type="button" onclick="switchAdminSubTab('odp')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-xs">
+                    <i data-lucide="network" class="w-3.5 h-3.5"></i>
+                    <span>Kelola Database ODP</span>
+                  </button>
+                </div>
               </div>
             `;
             lucide.createIcons();
@@ -25245,10 +25255,10 @@
       let effectivePorts = (Array.isArray(portsData) && portsData.length > 0) ? portsData : [];
       if (effectivePorts.length === 0) {
         const odpConfigs = [
-          { code: 'ODP-BIA-01', name: 'Simpang Tiga Biaro Pasar', total: 8 },
-          { code: 'ODP-BIA-02', name: 'Pulutan Kototuo Harau', total: 8 },
-          { code: 'ODP-BIA-03', name: 'Jl. Raya Harau Lembah KM 2', total: 8 },
-          { code: 'ODP-BIA-04', name: 'Biaro Barat Perumahan', total: 1 }
+          { code: 'ODP-WHL-01', name: 'ODP Distribusi Wholesale 01', total: 8 },
+          { code: 'ODP-WHL-02', name: 'ODP Distribusi Wholesale 02', total: 8 },
+          { code: 'ODP-WHL-03', name: 'ODP Distribusi Wholesale 03', total: 8 },
+          { code: 'ODP-WHL-04', name: 'ODP Distribusi Wholesale 04', total: 1 }
         ];
 
         let portIndex = 1;
