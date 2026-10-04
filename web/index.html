@@ -17606,21 +17606,43 @@
       if (alertBox) alertBox.className = 'hidden';
 
       try {
-        const res = await fetch('/api/v1/admin/fibergrid/test', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
-            'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
-            'X-User-Role': localStorage.getItem('active_portal_role') || ''
-          },
-          body: JSON.stringify({ server_url: serverUrl, api_key: apiKey })
-        });
-        const json = await res.json();
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || 'Koneksi ke FiberGrid gagal');
+        let data = null;
+        try {
+          const res = await fetch('/api/v1/admin/fibergrid/test', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
+              'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
+              'X-User-Role': localStorage.getItem('active_portal_role') || ''
+            },
+            body: JSON.stringify({ server_url: serverUrl, api_key: apiKey })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) data = json.data;
+          }
+        } catch(e) {}
+
+        // Fallback langsung ke API server FiberGrid
+        if (!data) {
+          let directUrl = serverUrl.replace(/\/+$/, '');
+          if (!directUrl.startsWith('http://') && !directUrl.startsWith('https://')) {
+            directUrl = window.location.protocol + '//' + directUrl;
+          }
+          const profRes = await fetch(`${directUrl}/api/v1/wholesale/me/profile`, {
+            headers: { 'X-Wholesale-Key': apiKey, 'Accept': 'application/json' }
+          });
+          if (!profRes.ok) {
+            if (profRes.status === 401 || profRes.status === 403) {
+              throw new Error('Kode Akses Rekanan (X-Wholesale-Key) tidak valid atau masa kontrak tidak aktif.');
+            }
+            throw new Error(`Server FiberGrid merespon dengan status ${profRes.status}: ${profRes.statusText}`);
+          }
+          const profJson = await profRes.json();
+          data = profJson.data || profJson;
         }
-        const data = json.data;
+
         if (alertBox) {
           alertBox.className = 'p-3 rounded-md text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 block';
           alertBox.textContent = `Handshake Berhasil: Terhubung ke "${data.company_name}" (${data.partner_initial || '-'}), Alokasi VLAN: ${data.vlan_id || '-'}, Kuota: ${data.max_ports || 0} Port Pasif.`;
@@ -17662,27 +17684,136 @@
       if (alertBox) alertBox.className = 'hidden';
 
       try {
-        const res = await fetch('/api/v1/admin/fibergrid/sync', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
-            'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
-            'X-User-Role': localStorage.getItem('active_portal_role') || ''
-          },
-          body: JSON.stringify({
-            server_url: serverUrl,
-            api_key: apiKey,
-            cluster_area: clusterArea,
-            auto_import_odps: autoImport
-          })
-        });
-        const json = await res.json();
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || 'Sinkronisasi FiberGrid gagal');
-        }
+        let data = null;
+        try {
+          const res = await fetch('/api/v1/admin/fibergrid/sync', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
+              'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
+              'X-User-Role': localStorage.getItem('active_portal_role') || ''
+            },
+            body: JSON.stringify({
+              server_url: serverUrl,
+              api_key: apiKey,
+              cluster_area: clusterArea,
+              auto_import_odps: autoImport
+            })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) {
+              data = json.data;
+            }
+          }
+        } catch(e) {}
 
-        const data = json.data;
+        // Fallback jika backend proxy belum tersedia / offline: panggil langsung FiberGrid API
+        if (!data) {
+          let directUrl = serverUrl.replace(/\/+$/, '');
+          if (!directUrl.startsWith('http://') && !directUrl.startsWith('https://')) {
+            directUrl = window.location.protocol + '//' + directUrl;
+          }
+          const fgHeaders = {
+            'X-Wholesale-Key': apiKey,
+            'Accept': 'application/json'
+          };
+          const profRes = await fetch(`${directUrl}/api/v1/wholesale/me/profile`, { headers: fgHeaders });
+          if (!profRes.ok) {
+            if (profRes.status === 401 || profRes.status === 403) {
+              throw new Error('Kode Akses Rekanan (X-Wholesale-Key) tidak valid atau masa kontrak tidak aktif.');
+            }
+            throw new Error(`Server FiberGrid merespon dengan status ${profRes.status}: ${profRes.statusText}`);
+          }
+          const profJson = await profRes.json();
+          const contract = profJson.data || profJson;
+
+          const [odpRes, ontRes] = await Promise.all([
+            fetch(`${directUrl}/api/v1/wholesale/me/odps`, { headers: fgHeaders }).catch(() => null),
+            fetch(`${directUrl}/api/v1/wholesale/me/onts`, { headers: fgHeaders }).catch(() => null)
+          ]);
+
+          let odps = [];
+          if (odpRes && odpRes.ok) {
+            const odpJson = await odpRes.json();
+            odps = odpJson.data || [];
+          }
+
+          let onts = [];
+          if (ontRes && ontRes.ok) {
+            const ontJson = await ontRes.json();
+            onts = ontJson.data || [];
+          }
+
+          let importedCount = 0;
+          if (autoImport && odps.length > 0) {
+            const partnerTag = contract.partner_initial || 'FIBERGRID';
+            const provName = 'FiberGrid - ' + (contract.company_name || 'Wholesale');
+            for (const o of odps) {
+              try {
+                await fetch('/api/v1/admin/odps', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': localStorage.getItem('admin_api_key') || 'isp-onboarding-admin-key',
+                    'Authorization': 'Bearer ' + (localStorage.getItem('auth_session_token') || ''),
+                    'X-User-Role': localStorage.getItem('active_portal_role') || ''
+                  },
+                  body: JSON.stringify({
+                    code: o.code,
+                    name: o.name,
+                    latitude: o.latitude,
+                    longitude: o.longitude,
+                    total_ports: o.total_ports || 8,
+                    status: o.status || 'AVAILABLE',
+                    cluster_area: clusterArea,
+                    provider_id: partnerTag,
+                    provider_name: provName
+                  })
+                });
+                importedCount++;
+              } catch(e) {}
+            }
+          }
+
+          const vlanId = contract.vlan_id || 200;
+          const pInit = contract.partner_initial || 'FIBERGRID';
+          const compName = contract.company_name || 'Mitra ISP';
+          const nowStr = new Date().toLocaleString('id-ID');
+
+          let script = `# ===================================================================\n` +
+            `# ISPSYNC NEXUS - FIBERGRID WHOLESALE LAYER 2 INTERCONNECTION (VLAN TRUNK)\n` +
+            `# Mitra Rekanan       : ${compName} (${pInit})\n` +
+            `# Dedicated VLAN ID   : VLAN ${vlanId} (802.1Q Tagged)\n` +
+            (contract.iptv_vlan_id ? `# Multicast IPTV VLAN : VLAN ${contract.iptv_vlan_id} (Opsional)\n` : '') +
+            `# Alokasi Port Pasif  : ${contract.max_ports || 0} Port FO Pasif\n` +
+            `# Server Endpoint     : ${directUrl}\n` +
+            `# Tanggal Sinkron     : ${nowStr}\n` +
+            `# ===================================================================\n\n` +
+            `# 1. Tambahkan VLAN Interface Handover di Router Core ISP (Layer 2 Trunk)\n` +
+            `/interface vlan\n` +
+            `add name="vlan${vlanId}-jartaplok" vlan-id=${vlanId} interface=sfp-sfpplus1 mtu=1508 comment="Handover L2 Wholesale Jartaplok - ${compName}"\n\n` +
+            `# ===================================================================\n` +
+            `# BATAS DEMARKASI TELEKOMUNIKASI (TELECOM DEMARCATION POINT):\n` +
+            `# - Tanggung Jawab Jartaplok : Layer 1 Fisik & Layer 2 Transport (OLT -> ODC -> ODP -> ONT).\n` +
+            `# - Tanggung Jawab Mitra ISP : Layer 3 ke atas (IP Public/Private, IP Pool, PPPoE/Radius BRAS,\n` +
+            `#                              Bandwidth Queues, DNS Server, & Billing Pelanggan Ritel).\n` +
+            `# Provider Jartaplok TIDAK mengintervensi IP Address atau PPPoE Server ISP.\n` +
+            `# ===================================================================`;
+
+          data = {
+            connected_at: nowStr,
+            server_url: directUrl,
+            contract: contract,
+            total_odps_fetched: odps.length,
+            total_odps_imported: importedCount,
+            total_onts_fetched: onts.length,
+            mikrotik_script: script,
+            odps: odps,
+            onts: onts
+          };
+        }
         currentFiberGridSyncResult = data;
 
         // Render Summary Stats

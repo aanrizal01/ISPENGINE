@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -42,6 +43,10 @@ func Load() *Config {
 		SmartOLTAPIKey:    getEnv("SMARTOLT_API_KEY", "b71455fab579457d98d8f4b6d28cfdff"),
 		SmartOLTZoneID:    getEnv("SMARTOLT_ZONE_ID", "122"),
 		SmartOLTZoneName:  getEnv("SMARTOLT_ZONE_NAME", "GOGIGA"),
+	}
+
+	if cfg.DatabaseDriver == "sqlite" && (strings.HasPrefix(cfg.DatabaseDSN, "postgres://") || strings.HasPrefix(cfg.DatabaseDSN, "postgresql://")) {
+		cfg.DatabaseDriver = "postgres"
 	}
 
 	return cfg
