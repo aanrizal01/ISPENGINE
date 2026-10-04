@@ -206,6 +206,9 @@ func main() {
 			adm.Get("/clusters", apiH.AdminListClusters)
 			adm.Get("/staff-kpi", apiH.AdminStaffKPI)
 			adm.Get("/radius/live-sessions", apiH.AdminRadiusLiveSessions)
+			adm.Get("/partners", apiH.AdminListPartners)
+			adm.Post("/partners", apiH.AdminCreatePartner)
+			adm.Put("/partners/{id}", apiH.AdminUpdatePartner)
 		})
 
 		api.Route("/technician", func(tech chi.Router) {

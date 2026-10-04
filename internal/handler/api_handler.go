@@ -1974,3 +1974,118 @@ func (h *APIHandler) KickSubscriber(w http.ResponseWriter, r *http.Request) {
 		"message": fmt.Sprintf("User %s dieksekusi. PPPoE: %v, Hotspot: %v", username, pppoeKicked, hotspotKicked),
 	})
 }
+
+// AdminListPartners mengembalikan daftar tim sales & agen mitra resmi
+func (h *APIHandler) AdminListPartners(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+
+	users, err := h.store.ListUsersByTenant(r.Context(), t.ID)
+	if err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal mengambil daftar sales & mitra: "+err.Error())
+		return
+	}
+
+	type partnerItem struct {
+		ID             string  `json:"id"`
+		Code           string  `json:"code"`
+		Name           string  `json:"name"`
+		BranchCode     string  `json:"branch_code"`
+		ContactPhone   string  `json:"contact_phone"`
+		CommissionRate float64 `json:"commission_rate"`
+		IsActive       bool    `json:"is_active"`
+	}
+
+	partners := make([]partnerItem, 0)
+	for _, u := range users {
+		if strings.EqualFold(u.Role, "SALES") {
+			partners = append(partners, partnerItem{
+				ID:             u.ID,
+				Code:           strings.ToUpper(u.Username),
+				Name:           u.FullName,
+				BranchCode:     "ALL",
+				ContactPhone:   u.Phone,
+				CommissionRate: 50000,
+				IsActive:       u.Status == "ACTIVE",
+			})
+		}
+	}
+
+	h.successResponse(w, "Sales partners retrieved", partners)
+}
+
+// AdminCreatePartner mendaftarkan sales / mitra baru
+func (h *APIHandler) AdminCreatePartner(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+
+	var req struct {
+		Code           string  `json:"code"`
+		Name           string  `json:"name"`
+		ContactPhone   string  `json:"contact_phone"`
+		CommissionRate float64 `json:"commission_rate"`
+		BranchCode     string  `json:"branch_code"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.failResponse(w, http.StatusBadRequest, "Payload request tidak valid")
+		return
+	}
+
+	code := strings.TrimSpace(strings.ToUpper(req.Code))
+	name := strings.TrimSpace(req.Name)
+	if code == "" || name == "" {
+		h.failResponse(w, http.StatusBadRequest, "Kode dan Nama sales wajib diisi")
+		return
+	}
+
+	user := &domain.User{
+		TenantID: t.ID,
+		Username: strings.ToLower(code),
+		FullName: name,
+		Email:    fmt.Sprintf("%s@%s.local", strings.ToLower(code), t.Slug),
+		Phone:    strings.TrimSpace(req.ContactPhone),
+		Role:     "SALES",
+		Status:   "ACTIVE",
+	}
+
+	defaultPassword := "Sales@" + code
+	if err := h.store.CreateUser(r.Context(), user, defaultPassword); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal mendaftarkan sales: "+err.Error())
+		return
+	}
+
+	h.successResponse(w, "Sales berhasil didaftarkan", user)
+}
+
+// AdminUpdatePartner memperbarui status sales / mitra
+func (h *APIHandler) AdminUpdatePartner(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	if t == nil {
+		h.errorResponse(w, http.StatusNotFound, "Tenant context not found")
+		return
+	}
+
+	partnerID := chi.URLParam(r, "id")
+	var req struct {
+		Status string `json:"status"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.failResponse(w, http.StatusBadRequest, "Payload request tidak valid")
+		return
+	}
+
+	if req.Status != "" {
+		if err := h.store.UpdateUserStatus(r.Context(), t.ID, partnerID, req.Status); err != nil {
+			h.failResponse(w, http.StatusInternalServerError, "Gagal memperbarui status sales: "+err.Error())
+			return
+		}
+	}
+
+	h.successResponse(w, "Sales berhasil diperbarui", nil)
+}
