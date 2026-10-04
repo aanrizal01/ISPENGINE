@@ -229,6 +229,78 @@
       color: #0f172a;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       NOC DASHBOARD: RESPONSIVE (drawer, min font, touch targets)
+       ══════════════════════════════════════════════════════════ */
+    #admin-dashboard-container .text-\[9px\],
+    #admin-dashboard-container .text-\[9\.5px\],
+    #admin-dashboard-container .text-\[10px\],
+    #admin-dashboard-container .text-\[11px\] {
+      font-size: 12px !important;
+      line-height: 1.4 !important;
+    }
+    #admin-sidebar button,
+    #admin-mobile-topbar button {
+      cursor: pointer;
+    }
+    #admin-sidebar button:focus-visible,
+    #admin-sidebar select:focus-visible {
+      outline: 2px solid #06b6d4;
+      outline-offset: 2px;
+    }
+    @media (max-width: 1023.98px) {
+      #admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 10000;
+        width: min(85vw, 22rem);
+        max-width: none;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 0;
+        transform: translateX(-102%);
+        visibility: hidden;
+        transition: transform 0.2s ease, visibility 0s linear 0.2s;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+      }
+      html.admin-drawer-open #admin-sidebar {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.2s ease, visibility 0s linear 0s;
+      }
+      html.admin-drawer-open,
+      html.admin-drawer-open body {
+        overflow: hidden;
+      }
+      #admin-sidebar button,
+      #admin-sidebar select {
+        min-height: 44px;
+      }
+      #admin-sidebar .truncate {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+    }
+    @media (max-width: 767.98px) {
+      #admin-main-content button:not(td button):not(th button),
+      #admin-main-content select,
+      #admin-main-content input:not([type="checkbox"]):not([type="radio"]) {
+        min-height: 44px;
+      }
+      #admin-main-content input,
+      #admin-main-content select,
+      #admin-main-content textarea {
+        font-size: 16px !important;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #admin-sidebar { transition: none !important; }
+    }
+
     /* Production Cleanliness: Hide all dev demo helper buttons by default */
     .dev-demo-only {
       display: none !important;
@@ -2809,8 +2881,27 @@
       <!-- 2. ADMIN DASHBOARD (Shown when authenticated) -->
       <div id="admin-dashboard-container" class="hidden flex flex-col lg:flex-row gap-5 items-start w-full">
         
+        <!-- MOBILE TOP BAR (visible only below lg) -->
+        <div id="admin-mobile-topbar" class="lg:hidden sticky top-0 z-40 w-full flex items-center gap-3 px-3 h-14 bg-slate-950 border-b border-slate-800 text-white rounded-lg">
+          <button id="admin-drawer-open-btn" type="button" onclick="openAdminDrawer()" aria-label="Buka menu navigasi" aria-controls="admin-sidebar" aria-expanded="false" class="w-11 h-11 -ml-1 flex items-center justify-center rounded-xl text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <img id="admin-mobile-topbar-logo" src="" alt="Logo" class="h-7 w-auto object-contain brightness-0 invert shrink-0" onerror="this.style.display='none'" />
+          <span id="admin-mobile-topbar-brand" class="font-black tracking-tight uppercase text-base"></span>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700 shrink-0 whitespace-nowrap">NOC</span>
+          <script>
+            (function() {
+              try {
+                var l = document.getElementById('admin-mobile-topbar-logo'); if (l) l.src = window.__EARLY_LOGO_URL__ || '/web/dev_logo.svg';
+                var b = document.getElementById('admin-mobile-topbar-brand'); if (b) b.textContent = window.__EARLY_BRAND_NAME__ || 'DEV';
+              } catch(e) {}
+            })();
+          </script>
+        </div>
+        <div id="admin-drawer-backdrop" onclick="closeAdminDrawer()" class="hidden lg:hidden fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm" aria-hidden="true"></div>
+
         <!-- SIDEBAR NAVIGATION -->
-        <aside class="w-full lg:w-64 xl:w-72 shrink-0 bg-white border border-slate-200/90 rounded-lg p-3.5 shadow-2xs lg:sticky lg:top-6 space-y-4">
+        <aside id="admin-sidebar" role="navigation" aria-label="Navigasi NOC" class="w-full lg:w-64 xl:w-72 shrink-0 bg-white border border-slate-200/90 rounded-lg p-3.5 shadow-2xs lg:sticky lg:top-6 space-y-4">
           <!-- Sidebar Brand Header -->
           <div class="flex items-center gap-2.5 px-1 pb-1 border-b border-slate-100">
             <img src="/logo.png" alt="GOGIGA" class="h-7 w-auto object-contain" />
@@ -18187,6 +18278,72 @@
       alert('Command Router MikroTik (Layer 2 Handover) berhasil disalin ke clipboard!');
     }
 
+
+    // NOC mobile drawer (off-canvas sidebar below lg breakpoint)
+    function isAdminMobileViewport() {
+      return window.matchMedia('(max-width: 1023.98px)').matches;
+    }
+
+    function openAdminDrawer() {
+      if (!isAdminMobileViewport()) return;
+      document.documentElement.classList.add('admin-drawer-open');
+      const backdrop = document.getElementById('admin-drawer-backdrop');
+      if (backdrop) backdrop.classList.remove('hidden');
+      const openBtn = document.getElementById('admin-drawer-open-btn');
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'true');
+      const side = document.getElementById('admin-sidebar');
+      if (side) {
+        side.setAttribute('role', 'dialog');
+        side.setAttribute('aria-modal', 'true');
+        const first = side.querySelector('button, select');
+        if (first) setTimeout(() => first.focus(), 50);
+      }
+    }
+
+    function closeAdminDrawer(restoreFocus) {
+      document.documentElement.classList.remove('admin-drawer-open');
+      const backdrop = document.getElementById('admin-drawer-backdrop');
+      if (backdrop) backdrop.classList.add('hidden');
+      const openBtn = document.getElementById('admin-drawer-open-btn');
+      if (openBtn) {
+        openBtn.setAttribute('aria-expanded', 'false');
+        if (restoreFocus === true) openBtn.focus();
+      }
+      const side = document.getElementById('admin-sidebar');
+      if (side) {
+        side.setAttribute('role', 'navigation');
+        side.removeAttribute('aria-modal');
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (!document.documentElement.classList.contains('admin-drawer-open')) return;
+      if (e.key === 'Escape') {
+        closeAdminDrawer(true);
+        return;
+      }
+      if (e.key === 'Tab') {
+        const side = document.getElementById('admin-sidebar');
+        if (!side) return;
+        const f = Array.from(side.querySelectorAll('button:not([disabled]), select, a[href]')).filter(el => el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!document.documentElement.classList.contains('admin-drawer-open')) return;
+      const side = document.getElementById('admin-sidebar');
+      if (!side || !side.contains(e.target)) return;
+      const btn = e.target.closest('button');
+      if (btn) setTimeout(() => closeAdminDrawer(false), 0);
+    });
+
+    window.addEventListener('resize', function() {
+      if (!isAdminMobileViewport()) closeAdminDrawer(false);
+    });
 
     function switchAdminSubTab(sub) {
       const currentRole = getActivePortalSession();
