@@ -1353,10 +1353,6 @@ func (h *APIHandler) JartaplokBilling(w http.ResponseWriter, r *http.Request) {
 		totalCapacity += o.TotalPorts
 		totalUsed += o.UsedPorts
 	}
-	if totalCapacity == 0 {
-		totalCapacity = 16
-		totalUsed = 2
-	}
 	availPorts := totalCapacity - totalUsed
 	if availPorts < 0 {
 		availPorts = 0
@@ -1367,6 +1363,18 @@ func (h *APIHandler) JartaplokBilling(w http.ResponseWriter, r *http.Request) {
 	}
 	ratePerPort := 25000.0
 	totalBilling := float64(totalUsed) * ratePerPort
+
+	tiers := make([]map[string]interface{}, 0)
+	if totalUsed > 0 {
+		tiers = append(tiers, map[string]interface{}{
+			"speed_mbps":      50,
+			"rate_per_port":   ratePerPort,
+			"active_ports":    totalUsed,
+			"suspended_ports": 0,
+			"subtotal":        totalBilling,
+			"full_subtotal":   totalBilling,
+		})
+	}
 
 	h.successResponse(w, "Jartaplok billing retrieved", map[string]interface{}{
 		"agreements":              ags,
@@ -1383,17 +1391,8 @@ func (h *APIHandler) JartaplokBilling(w http.ResponseWriter, r *http.Request) {
 		"total_suspended_ports":   0,
 		"partner_name":            "Mitra Wholesale",
 		"service_type":            "WHOLESALE",
-		"tiers": []map[string]interface{}{
-			{
-				"speed_mbps":      50,
-				"rate_per_port":   ratePerPort,
-				"active_ports":    totalUsed,
-				"suspended_ports": 0,
-				"subtotal":        totalBilling,
-				"full_subtotal":   totalBilling,
-			},
-		},
-		"estimated_capex_savings": "Rp 45.000.000 (Penghematan Penarikan Feeder)",
+		"tiers":                   tiers,
+		"estimated_capex_savings": "Rp 0",
 	})
 }
 
@@ -1454,36 +1453,30 @@ func (h *APIHandler) SyncODPFromFiberGrid(w http.ResponseWriter, r *http.Request
 
 
 func (h *APIHandler) JartaplokPorts(w http.ResponseWriter, r *http.Request) {
-	h.successResponse(w, "Jartaplok ports retrieved", []map[string]interface{}{
-		{
-			"circuit_id":     "CKT-JARTAP-001",
-			"odp_code":       "ODP-PYK-001",
-			"odp_name":       "ODP Simpang Benteng 01",
-			"port_number":    1,
-			"package_speed":  "50 Mbps",
-			"monthly_rental": 25000,
-			"prorated_fee":   25000,
-			"is_prorated":    false,
-			"active_days":    30,
-			"total_days":     30,
-			"activated_at":   "01 Sep 2026",
-			"status":         "ACTIVE",
-		},
-		{
-			"circuit_id":     "CKT-JARTAP-002",
-			"odp_code":       "ODP-PYK-002",
-			"odp_name":       "ODP Koridor Sudirman 02",
-			"port_number":    2,
-			"package_speed":  "100 Mbps",
-			"monthly_rental": 35000,
-			"prorated_fee":   35000,
-			"is_prorated":    false,
-			"active_days":    30,
-			"total_days":     30,
-			"activated_at":   "05 Sep 2026",
-			"status":         "ACTIVE",
-		},
-	})
+	t := middleware.GetTenant(r)
+	ports := make([]map[string]interface{}, 0)
+	if t != nil {
+		odps, _ := h.store.ListODPs(r.Context(), t.ID)
+		for _, o := range odps {
+			if o.IsSharedJartaplok && o.UsedPorts > 0 {
+				ports = append(ports, map[string]interface{}{
+					"circuit_id":     fmt.Sprintf("CKT-%s-01", o.Code),
+					"odp_code":       o.Code,
+					"odp_name":       o.Name,
+					"port_number":    1,
+					"package_speed":  "50 Mbps",
+					"monthly_rental": 25000,
+					"prorated_fee":   25000,
+					"is_prorated":    false,
+					"active_days":    30,
+					"total_days":     30,
+					"activated_at":   "01 Sep 2026",
+					"status":         "ACTIVE",
+				})
+			}
+		}
+	}
+	h.successResponse(w, "Jartaplok ports retrieved", ports)
 }
 
 func (h *APIHandler) SuperuserOverview(w http.ResponseWriter, r *http.Request) {

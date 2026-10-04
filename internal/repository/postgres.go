@@ -471,32 +471,6 @@ func (s *PostgresStorage) seedDefaultTenant() error {
 			ON CONFLICT (tenant_id, code) DO NOTHING
 		`, uuid.New().String(), devID)
 
-		_, _ = s.db.ExecContext(ctx, `
-			INSERT INTO odps (id, tenant_id, code, name, latitude, longitude, total_ports, used_ports, status)
-			VALUES ($1, $2, 'ODP-DEV-001', 'ODP Testbed NOC Core', -0.9400, 100.3700, 16, 2, 'ACTIVE')
-			ON CONFLICT (tenant_id, code) DO NOTHING
-		`, uuid.New().String(), devID)
-	}
-
-	// Always ensure dev tenant has initial testbed ODPs
-	if devID != "" {
-		devODPs := []struct {
-			c, n     string
-			lat, lng float64
-			tp, up   int
-		}{
-			{"ODP-DEV-001", "ODP Testbed NOC Core", -0.9400, 100.3700, 16, 2},
-			{"ODP-DEV-002", "ODP Cyber 1 Datacenter", -6.2383, 106.8227, 24, 6},
-			{"ODP-PYK-001", "ODP Simpang Benteng 01", -0.2245, 100.6321, 8, 1},
-			{"ODP-PYK-002", "ODP Koridor Sudirman 02", -0.2289, 100.6354, 8, 1},
-		}
-		for _, o := range devODPs {
-			_, _ = s.db.ExecContext(ctx, `
-				INSERT INTO odps (id, tenant_id, code, name, latitude, longitude, total_ports, used_ports, status)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ACTIVE')
-				ON CONFLICT (tenant_id, code) DO NOTHING
-			`, uuid.New().String(), devID, o.c, o.n, o.lat, o.lng, o.tp, o.up)
-		}
 	}
 
 	// ── 4. Kerjasama Jartaplok Bilateral (Postgres) ───

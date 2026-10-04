@@ -24256,31 +24256,35 @@
       }
       if (footTotal) footTotal.innerText = `Rp ${Number(d.total_billing_amount || 0).toLocaleString('id-ID')}`;
 
-      if (tbody && d.tiers) {
-        tbody.innerHTML = d.tiers.map(t => {
-          const hasProrataOrSusp = t.full_subtotal && t.full_subtotal > t.subtotal;
-          return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4 font-bold text-slate-800">
-              ${d.service_type === 'BITSTREAM' ? `${t.speed_mbps} Mbps Bitstream Symetric 1:1` : `${t.speed_mbps} Mbps Wholesale FO`}
-            </td>
-            <td class="py-3 px-4 font-mono text-slate-600">Rp ${Number(t.rate_per_port).toLocaleString('id-ID')} / port / bln</td>
-            <td class="py-3 px-4 text-center">
-              <div class="inline-flex flex-col items-center">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold ${t.active_ports > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
-                  ${t.active_ports} Port Aktif
-                </span>
-                ${t.suspended_ports > 0 ? `<span class="text-[10px] font-bold text-amber-700 mt-0.5">${t.suspended_ports} Jeda</span>` : ''}
-              </div>
-            </td>
-            <td class="py-3 px-4 text-right font-mono font-bold ${t.subtotal > 0 ? 'text-emerald-700' : 'text-slate-400'}">
-              ${hasProrataOrSusp ? `<span class="line-through text-slate-400 text-[10px] block font-normal">Rp ${Number(t.full_subtotal).toLocaleString('id-ID')}</span>` : ''}
-              Rp ${Number(t.subtotal).toLocaleString('id-ID')}
-              ${hasProrataOrSusp ? `<span class="text-[10px] text-emerald-700 block font-normal">Prorata Diterapkan</span>` : ''}
-            </td>
-          </tr>
-        `;
-        }).join('');
+      if (tbody) {
+        if (!d.tiers || d.tiers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-sans text-xs">Belum ada port aktif terpasang pada periode ini.</td></tr>';
+        } else {
+          tbody.innerHTML = d.tiers.map(t => {
+            const hasProrataOrSusp = t.full_subtotal && t.full_subtotal > t.subtotal;
+            return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="py-3 px-4 font-bold text-slate-800">
+                ${d.service_type === 'BITSTREAM' ? `${t.speed_mbps} Mbps Bitstream Symetric 1:1` : `${t.speed_mbps} Mbps Wholesale FO`}
+              </td>
+              <td class="py-3 px-4 font-mono text-slate-600">Rp ${Number(t.rate_per_port).toLocaleString('id-ID')} / port / bln</td>
+              <td class="py-3 px-4 text-center">
+                <div class="inline-flex flex-col items-center">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold ${t.active_ports > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
+                    ${t.active_ports} Port Aktif
+                  </span>
+                  ${t.suspended_ports > 0 ? `<span class="text-[10px] font-bold text-amber-700 mt-0.5">${t.suspended_ports} Jeda</span>` : ''}
+                </div>
+              </td>
+              <td class="py-3 px-4 text-right font-mono font-bold ${t.subtotal > 0 ? 'text-emerald-700' : 'text-slate-400'}">
+                ${hasProrataOrSusp ? `<span class="line-through text-slate-400 text-[10px] block font-normal">Rp ${Number(t.full_subtotal).toLocaleString('id-ID')}</span>` : ''}
+                Rp ${Number(t.subtotal).toLocaleString('id-ID')}
+                ${hasProrataOrSusp ? `<span class="text-[10px] text-emerald-700 block font-normal">Prorata Diterapkan</span>` : ''}
+              </td>
+            </tr>
+          `;
+          }).join('');
+        }
       }
       lucide.createIcons();
     }
