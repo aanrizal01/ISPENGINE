@@ -469,10 +469,11 @@
         z-index: auto !important;
       }
 
-      /* Tampilkan modal BAST, Invoice Pelanggan, & Invoice Jartaplok aktif mengalir normal (static) */
+      /* Tampilkan modal BAST, Invoice Pelanggan, Invoice Jartaplok, & Scorecard KPI aktif mengalir normal (static) */
       #modal-view-bast:not(.hidden),
       #modal-cust-invoice-print:not(.hidden),
-      #modal-jartaplok-invoice:not(.hidden) {
+      #modal-jartaplok-invoice:not(.hidden),
+      #modal-kpi-scorecard:not(.hidden) {
         display: block !important;
         position: static !important;
         inset: auto !important;
@@ -488,11 +489,12 @@
         z-index: auto !important;
       }
 
-      /* Kartu putih dalam modal kontrak, BAST, invoice pelanggan, dan invoice Jartaplok */
+      /* Kartu putih dalam modal kontrak, BAST, invoice pelanggan, invoice Jartaplok, dan Scorecard KPI */
       #modal-digital-contract > div,
       #modal-view-bast > div,
       #modal-cust-invoice-print > div,
-      #modal-jartaplok-invoice > div {
+      #modal-jartaplok-invoice > div,
+      #modal-kpi-scorecard > div {
         display: block !important;
         position: static !important;
         width: 100% !important;
@@ -3963,10 +3965,10 @@
               <p class="text-xs text-slate-500 font-sans mt-0.5">Monitoring metrik kinerja teknisi lapangan, tim sales, dan efektivitas operasional berbasis data PostgreSQL.</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-              <a href="/FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" id="btn-kpi-download-pdf" target="_blank" download="FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-mono text-xs font-bold rounded-md border border-slate-200 flex items-center gap-1.5 transition shadow-xs">
+              <button type="button" onclick="openKPIScorecardModal()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-mono text-xs font-bold rounded-md border border-slate-200 flex items-center gap-1.5 transition shadow-xs" title="Buka & Unduh Form Scorecard KPI Resmi Sesuai Data Tenant">
                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
                 <span>Unduh Form PDF</span>
-              </a>
+              </button>
               <button onclick="loadStaffKPIData()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold rounded-md shadow-xs flex items-center gap-1.5 transition">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span>Segarkan Data KPI</span>
@@ -8193,6 +8195,183 @@
       <!-- Footer Modal -->
       <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 no-print shrink-0">
         <button type="button" onclick="closeViewBastModal()" class="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODAL FORM SCORECARD KPI BULANAN (LIVE MULTI-TENANT PRINT) -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div id="modal-kpi-scorecard" class="fixed inset-0 z-[9999] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden overflow-y-auto">
+    <div class="bg-white max-w-4xl w-full rounded-xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <!-- Header Kontrol (No Print) -->
+      <div class="p-4 bg-slate-900 text-white flex items-center justify-between no-print shrink-0 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <i data-lucide="file-check-2" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold font-mono text-white">FORM SCORECARD EVALUASI &amp; KPI BULANAN</h3>
+            <span class="text-[11px] text-slate-400 font-sans">Dokumen Resmi Sesuai Data Aktif Tenant ISP</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="/FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" target="_blank" download="FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-md text-xs font-mono font-medium transition flex items-center gap-1.5 border border-slate-700" title="Unduh format blanko PDF standar">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Blanko PDF</span>
+          </a>
+          <button type="button" onclick="window.print()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm" title="Cetak atau Simpan sebagai PDF">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Cetak / Unduh PDF</span>
+          </button>
+          <button type="button" onclick="closeKPIScorecardModal()" class="w-8 h-8 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Isi Dokumen Cetak / Preview -->
+      <div class="p-6 sm:p-10 overflow-y-auto space-y-6 text-slate-800 bg-white" id="scorecard-printable-area">
+        <!-- Header Dokumen Cetak -->
+        <div class="border-b-2 border-slate-900 pb-4">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-mono font-bold tracking-wider uppercase text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">OFFICIAL HR &amp; OPERATIONAL SCORECARD</span>
+              <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight font-sans mt-1" id="scorecard-doc-title">FORM SCORECARD EVALUASI &amp; PENILAIAN KPI BULANAN</h1>
+              <p class="text-xs text-slate-600 font-sans mt-0.5">STANDAR EVALUASI KINERJA SDM OPERASIONAL <strong id="scorecard-company-name">PT. PENYELENGGARA JASA INTERNET</strong></p>
+            </div>
+            <div class="text-right font-mono text-[11px] text-slate-600 space-y-0.5">
+              <div>No: <strong id="scorecard-form-no" class="text-slate-900">ISP/HRD-KPI/FORM/2026/10</strong></div>
+              <div>Periode: <strong id="scorecard-period" class="text-slate-900">Bulan Oktober 2026</strong></div>
+              <div>Tanggal: <span id="scorecard-eval-date">-</span></div>
+            </div>
+          </div>
+
+          <!-- Metadata Box -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 text-[11px] font-sans">
+            <div class="p-2 rounded bg-slate-50 border border-slate-200">
+              <span class="block text-[10px] font-mono text-slate-500 uppercase">Penyelenggara ISP</span>
+              <strong id="scorecard-tenant-name" class="text-slate-900 font-bold">-</strong>
+            </div>
+            <div class="p-2 rounded bg-slate-50 border border-slate-200">
+              <span class="block text-[10px] font-mono text-slate-500 uppercase">Brand Layanan</span>
+              <strong id="scorecard-brand-name" class="text-slate-900 font-bold">-</strong>
+            </div>
+            <div class="p-2 rounded bg-slate-50 border border-slate-200">
+              <span class="block text-[10px] font-mono text-slate-500 uppercase">Wilayah Operasional</span>
+              <strong id="scorecard-branch-name" class="text-slate-900 font-bold">Nasional (Pusat)</strong>
+            </div>
+            <div class="p-2 rounded bg-slate-50 border border-slate-200">
+              <span class="block text-[10px] font-mono text-slate-500 uppercase">Disahkan Oleh</span>
+              <strong id="scorecard-director-name" class="text-slate-900 font-bold">Direktur Utama / Owner</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panduan Singkat Skema Pembobotan -->
+        <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-sans text-slate-600 space-y-1">
+          <strong class="font-bold text-slate-900 font-mono text-xs block">PANDUAN PENGISIAN &amp; PEMBOBOTAN:</strong>
+          <p>• <strong>Kuantitatif Sistem (70%):</strong> Terhitung otomatis dari database operasional (SPK Pasang Baru, BAST Digital, dan data pelanggan terverifikasi).</p>
+          <p>• <strong>Kualitatif Lapangan (30%):</strong> Observasi kedisiplinan kerja, kepatuhan K3 fiber optic, etika pelanggan, dan ketepatan SOP.</p>
+          <p>• <strong>Predikat Akhir:</strong> Skor 90–100 (A - Sangat Baik / Komisi + Bonus), Skor 75–89 (B - Baik / Standar SOP), Skor 60–74 (C - Cukup), &lt;60 (D - Kurang / Pembinaan).</p>
+        </div>
+
+        <!-- Seksi 1: Teknisi Lapangan -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+            <h2 class="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="wrench" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>1. FORMULIR PENILAIAN: REGU TEKNISI LAPANGAN</span>
+            </h2>
+            <span class="text-[10px] font-mono text-slate-500">Bobot 100% (Teknis 70%, Disiplin &amp; K3 30%)</span>
+          </div>
+          <div id="scorecard-tech-container" class="space-y-4">
+            <!-- Diisi dinamis -->
+          </div>
+        </div>
+
+        <!-- Seksi 2: Sales Marketing -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+            <h2 class="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>2. FORMULIR PENILAIAN: ACCOUNT EXECUTIVE / SALES MARKETING</span>
+            </h2>
+            <span class="text-[10px] font-mono text-slate-500">Bobot 100% (Penjualan 70%, Tata Kelola 30%)</span>
+          </div>
+          <div id="scorecard-sales-container" class="space-y-4">
+            <!-- Diisi dinamis -->
+          </div>
+        </div>
+
+        <!-- Seksi 3: NOC & Core Network -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+            <h2 class="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-purple-600"></i>
+              <span>3. FORMULIR PENILAIAN: KEPALA NOC &amp; CORE NETWORK</span>
+            </h2>
+            <span class="text-[10px] font-mono text-slate-500">Target Uptime Core &ge; 99.5%</span>
+          </div>
+          <div id="scorecard-noc-container" class="space-y-4">
+            <!-- Diisi dinamis -->
+          </div>
+        </div>
+
+        <!-- Seksi 4: Finance & Billing -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+            <h2 class="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="receipt" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>4. FORMULIR PENILAIAN: STAF KEUANGAN &amp; BILLING (FINANCE)</span>
+            </h2>
+            <span class="text-[10px] font-mono text-slate-500">Target Collection Rate &ge; 95%</span>
+          </div>
+          <div id="scorecard-finance-container" class="space-y-4">
+            <!-- Diisi dinamis -->
+          </div>
+        </div>
+
+        <!-- Seksi 5: Lembar Pengesahan Resmi -->
+        <div class="pt-6 border-t-2 border-slate-300">
+          <h2 class="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider text-center mb-4">LEMBAR PENGESAHAN &amp; PENETAPAN EVALUASI BULANAN</h2>
+          <div class="grid grid-cols-3 gap-4 text-center font-sans text-xs">
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Disusun Oleh:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block">Karyawan / Staf Dinilai</strong>
+                <span class="text-[10px] text-slate-500">Staf Terkait</span>
+              </div>
+            </div>
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Diperiksa Oleh:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block" id="scorecard-sign-supervisor">Kepala Divisi / NOC</strong>
+                <span class="text-[10px] text-slate-500">Atasan Langsung</span>
+              </div>
+            </div>
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Disetujui &amp; Disahkan:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block" id="scorecard-sign-owner">Direktur Utama / Owner</strong>
+                <span class="text-[10px] text-slate-500">Pimpinan Tertinggi ISP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Modal (No Print) -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 no-print shrink-0">
+        <span class="text-[11px] text-slate-500 font-mono">Gunakan tombol Cetak untuk menyimpan dokumen PDF resmi A4.</span>
+        <button type="button" onclick="closeKPIScorecardModal()" class="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 transition">
           Tutup
         </button>
       </div>
@@ -18513,6 +18692,7 @@
         const json = await res.json();
         if (json.success && json.data) {
           const d = json.data;
+          window.__LAST_KPI_DATA__ = d;
           const kpiTitle = document.getElementById('kpi-branch-scope-title');
           if (kpiTitle) {
             kpiTitle.textContent = 'PAPAN PERFORMA & KPI STAF (' + (d.branch_name || 'NASIONAL').toUpperCase() + ')';
@@ -18712,6 +18892,356 @@
         const salesBody = document.getElementById('kpi-sales-table-body');
         if (salesBody) salesBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada data sales.</td></tr>';
       }
+    }
+
+    async function openKPIScorecardModal() {
+      try {
+        if (!window.__LAST_KPI_DATA__) {
+          await loadStaffKPIData();
+        }
+        const d = window.__LAST_KPI_DATA__ || {};
+        const tenant = window.__ISPSYNC_TENANT__ || {};
+        const tenantName = tenant.Name || window.__EARLY_BRAND_NAME__ || 'Penyelenggara Jasa Internet';
+        const brandName = (tenant.PrefixID || tenant.Slug || 'ISP').toUpperCase() + ' FIBER BROADBAND';
+        const slugUpper = (tenant.Slug || 'ISP').toUpperCase();
+
+        // Find Owner / Direktur & NOC
+        const allTeam = Array.isArray(d.all_team) ? d.all_team : [];
+        const ownerUser = allTeam.find(m => (m.role || '').toUpperCase() === 'OWNER');
+        const ownerName = ownerUser ? (ownerUser.name || ownerUser.username) : 'Direktur Utama / Owner';
+        const nocUser = allTeam.find(m => (m.role || '').toUpperCase() === 'NOC');
+        const nocName = nocUser ? (nocUser.name || nocUser.username) : 'Kepala Divisi NOC';
+
+        // Header info
+        const elCompany = document.getElementById('scorecard-company-name');
+        if (elCompany) elCompany.textContent = tenantName;
+        const elTenant = document.getElementById('scorecard-tenant-name');
+        if (elTenant) elTenant.textContent = tenantName;
+        const elBrand = document.getElementById('scorecard-brand-name');
+        if (elBrand) elBrand.textContent = brandName;
+        const elFormNo = document.getElementById('scorecard-form-no');
+        if (elFormNo) elFormNo.textContent = `${slugUpper}/HRD-KPI/FORM/2026/10`;
+        const elDirector = document.getElementById('scorecard-director-name');
+        if (elDirector) elDirector.textContent = ownerName;
+        const elEvalDate = document.getElementById('scorecard-eval-date');
+        if (elEvalDate) {
+          const now = new Date();
+          elEvalDate.textContent = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+        }
+        const elSignOwner = document.getElementById('scorecard-sign-owner');
+        if (elSignOwner) elSignOwner.textContent = ownerName;
+        const elSignSup = document.getElementById('scorecard-sign-supervisor');
+        if (elSignSup) elSignSup.textContent = nocName;
+
+        // Render Technicians
+        const techContainer = document.getElementById('scorecard-tech-container');
+        if (techContainer) {
+          const techs = Array.isArray(d.technicians) && d.technicians.length > 0
+            ? d.technicians
+            : allTeam.filter(m => (m.role || '').toUpperCase() === 'TECHNICIAN' || (m.role || '').toUpperCase() === 'TEKNISI');
+
+          if (techs.length === 0) {
+            techContainer.innerHTML = `
+              <div class="p-3 bg-slate-50 border border-slate-200 rounded text-xs text-slate-500">
+                Nama Teknisi: [ ____________________ ] • Belum ada teknisi lapangan terdaftar pada sistem.
+              </div>
+            `;
+          } else {
+            techContainer.innerHTML = techs.map((t, idx) => {
+              const completed = t.completed_orders || 0;
+              const opt = (t.avg_optical_power_dbm && t.avg_optical_power_dbm !== 0) ? `${t.avg_optical_power_dbm.toFixed(1)} dBm` : '-';
+              const score = (t.completed_orders > 0 && t.score > 0) ? `${t.score}/100` : '0/100';
+              const grade = t.grade || 'BELUM DIEVALUASI';
+
+              return `
+                <div class="border border-slate-200 rounded-lg p-3.5 bg-slate-50/50 space-y-2.5">
+                  <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+                    <div>
+                      <span class="font-mono text-slate-500 text-[10px]">TEKNISI #${idx + 1}:</span>
+                      <strong class="text-slate-900 ml-1 font-bold text-sm">${t.name}</strong>
+                      <span class="ml-2 font-mono text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${t.role || 'Teknisi Lapangan'}</span>
+                    </div>
+                    <div class="font-mono text-xs">
+                      Status: <strong class="text-slate-900">${grade}</strong> (${score})
+                    </div>
+                  </div>
+                  <table class="w-full text-left text-xs bg-white border border-slate-200 rounded">
+                    <thead class="bg-slate-100 text-[10px] font-mono text-slate-600">
+                      <tr>
+                        <th class="py-1.5 px-2">INDIKATOR KPI</th>
+                        <th class="py-1.5 px-2">TARGET</th>
+                        <th class="py-1.5 px-2">BOBOT</th>
+                        <th class="py-1.5 px-2">REALISASI</th>
+                        <th class="py-1.5 px-2 text-right">SKOR</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-sans text-[11px]">
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">1. SPK Pasang Baru Selesai (Completed)</td>
+                        <td class="py-1.5 px-2 font-mono">≥ 20 SPK</td>
+                        <td class="py-1.5 px-2 font-mono">30%</td>
+                        <td class="py-1.5 px-2 font-mono font-bold text-emerald-700">${completed} SPK</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${completed > 0 ? Math.min(30, Math.round(completed / 20 * 30)) + '%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">2. Kualitas Redaman BAST Optik (≤ -23.0 dBm)</td>
+                        <td class="py-1.5 px-2 font-mono">100% Bagus</td>
+                        <td class="py-1.5 px-2 font-mono">25%</td>
+                        <td class="py-1.5 px-2 font-mono">${opt}</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${completed > 0 ? '25%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">3. Kecepatan Penanganan Gangguan (≤ 4 Jam)</td>
+                        <td class="py-1.5 px-2 font-mono">≥ 90%</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">${completed > 0 ? 'Standar' : '-'}</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${completed > 0 ? '15%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">4. Kepatuhan K3 &amp; APD Lapangan (Helm, Rompi, Sabuk)</td>
+                        <td class="py-1.5 px-2 font-mono">100% Tertib</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">SOP</td>
+                        <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">5. Presensi, Kehadiran &amp; Sikap Pelanggan</td>
+                        <td class="py-1.5 px-2 font-mono">Nihil Komplain</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">Nihil</td>
+                        <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+
+        // Render Sales
+        const salesContainer = document.getElementById('scorecard-sales-container');
+        if (salesContainer) {
+          const salesList = Array.isArray(d.sales) && d.sales.length > 0
+            ? d.sales
+            : allTeam.filter(m => (m.role || '').toUpperCase() === 'SALES');
+
+          if (salesList.length === 0) {
+            salesContainer.innerHTML = `
+              <div class="p-3 bg-slate-50 border border-slate-200 rounded text-xs text-slate-500">
+                Nama Staf Sales: [ ____________________ ] • Belum ada staf sales marketing terdaftar.
+              </div>
+            `;
+          } else {
+            salesContainer.innerHTML = salesList.map((s, idx) => {
+              const active = s.active_customers || 0;
+              const leads = s.total_leads || 0;
+              const comm = s.total_commission || 0;
+              const score = (active > 0 || leads > 0) ? `${s.score}/100` : '0/100';
+              const grade = s.grade || 'BELUM DIEVALUASI';
+
+              return `
+                <div class="border border-slate-200 rounded-lg p-3.5 bg-slate-50/50 space-y-2.5">
+                  <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+                    <div>
+                      <span class="font-mono text-slate-500 text-[10px]">SALES #${idx + 1}:</span>
+                      <strong class="text-slate-900 ml-1 font-bold text-sm">${s.name}</strong>
+                      <span class="ml-2 font-mono text-[10px] text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">${s.partner_code || s.username || 'SALES'}</span>
+                    </div>
+                    <div class="font-mono text-xs">
+                      Status: <strong class="text-slate-900">${grade}</strong> (${score})
+                    </div>
+                  </div>
+                  <table class="w-full text-left text-xs bg-white border border-slate-200 rounded">
+                    <thead class="bg-slate-100 text-[10px] font-mono text-slate-600">
+                      <tr>
+                        <th class="py-1.5 px-2">INDIKATOR KPI</th>
+                        <th class="py-1.5 px-2">TARGET</th>
+                        <th class="py-1.5 px-2">BOBOT</th>
+                        <th class="py-1.5 px-2">REALISASI</th>
+                        <th class="py-1.5 px-2 text-right">SKOR</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-sans text-[11px]">
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">1. Pencapaian Pelanggan Baru Aktif (Active)</td>
+                        <td class="py-1.5 px-2 font-mono">30 Pelanggan</td>
+                        <td class="py-1.5 px-2 font-mono">45%</td>
+                        <td class="py-1.5 px-2 font-mono font-bold text-emerald-700">${active} Pelanggan</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${active > 0 ? Math.min(45, Math.round(active / 30 * 45)) + '%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">2. Rasio Konversi Prospek ke Pelanggan Aktif</td>
+                        <td class="py-1.5 px-2 font-mono">≥ 80%</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">${(s.conversion_rate_pct || 0).toFixed(0)}%</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${active > 0 ? '15%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">3. Follow-Up Calon Pelanggan Overdistance</td>
+                        <td class="py-1.5 px-2 font-mono">≥ 90% Survei</td>
+                        <td class="py-1.5 px-2 font-mono">10%</td>
+                        <td class="py-1.5 px-2 font-mono">${active > 0 ? 'SOP' : '-'}</td>
+                        <td class="py-1.5 px-2 font-mono text-right">${active > 0 ? '10%' : '0%'}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">4. Kecepatan Entri Registrasi Pelanggan Baru</td>
+                        <td class="py-1.5 px-2 font-mono">≤ 2 Jam</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">SOP</td>
+                        <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-2 font-medium">5. Laporan Pipeline Mingguan &amp; Kepatuhan SOP</td>
+                        <td class="py-1.5 px-2 font-mono">100% Disiplin</td>
+                        <td class="py-1.5 px-2 font-mono">15%</td>
+                        <td class="py-1.5 px-2 font-mono">Tertib</td>
+                        <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="text-[11px] font-mono text-slate-700 bg-slate-100/70 p-2 rounded border border-slate-200 flex items-center justify-between">
+                    <span>Kalkulasi Hak Komisi: ${active} Plg × Rp 50.000</span>
+                    <strong class="text-emerald-700">Rp ${comm.toLocaleString('id-ID')}</strong>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+
+        // Render NOC
+        const nocContainer = document.getElementById('scorecard-noc-container');
+        if (nocContainer) {
+          nocContainer.innerHTML = `
+            <div class="border border-slate-200 rounded-lg p-3.5 bg-slate-50/50 space-y-2">
+              <div class="text-xs">
+                <span class="font-mono text-slate-500 text-[10px]">PENANGGUNG JAWAB NOC:</span>
+                <strong class="text-slate-900 ml-1 font-bold">${nocName}</strong>
+              </div>
+              <table class="w-full text-left text-xs bg-white border border-slate-200 rounded">
+                <thead class="bg-slate-100 text-[10px] font-mono text-slate-600">
+                  <tr>
+                    <th class="py-1.5 px-2">INDIKATOR KPI</th>
+                    <th class="py-1.5 px-2">TARGET</th>
+                    <th class="py-1.5 px-2">BOBOT</th>
+                    <th class="py-1.5 px-2">REALISASI</th>
+                    <th class="py-1.5 px-2 text-right">SKOR</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-sans text-[11px]">
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">1. Uptime Jaringan &amp; Router MikroTik Gateway</td>
+                    <td class="py-1.5 px-2 font-mono">≥ 99.5%</td>
+                    <td class="py-1.5 px-2 font-mono">30%</td>
+                    <td class="py-1.5 px-2 font-mono text-emerald-700 font-bold">99.9%</td>
+                    <td class="py-1.5 px-2 font-mono text-right">30%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">2. Kecepatan Verifikasi Pendaftaran &amp; Terbit SPK</td>
+                    <td class="py-1.5 px-2 font-mono">≤ 2 Jam</td>
+                    <td class="py-1.5 px-2 font-mono">20%</td>
+                    <td class="py-1.5 px-2 font-mono">SOP</td>
+                    <td class="py-1.5 px-2 font-mono text-right">20%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">3. Penyelesaian Gangguan Core Severity 1 &amp; 2</td>
+                    <td class="py-1.5 px-2 font-mono">≤ 3 Jam</td>
+                    <td class="py-1.5 px-2 font-mono">20%</td>
+                    <td class="py-1.5 px-2 font-mono">SLA 100%</td>
+                    <td class="py-1.5 px-2 font-mono text-right">20%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">4. Pemeliharaan Data ODP GIS &amp; Core Fiber Optic</td>
+                    <td class="py-1.5 px-2 font-mono">100% Akurat</td>
+                    <td class="py-1.5 px-2 font-mono">15%</td>
+                    <td class="py-1.5 px-2 font-mono">Tertib</td>
+                    <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">5. Koordinasi &amp; Dispatching Regu Lapangan</td>
+                    <td class="py-1.5 px-2 font-mono">Efektif</td>
+                    <td class="py-1.5 px-2 font-mono">15%</td>
+                    <td class="py-1.5 px-2 font-mono">SOP</td>
+                    <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        // Render Finance
+        const finContainer = document.getElementById('scorecard-finance-container');
+        if (finContainer) {
+          finContainer.innerHTML = `
+            <div class="border border-slate-200 rounded-lg p-3.5 bg-slate-50/50 space-y-2">
+              <div class="text-xs">
+                <span class="font-mono text-slate-500 text-[10px]">PENANGGUNG JAWAB KEUANGAN &amp; BILLING:</span>
+                <strong class="text-slate-900 ml-1 font-bold">Staf Keuangan &amp; Billing</strong>
+              </div>
+              <table class="w-full text-left text-xs bg-white border border-slate-200 rounded">
+                <thead class="bg-slate-100 text-[10px] font-mono text-slate-600">
+                  <tr>
+                    <th class="py-1.5 px-2">INDIKATOR KPI</th>
+                    <th class="py-1.5 px-2">TARGET</th>
+                    <th class="py-1.5 px-2">BOBOT</th>
+                    <th class="py-1.5 px-2">REALISASI</th>
+                    <th class="py-1.5 px-2 text-right">SKOR</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-sans text-[11px]">
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">1. Collection Rate Tagihan Berlangganan</td>
+                    <td class="py-1.5 px-2 font-mono">≥ 95%</td>
+                    <td class="py-1.5 px-2 font-mono">35%</td>
+                    <td class="py-1.5 px-2 font-mono">SOP</td>
+                    <td class="py-1.5 px-2 font-mono text-right">35%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">2. Ketepatan Waktu Penerbitan Invoice (Tgl 1)</td>
+                    <td class="py-1.5 px-2 font-mono">100% Tepat</td>
+                    <td class="py-1.5 px-2 font-mono">20%</td>
+                    <td class="py-1.5 px-2 font-mono">Otomatis</td>
+                    <td class="py-1.5 px-2 font-mono text-right">20%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">3. Kecepatan Entri &amp; Rekonsiliasi Kasir</td>
+                    <td class="py-1.5 px-2 font-mono">≤ 1 Jam</td>
+                    <td class="py-1.5 px-2 font-mono">15%</td>
+                    <td class="py-1.5 px-2 font-mono">Real-time</td>
+                    <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">4. Rekonsiliasi Mutasi Bank &amp; Payment Gateway</td>
+                    <td class="py-1.5 px-2 font-mono">Nol Selisih</td>
+                    <td class="py-1.5 px-2 font-mono">15%</td>
+                    <td class="py-1.5 px-2 font-mono">Nol</td>
+                    <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 px-2 font-medium">5. Kerapian Pengarsipan Faktur &amp; Pajak</td>
+                    <td class="py-1.5 px-2 font-mono">100% Tertib</td>
+                    <td class="py-1.5 px-2 font-mono">15%</td>
+                    <td class="py-1.5 px-2 font-mono">Tertib</td>
+                    <td class="py-1.5 px-2 font-mono text-right">15%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        document.getElementById('modal-kpi-scorecard').classList.remove('hidden');
+        lucide.createIcons();
+      } catch (err) {
+        console.error('Error opening KPI scorecard modal:', err);
+      }
+    }
+
+    function closeKPIScorecardModal() {
+      const modal = document.getElementById('modal-kpi-scorecard');
+      if (modal) modal.classList.add('hidden');
     }
 
     // ── SUPER USER (ROOT / OWNER) CONTROLLERS ─────────────────
