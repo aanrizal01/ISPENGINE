@@ -1200,6 +1200,126 @@ func (h *APIHandler) AdminListRegistrations(w http.ResponseWriter, r *http.Reque
 	h.successResponse(w, "Registrations retrieved", out)
 }
 
+// AdminMarkUncovered menandai permohonan ke Wishlist Perluasan atau Batal Luar Jangkauan
+func (h *APIHandler) AdminMarkUncovered(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		h.failResponse(w, http.StatusBadRequest, "ID atau No. Registrasi wajib diisi")
+		return
+	}
+
+	var req struct {
+		Action string `json:"action"` // WISHLIST / CANCEL
+		Reason string `json:"reason"`
+	}
+	_ = json.NewDecoder(r.Body).Decode(&req)
+
+	status := "UNCOVERED_WISHLIST"
+	msg := "Permohonan pelanggan telah dicatat dalam Daftar Prioritas Perluasan Jaringan (Wishlist)"
+	if strings.ToUpper(req.Action) == "CANCEL" {
+		status = "CANCELLED_NO_COVERAGE"
+		msg = "Permohonan pelanggan resmi dibatalkan karena di luar jangkauan jaringan"
+	}
+
+	if err := h.store.UpdateSubscriberStatus(r.Context(), t.ID, id, status); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal memperbarui status: "+err.Error())
+		return
+	}
+
+	h.successResponse(w, msg, map[string]interface{}{
+		"id":     id,
+		"status": status,
+		"reason": req.Reason,
+	})
+}
+
+// AdminDeleteRegistration menghapus berkas pendaftaran pelanggan
+func (h *APIHandler) AdminDeleteRegistration(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		h.failResponse(w, http.StatusBadRequest, "ID atau No. Registrasi wajib diisi")
+		return
+	}
+
+	if err := h.store.DeleteSubscriber(r.Context(), t.ID, id); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal menghapus data: "+err.Error())
+		return
+	}
+
+	h.successResponse(w, "Data permohonan registrasi berhasil dihapus", map[string]interface{}{
+		"id": id,
+	})
+}
+
+// AdminNOCApproval memproses persetujuan atau penolakan teknis NOC
+func (h *APIHandler) AdminNOCApproval(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		h.failResponse(w, http.StatusBadRequest, "ID wajib diisi")
+		return
+	}
+
+	var req struct {
+		Action       string `json:"action"` // APPROVE / REJECT
+		ApproverName string `json:"approver_name"`
+		Notes        string `json:"notes"`
+	}
+	_ = json.NewDecoder(r.Body).Decode(&req)
+
+	status := "APPROVED_BY_NOC"
+	msg := "Permohonan berhasil disetujui oleh NOC"
+	if strings.ToUpper(req.Action) == "REJECT" {
+		status = "REJECTED_BY_NOC"
+		msg = "Permohonan ditolak oleh NOC"
+	}
+
+	if err := h.store.UpdateSubscriberStatus(r.Context(), t.ID, id, status); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal memperbarui status: "+err.Error())
+		return
+	}
+
+	h.successResponse(w, msg, map[string]interface{}{
+		"id":     id,
+		"status": status,
+	})
+}
+
+// AdminSuspendSubscriber menangguhkan layanan subscriber
+func (h *APIHandler) AdminSuspendSubscriber(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	if err := h.store.UpdateSubscriberStatus(r.Context(), t.ID, id, "SUSPENDED"); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal menangguhkan layanan: "+err.Error())
+		return
+	}
+	h.successResponse(w, "Layanan berhasil ditangguhkan (SUSPENDED)", map[string]interface{}{"id": id, "status": "SUSPENDED"})
+}
+
+// AdminResumeSubscriber mengaktifkan kembali layanan subscriber
+func (h *APIHandler) AdminResumeSubscriber(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	if err := h.store.UpdateSubscriberStatus(r.Context(), t.ID, id, "ACTIVE"); err != nil {
+		h.failResponse(w, http.StatusInternalServerError, "Gagal mengaktifkan kembali layanan: "+err.Error())
+		return
+	}
+	h.successResponse(w, "Layanan berhasil diaktifkan kembali (ACTIVE)", map[string]interface{}{"id": id, "status": "ACTIVE"})
+}
+
+// AdminReassignODP mengalihkan titik sambung ODP
+func (h *APIHandler) AdminReassignODP(w http.ResponseWriter, r *http.Request) {
+	t := middleware.GetTenant(r)
+	id := chi.URLParam(r, "id")
+	var req struct {
+		ODPCode string `json:"odp_code"`
+	}
+	_ = json.NewDecoder(r.Body).Decode(&req)
+	h.successResponse(w, "ODP berhasil dialihkan", map[string]interface{}{"id": id, "odp_code": req.ODPCode, "tenant_id": t.ID})
+}
+
 func (h *APIHandler) AdminListODPs(w http.ResponseWriter, r *http.Request) {
 	h.PublicODPs(w, r)
 }

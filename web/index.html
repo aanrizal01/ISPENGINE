@@ -17442,7 +17442,13 @@
             reason: reason
           })
         });
-        const json = await res.json();
+        const text = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          json = { success: false, message: 'Server mengembalikan respons non-JSON (HTTP ' + res.status + '): ' + text.slice(0, 100) };
+        }
         if (json.success) {
           alert(`✓ Status berhasil diperbarui:\n${json.message}`);
           closeMarkUncoveredModal();

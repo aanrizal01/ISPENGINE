@@ -1040,8 +1040,16 @@ func (s *PostgresStorage) UpdateSubscriberStatus(ctx context.Context, tenantID, 
 
 	_, err := s.db.ExecContext(ctx, `
 		UPDATE subscribers SET status = $1, activated_at = COALESCE($2, activated_at), suspended_at = COALESCE($3, suspended_at), updated_at = $4
-		WHERE tenant_id = $5 AND id = $6
+		WHERE tenant_(id =  OR subscriber_no = )$5 AND (id =  OR subscriber_no = )$6
 	`, status, actTime, suspTime, now, tenantID, id)
+	return err
+}
+
+func (s *PostgresStorage) DeleteSubscriber(ctx context.Context, tenantID, idOrNo string) error {
+	_, err := s.db.ExecContext(ctx, `
+		DELETE FROM subscribers
+		WHERE tenant_id = $1 AND (id = $2 OR subscriber_no = $2)
+	`, tenantID, idOrNo)
 	return err
 }
 

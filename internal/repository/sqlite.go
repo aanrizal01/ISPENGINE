@@ -1088,8 +1088,16 @@ func (s *SQLiteStorage) UpdateSubscriberStatus(ctx context.Context, tenantID, id
 
 	_, err := s.db.ExecContext(ctx, `
 		UPDATE subscribers SET status = ?, activated_at = COALESCE(?, activated_at), suspended_at = COALESCE(?, suspended_at), updated_at = ?
-		WHERE tenant_id = ? AND id = ?
+		WHERE tenant_(id = ? OR subscriber_no = ?) AND (id = ? OR subscriber_no = ?)
 	`, status, actTime, suspTime, now, tenantID, id)
+	return err
+}
+
+func (s *SQLiteStorage) DeleteSubscriber(ctx context.Context, tenantID, idOrNo string) error {
+	_, err := s.db.ExecContext(ctx, `
+		DELETE FROM subscribers
+		WHERE tenant_id = ? AND (id = ? OR subscriber_no = ?)
+	`, tenantID, idOrNo, idOrNo)
 	return err
 }
 

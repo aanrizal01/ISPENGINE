@@ -219,6 +219,13 @@ func main() {
 		api.Route("/admin", func(adm chi.Router) {
 			adm.Use(adminOnly)
 			adm.Get("/registrations", apiH.AdminListRegistrations)
+			adm.Post("/registrations/{id}/uncovered", apiH.AdminMarkUncovered)
+			adm.Delete("/registrations/{id}", apiH.AdminDeleteRegistration)
+			adm.Post("/registrations/{id}/delete", apiH.AdminDeleteRegistration)
+			adm.Post("/registrations/{id}/noc-approval", apiH.AdminNOCApproval)
+			adm.Post("/registrations/{id}/suspend", apiH.AdminSuspendSubscriber)
+			adm.Post("/registrations/{id}/resume", apiH.AdminResumeSubscriber)
+			adm.Post("/registrations/{id}/reassign-odp", apiH.AdminReassignODP)
 			adm.Get("/odps", apiH.AdminListODPs)
 			adm.Post("/odps", apiH.AdminCreateODP)
 			adm.Delete("/odps/{id}", apiH.AdminDeleteODP)
