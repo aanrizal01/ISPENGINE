@@ -1,7 +1,7 @@
 # ISPSYNC Nexus (ISP Onboarding Gateway)
 # Multi-stage production Dockerfile
 
-FROM golang:1.23-alpine AS builder
+FROM golang:alpine AS builder
 
 RUN apk add --no-cache git ca-certificates tzdata
 
