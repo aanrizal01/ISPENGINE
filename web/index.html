@@ -34,9 +34,9 @@
         }
         if (!favSlug || favSlug === 'localhost' || favSlug === '103') favSlug = 'dev';
 
-        var earlyBrand = (favSlug && favSlug !== 'dev') ? favSlug.toUpperCase() : 'DEV';
+        var earlyBrand = (favSlug && favSlug !== 'dev') ? favSlug.toUpperCase() : 'ISPSYNC';
         var tCtxEarly = window.__ISPSYNC_TENANT__ || {};
-        if (tCtxEarly.short_name && tCtxEarly.short_name !== 'DEVLAB' && !tCtxEarly.short_name.toUpperCase().startsWith('PT')) {
+        if (tCtxEarly.short_name && tCtxEarly.short_name !== 'DEVLAB' && tCtxEarly.short_name !== 'DEV' && !tCtxEarly.short_name.toUpperCase().startsWith('PT')) {
           earlyBrand = tCtxEarly.short_name.toUpperCase();
         }
 
@@ -2107,7 +2107,7 @@
                 (function() {
                   try {
                     var s = window.__EARLY_TENANT_SLUG__ || 'dev';
-                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var b = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
                     var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
                     var img = document.getElementById('sales-login-brand-logo'); if (img) img.src = logo;
                     var h2 = document.getElementById('sales-login-brand-name'); if (h2) h2.textContent = b;
@@ -2190,7 +2190,7 @@
                 (function() {
                   try {
                     var s = window.__EARLY_TENANT_SLUG__ || 'dev';
-                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var b = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
                     var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
                     var mImg = document.getElementById('sales-mobile-brand-logo'); if (mImg) mImg.src = logo;
                     var mH2 = document.getElementById('sales-mobile-brand-name'); if (mH2) mH2.textContent = b;
@@ -2733,7 +2733,7 @@
                 (function() {
                   try {
                     var s = window.__EARLY_TENANT_SLUG__ || 'dev';
-                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var b = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
                     var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
                     var img = document.getElementById('noc-login-brand-logo'); if (img) img.src = logo;
                     var h2 = document.getElementById('noc-login-brand-name'); if (h2) h2.textContent = b;
@@ -2815,7 +2815,7 @@
                 (function() {
                   try {
                     var s = window.__EARLY_TENANT_SLUG__ || 'dev';
-                    var b = window.__EARLY_BRAND_NAME__ || 'DEV';
+                    var b = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
                     var logo = window.__EARLY_LOGO_URL__ || ('/web/' + s + '_logo.svg');
                     var mImg = document.getElementById('noc-mobile-brand-logo'); if (mImg) mImg.src = logo;
                     var mH2 = document.getElementById('noc-mobile-brand-name'); if (mH2) mH2.textContent = b;
@@ -2931,7 +2931,7 @@
             (function() {
               try {
                 var l = document.getElementById('admin-mobile-topbar-logo'); if (l) l.src = window.__EARLY_LOGO_URL__ || '/web/dev_logo.svg';
-                var b = document.getElementById('admin-mobile-topbar-brand'); if (b) b.textContent = window.__EARLY_BRAND_NAME__ || 'DEV';
+                var b = document.getElementById('admin-mobile-topbar-brand'); if (b) b.textContent = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
               } catch(e) {}
             })();
           </script>
@@ -2951,7 +2951,7 @@
               (function() {
                 try {
                   var l = document.getElementById('admin-sidebar-brand-logo'); if (l && window.__EARLY_LOGO_URL__) l.src = window.__EARLY_LOGO_URL__;
-                  var n = document.getElementById('admin-sidebar-brand-name'); if (n) n.textContent = window.__EARLY_BRAND_NAME__ || 'DEV';
+                  var n = document.getElementById('admin-sidebar-brand-name'); if (n) n.textContent = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
                 } catch(e) {}
               })();
             </script>
@@ -20853,9 +20853,9 @@
           dev: 'Laboratorium ISPSYNC R&D'
         };
 
-        // Always use short uppercase brand acronym (ISPMU, ISPKU, DEV), never PT corporate name
-        let brandName = (slug && slug !== 'dev') ? slug.toUpperCase() : 'DEV';
-        if (injected.short_name && injected.short_name !== 'DEVLAB' && !injected.short_name.toUpperCase().startsWith('PT')) {
+        // Always use short uppercase brand acronym (ISPMU, ISPKU), fallback to ISPSYNC for dev/platform
+        let brandName = (slug && slug !== 'dev') ? slug.toUpperCase() : 'ISPSYNC';
+        if (injected.short_name && injected.short_name !== 'DEVLAB' && injected.short_name !== 'DEV' && !injected.short_name.toUpperCase().startsWith('PT')) {
           brandName = injected.short_name.toUpperCase();
         }
 
@@ -24712,9 +24712,9 @@
           dev: 'Laboratorium ISPSYNC R&D'
         };
 
-        // Always use short uppercase brand acronym (ISPMU, ISPKU, DEV), never PT corporate name
-        let brandName = (slug && slug !== 'dev') ? slug.toUpperCase() : 'DEV';
-        if (injected.short_name && injected.short_name !== 'DEVLAB' && !injected.short_name.toUpperCase().startsWith('PT')) {
+        // Always use short uppercase brand acronym (ISPMU, ISPKU), fallback to ISPSYNC for dev/platform
+        let brandName = (slug && slug !== 'dev') ? slug.toUpperCase() : 'ISPSYNC';
+        if (injected.short_name && injected.short_name !== 'DEVLAB' && injected.short_name !== 'DEV' && !injected.short_name.toUpperCase().startsWith('PT')) {
           brandName = injected.short_name.toUpperCase();
         }
 

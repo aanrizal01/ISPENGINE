@@ -89,10 +89,10 @@ func (h *PageHandler) ServeApp(w http.ResponseWriter, r *http.Request) {
 
 	// 2. Injected Early Tenant Context Script
 	brandShort := tCtx.Tenant.PrefixID
-	if brandShort == "" || strings.HasPrefix(strings.ToUpper(brandShort), "PT") {
+	if brandShort == "" || strings.HasPrefix(strings.ToUpper(brandShort), "PT") || brandShort == "DEV" {
 		brandShort = strings.ToUpper(tCtx.Tenant.Slug)
 	}
-	if brandShort == "" {
+	if brandShort == "" || brandShort == "DEV" {
 		brandShort = "ISPSYNC"
 	}
 
