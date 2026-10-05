@@ -49,6 +49,12 @@ func (h *PageHandler) ServeApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Guard against serving HTML as a corrupted PDF if requested directly
+	if strings.HasSuffix(strings.ToLower(r.URL.Path), ".pdf") {
+		http.NotFound(w, r)
+		return
+	}
+
 	h.mu.RLock()
 	html := h.htmlCache
 	h.mu.RUnlock()

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -261,20 +262,38 @@ func main() {
 	r.Get("/logo.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/logo.png")
 	})
-	r.Get("/FORM_SCORECARD_EVALUASI_KPI_BULANAN_GOGIGANET.pdf", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/FORM_SCORECARD_EVALUASI_KPI_BULANAN_GOGIGANET.pdf")
-	})
-	r.Get("/MASTER_SOP_EKOSISTEM_3_ENGINE_GOGIGANET.pdf", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/MASTER_SOP_EKOSISTEM_3_ENGINE_GOGIGANET.pdf")
-	})
-	r.Get("/MATRIKS_TUGAS_DAN_TANGGUNG_JAWAB_SDM_GOGIGANET.pdf", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/MATRIKS_TUGAS_DAN_TANGGUNG_JAWAB_SDM_GOGIGANET.pdf")
-	})
-	r.Get("/PROSEDUR_PENDAFTARAN_PELANGGAN_BARU.pdf", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/PROSEDUR_PENDAFTARAN_PELANGGAN_BARU.pdf")
-	})
-	r.Get("/SOP_OPERASIONAL_LENGKAP_GOGIGANET.pdf", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/SOP_OPERASIONAL_LENGKAP_GOGIGANET.pdf")
+	// Universal Document & PDF Handler (Multi-tenant dynamic branding support)
+	r.Get("/{filename}.pdf", func(w http.ResponseWriter, r *http.Request) {
+		fname := chi.URLParam(r, "filename")
+		cleanName := filepath.Base(fname)
+
+		candidates := []string{
+			filepath.Join("web", cleanName+".pdf"),
+		}
+
+		// Try tenant-stripped variations (e.g. FORM_SCORECARD_EVALUASI_KPI_BULANAN_DEV -> FORM_SCORECARD_EVALUASI_KPI_BULANAN)
+		parts := strings.Split(cleanName, "_")
+		if len(parts) > 1 {
+			baseName := strings.Join(parts[:len(parts)-1], "_")
+			candidates = append(candidates,
+				filepath.Join("web", baseName+".pdf"),
+				filepath.Join("web", baseName+"_GOGIGANET.pdf"),
+			)
+		}
+		// Also try _GOGIGANET suffix fallback
+		candidates = append(candidates, filepath.Join("web", cleanName+"_GOGIGANET.pdf"))
+
+		for _, candidate := range candidates {
+			if fi, err := os.Stat(candidate); err == nil && !fi.IsDir() {
+				w.Header().Set("Content-Type", "application/pdf")
+				w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%q", cleanName+".pdf"))
+				w.Header().Set("Cache-Control", "public, max-age=3600")
+				http.ServeFile(w, r, candidate)
+				return
+			}
+		}
+
+		http.NotFound(w, r)
 	})
 	
 	// NOC Telco Preset Captive Portal & Isolir
