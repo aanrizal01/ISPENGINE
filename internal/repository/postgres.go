@@ -954,7 +954,7 @@ func (s *PostgresStorage) GetSubscriberByID(ctx context.Context, tenantID, id st
 		       nearest_odp_id, nearest_odp_code, olt_id, pon_port, onu_id, serial_number, mac_address,
 		       rx_optical_power, pppoe_username, pppoe_password, vlan_id, ip_address, status,
 		       activated_at, suspended_at, created_at, updated_at
-		FROM subscribers WHERE tenant_id = $1 AND id = $2
+		FROM subscribers WHERE tenant_id = $1 AND (id = $2 OR subscriber_no = $2)
 	`, tenantID, id)
 
 	var sub domain.Subscriber
@@ -1040,7 +1040,7 @@ func (s *PostgresStorage) UpdateSubscriberStatus(ctx context.Context, tenantID, 
 
 	_, err := s.db.ExecContext(ctx, `
 		UPDATE subscribers SET status = $1, activated_at = COALESCE($2, activated_at), suspended_at = COALESCE($3, suspended_at), updated_at = $4
-		WHERE tenant_(id =  OR subscriber_no = )$5 AND (id =  OR subscriber_no = )$6
+		WHERE tenant_id = $5 AND (id = $6 OR subscriber_no = $6)
 	`, status, actTime, suspTime, now, tenantID, id)
 	return err
 }

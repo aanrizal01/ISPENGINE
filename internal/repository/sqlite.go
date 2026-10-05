@@ -1001,8 +1001,8 @@ func (s *SQLiteStorage) GetSubscriberByID(ctx context.Context, tenantID, id stri
 		       nearest_odp_id, nearest_odp_code, olt_id, pon_port, onu_id, serial_number, mac_address,
 		       rx_optical_power, pppoe_username, pppoe_password, vlan_id, ip_address, status,
 		       activated_at, suspended_at, created_at, updated_at
-		FROM subscribers WHERE tenant_id = ? AND id = ?
-	`, tenantID, id)
+		FROM subscribers WHERE tenant_id = ? AND (id = ? OR subscriber_no = ?)
+	`, tenantID, id, id)
 
 	var sub domain.Subscriber
 	if err := row.Scan(
@@ -1088,8 +1088,8 @@ func (s *SQLiteStorage) UpdateSubscriberStatus(ctx context.Context, tenantID, id
 
 	_, err := s.db.ExecContext(ctx, `
 		UPDATE subscribers SET status = ?, activated_at = COALESCE(?, activated_at), suspended_at = COALESCE(?, suspended_at), updated_at = ?
-		WHERE tenant_(id = ? OR subscriber_no = ?) AND (id = ? OR subscriber_no = ?)
-	`, status, actTime, suspTime, now, tenantID, id)
+		WHERE tenant_id = ? AND (id = ? OR subscriber_no = ?)
+	`, status, actTime, suspTime, now, tenantID, id, id)
 	return err
 }
 

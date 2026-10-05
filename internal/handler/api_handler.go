@@ -1222,9 +1222,20 @@ func (h *APIHandler) AdminMarkUncovered(w http.ResponseWriter, r *http.Request) 
 		msg = "Permohonan pelanggan resmi dibatalkan karena di luar jangkauan jaringan"
 	}
 
+	sub, _ := h.store.GetSubscriberByID(r.Context(), t.ID, id)
+
 	if err := h.store.UpdateSubscriberStatus(r.Context(), t.ID, id, status); err != nil {
 		h.failResponse(w, http.StatusInternalServerError, "Gagal memperbarui status: "+err.Error())
 		return
+	}
+
+	// Kirim Notifikasi WhatsApp Otomatis ke Pelanggan via Gateway Ledger
+	if h.notif != nil && sub != nil {
+		tenantName := t.Name
+		if tenantName == "" {
+			tenantName = "Internet Service Provider"
+		}
+		go h.notif.SendUncoveredStatusNotification(context.Background(), tenantName, sub.FullName, sub.Phone, sub.SubscriberNo, req.Action, req.Reason)
 	}
 
 	h.successResponse(w, msg, map[string]interface{}{

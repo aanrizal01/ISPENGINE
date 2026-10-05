@@ -246,3 +246,130 @@ func (s *NotificationService) sendFonnte(ctx context.Context, token, phone, mess
 	}
 	return nil
 }
+
+// SendUncoveredStatusNotification mengirimkan notifikasi WA ke pelanggan ketika status permohonan ditandai Wishlist atau Dibatalkan
+func (s *NotificationService) SendUncoveredStatusNotification(ctx context.Context, tenantName, customerName, phone, regNo, action, reason string) {
+	targetPhone := NormalizePhone(phone)
+	if targetPhone == "" {
+		log.Printf("[NOTIFICATION SERVICE] Nomor telepon %q tidak valid, abaikan kirim WA uncovered", phone)
+		return
+	}
+
+	if s.db == nil {
+		log.Printf("[NOTIFICATION SERVICE] Database billing belum terhubung, pengiriman WA uncovered dilewati")
+		return
+	}
+
+	// 1. Ambil pengaturan WhatsApp Gateway dari app_settings
+	var settingsJSON []byte
+	err := s.db.QueryRowContext(ctx, "SELECT value FROM app_settings WHERE key = 'notification_settings'").Scan(&settingsJSON)
+	if err != nil {
+		log.Printf("[NOTIFICATION SERVICE] Gagal membaca notification_settings dari database: %v", err)
+		return
+	}
+
+	var cfg waConfig
+	if err := json.Unmarshal(settingsJSON, &cfg); err != nil {
+		log.Printf("[NOTIFICATION SERVICE] Gagal memparsing konfigurasi WA: %v", err)
+		return
+	}
+
+	if strings.TrimSpace(cfg.WAApiToken) == "" {
+		log.Printf("[NOTIFICATION SERVICE] Token WhatsApp Gateway belum dikonfigurasi di Ledger, pesan tidak dikirim")
+		return
+	}
+
+	// Tentukan template code berdasarkan action (WISHLIST atau CANCEL)
+	isCancel := strings.Contains(strings.ToUpper(action), "CANCEL")
+	templateCode := "UNCOVERED_WISHLIST_WA"
+	defaultSubject := "Prioritas Perluasan Jaringan Fiber"
+	defaultBody := `Halo Bapak/Ibu {{customer_name}},
+
+Terima kasih atas minat Anda berlangganan internet fiber {{company_name}} (No. Reg: {{registration_no}}).
+
+Berdasarkan hasil survei tim teknis kami, saat ini lokasi rumah Anda belum terjangkau jalur distribusi kabel Fiber Optik kami dalam batas jarak aman.
+
+Data permohonan Anda telah kami simpan ke dalam *Daftar Prioritas Perluasan Jaringan (Wishlist)* {{company_name}}. Kami akan segera menghubungi Anda kembali begitu tiang/jalur distribusi baru resmi dibuka di wilayah Anda.
+
+Salam hormat,
+Tim Layanan Pelanggan {{company_name}}`
+
+	if isCancel {
+		templateCode = "UNCOVERED_CANCELLED_WA"
+		defaultSubject = "Pemberitahuan Status Permohonan Pasang Baru"
+		defaultBody = `Halo Bapak/Ibu {{customer_name}},
+
+Terima kasih atas minat Anda berlangganan internet fiber {{company_name}} (No. Reg: {{registration_no}}).
+
+Setelah dilakukan pengecekan teknis mendalam, mohon maaf permohonan pasang baru saat ini belum dapat kami proses karena lokasi berada di luar batas jangkauan infrastruktur fiber optik kami.
+
+Terima kasih banyak atas pengertian Anda.
+
+Salam hormat,
+Tim Layanan Pelanggan {{company_name}}`
+	}
+
+	// 2. Ambil template dari notification_templates
+	var templateBody string
+	var isActive bool
+	var subject string
+	err = s.db.QueryRowContext(ctx,
+		"SELECT body, is_active, COALESCE(subject, $2) FROM notification_templates WHERE code = $1 AND channel = 'WHATSAPP'",
+		templateCode, defaultSubject,
+	).Scan(&templateBody, &isActive, &subject)
+
+	if err != nil {
+		log.Printf("[NOTIFICATION SERVICE] Template %s tidak ditemukan di DB, menggunakan template bawaan sistem", templateCode)
+		templateBody = defaultBody
+		isActive = true
+		subject = defaultSubject
+	}
+
+	if !isActive {
+		log.Printf("[NOTIFICATION SERVICE] Template %s dinonaktifkan di Ledger oleh owner", templateCode)
+		return
+	}
+
+	// 3. Interpolasi variabel dinamis
+	replacer := strings.NewReplacer(
+		"{{customer_name}}", customerName,
+		"{{registration_no}}", regNo,
+		"{{company_name}}", tenantName,
+		"{{customer_phone}}", phone,
+		"{{reason}}", reason,
+	)
+	finalMessage := replacer.Replace(templateBody)
+
+	// 4. Dispatch ke Provider (WABLAS atau FONNTE)
+	provider := strings.ToUpper(strings.TrimSpace(cfg.WAProvider))
+	var sendErr error
+
+	if provider == "WABLAS" {
+		sendErr = s.sendWablas(ctx, cfg.WAServerURL, cfg.WAApiToken, targetPhone, finalMessage)
+	} else if provider == "FONNTE" {
+		sendErr = s.sendFonnte(ctx, cfg.WAApiToken, targetPhone, finalMessage)
+	} else {
+		sendErr = s.sendWablas(ctx, cfg.WAServerURL, cfg.WAApiToken, targetPhone, finalMessage)
+	}
+
+	// 5. Catat ke tabel notifications di Ledger
+	status := "SENT"
+	var errStr *string
+	var sentAt *time.Time
+	now := time.Now()
+	if sendErr != nil {
+		status = "FAILED"
+		msg := sendErr.Error()
+		errStr = &msg
+		log.Printf("[NOTIFICATION SERVICE] Gagal mengirim pesan WA uncovered ke %s: %v", targetPhone, sendErr)
+	} else {
+		sentAt = &now
+		log.Printf("[NOTIFICATION SERVICE] ✅ Berhasil mengirim WA status uncovered (%s - %s) ke %s via %s", templateCode, regNo, targetPhone, provider)
+	}
+
+	_, _ = s.db.ExecContext(ctx,
+		`INSERT INTO notifications (id, channel, recipient, subject, body, status, error_message, sent_at, created_at)
+		 VALUES (gen_random_uuid(), 'WHATSAPP', $1, $2, $3, $4, $5, $6, NOW())`,
+		targetPhone, subject, finalMessage, status, errStr, sentAt,
+	)
+}
