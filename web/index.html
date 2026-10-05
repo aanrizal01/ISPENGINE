@@ -50,10 +50,28 @@
           elFav.type = 'image/svg+xml';
         }
 
-        if (mode === 'sales') {
-          document.title = 'Masuk | ' + earlyBrand + ' Sales';
-        } else if (mode === 'noc-fo' || mode === 'noc') {
-          document.title = 'Masuk | ' + earlyBrand + ' NOC Command Center';
+        var hasAuth = false;
+        if (mode === 'sales') hasAuth = !!localStorage.getItem('sales_auth');
+        else if (mode === 'technician') hasAuth = !!localStorage.getItem('technician_auth');
+        else if (mode === 'noc-fo' || mode === 'noc') {
+          var adminRole = localStorage.getItem('active_portal_role');
+          hasAuth = !!(localStorage.getItem('auth_session_token') || sessionStorage.getItem('auth_session_token')) && (adminRole === 'superuser' || adminRole === 'admin' || adminRole === 'finance' || adminRole === 'branch_manager');
+        }
+        else if (mode === 'rekan') hasAuth = !!localStorage.getItem('jartaplok_auth');
+        else if (mode === 'portal') hasAuth = !!localStorage.getItem('customer_auth_data');
+
+        if (!hasAuth) {
+          if (mode === 'sales') {
+            document.title = 'Masuk | ' + earlyBrand + ' Sales';
+          } else if (mode === 'noc-fo' || mode === 'noc') {
+            document.title = 'Masuk | ' + earlyBrand + ' NOC Command Center';
+          }
+        } else {
+          if (mode === 'sales') {
+            document.title = 'Dashboard Sales | ' + earlyBrand;
+          } else if (mode === 'noc-fo' || mode === 'noc') {
+            document.title = 'Dashboard | ' + earlyBrand + ' NOC';
+          }
         }
 
         // Cek apakah di portal pelanggan sedang meminta mode login/tracking atau sudah ada sesi
@@ -61,16 +79,6 @@
         if (isPortalLogin) {
           document.documentElement.classList.add('is-portal-track');
         }
-
-        var hasAuth = false;
-        if (mode === 'sales') hasAuth = !!localStorage.getItem('sales_auth');
-        else if (mode === 'technician') hasAuth = !!localStorage.getItem('technician_auth');
-        else if (mode === 'noc-fo') {
-          var adminRole = localStorage.getItem('active_portal_role');
-          hasAuth = !!(localStorage.getItem('auth_session_token') || sessionStorage.getItem('auth_session_token')) && (adminRole === 'superuser' || adminRole === 'admin' || adminRole === 'finance');
-        }
-        else if (mode === 'rekan') hasAuth = !!localStorage.getItem('jartaplok_auth');
-        else if (mode === 'portal') hasAuth = !!localStorage.getItem('customer_auth_data');
 
         if (hasAuth) {
           document.documentElement.classList.add('subdomain-logged-in');
@@ -18922,6 +18930,23 @@
         if (document.getElementById('admin-subtab-staff-btn')) document.getElementById('admin-subtab-staff-btn').className = activeStaff;
         loadSuperUserStaff();
       }
+
+      const subTitles = {
+        'executive': 'Analitik Finansial & ODP',
+        'reg': 'Permohonan Registrasi',
+        'clusters': 'Sakelar Wilayah',
+        'odp': 'Database Titik ODP',
+        'custmap': 'Peta Sebaran Pelanggan',
+        'jartaplok': 'Rekap & Estimasi Jartaplok',
+        'partners': 'Database Sales & Mitra',
+        'impersonate': 'Mode Impersonasi',
+        'staff': 'Kontrol Staf & RBAC',
+        'kpi': 'KPI & Evaluasi Staf'
+      };
+      const activeTitle = subTitles[sub] || 'NOC Command Center';
+      const bName = window.__EARLY_BRAND_NAME__ || 'ISPSYNC';
+      document.title = activeTitle + ' | ' + bName + ' NOC';
+
       lucide.createIcons();
     }
 
@@ -20902,7 +20927,12 @@
         favLink.type = 'image/svg+xml';
         favLink.href = favUrl;
 
-        document.title = 'Masuk | ' + brandName + ' Sales';
+        const isSalesLoggedIn = !!localStorage.getItem('sales_auth');
+        if (!isSalesLoggedIn) {
+          document.title = 'Masuk | ' + brandName + ' Sales';
+        } else {
+          document.title = 'Dashboard Sales | ' + brandName;
+        }
       } catch (e) {
         console.warn('Failed applying Sales dynamic branding:', e);
       }
@@ -24762,7 +24792,13 @@
         favLink.href = favUrl;
 
         // Set carrier document.title without trailing ISPSYNC duplication
-        document.title = 'Masuk | ' + brandName + ' NOC Command Center';
+        const token = localStorage.getItem('auth_session_token') || sessionStorage.getItem('auth_session_token');
+        const activeRole = localStorage.getItem('active_portal_role');
+        const isLoggedIn = !!token && (activeRole === 'superuser' || activeRole === 'admin' || activeRole === 'finance' || activeRole === 'branch_manager');
+
+        if (!isLoggedIn) {
+          document.title = 'Masuk | ' + brandName + ' NOC Command Center';
+        }
       } catch (e) {
         console.warn('Failed applying NOC dynamic branding:', e);
       }
