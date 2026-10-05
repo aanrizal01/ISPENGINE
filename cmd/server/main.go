@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strings"
@@ -267,6 +269,136 @@ func main() {
 		fname := chi.URLParam(r, "filename")
 		cleanName := filepath.Base(fname)
 
+		// Dynamic on-demand generation for KPI Scorecard
+		if strings.HasPrefix(cleanName, "FORM_SCORECARD_EVALUASI_KPI_BULANAN") {
+			tCtx := middleware.GetTenantContext(r)
+			if tCtx != nil && tCtx.Tenant != nil {
+				tenantSlug := tCtx.Tenant.Slug
+				companyName := tCtx.Tenant.Name
+				if companyName == "" {
+					companyName = "PT. MITRA USAHA DATA"
+				}
+				brandName := strings.ToUpper(tenantSlug) + " FIBER BROADBAND"
+				if tCtx.Tenant.PrefixID != "" {
+					brandName = strings.ToUpper(tCtx.Tenant.PrefixID) + " FIBER BROADBAND"
+				}
+				formNo := fmt.Sprintf("%s/HRD-KPI/FORM/2026/10", strings.ToUpper(tenantSlug))
+
+				users, _ := store.ListUsersByTenant(r.Context(), tCtx.Tenant.ID)
+				wos, _ := store.ListWorkOrders(r.Context(), tCtx.Tenant.ID, "")
+
+				directorName := "Direktur Utama / Owner"
+				nocName := "Kepala Divisi NOC"
+				var technicians []map[string]interface{}
+				var salesList []map[string]interface{}
+
+				for _, u := range users {
+					roleUpper := strings.ToUpper(u.Role)
+					switch roleUpper {
+					case "OWNER":
+						directorName = u.FullName
+					case "NOC":
+						nocName = u.FullName
+					case "TECHNICIAN":
+						completed := 0
+						for _, wo := range wos {
+							if (wo.TechnicianID != nil && *wo.TechnicianID == u.ID) || strings.EqualFold(wo.TechnicianName, u.FullName) {
+								if wo.Status == "COMPLETED" || wo.Status == "BAST_APPROVED" {
+									completed++
+								}
+							}
+						}
+						score := 0
+						grade := "BELUM DIEVALUASI"
+						if completed > 0 {
+							score = 70 + (completed * 5)
+							if score > 100 {
+								score = 100
+							}
+							grade = "A"
+							if score >= 95 {
+								grade = "A+"
+							}
+						}
+						technicians = append(technicians, map[string]interface{}{
+							"name":      u.FullName,
+							"role":      "Teknisi Lapangan",
+							"completed": completed,
+							"optical":   "-",
+							"score":     score,
+							"grade":     grade,
+						})
+					case "SALES":
+						salesList = append(salesList, map[string]interface{}{
+							"name":       u.FullName,
+							"code":       strings.ToUpper(u.Username),
+							"active":     0,
+							"leads":      0,
+							"commission": 0,
+							"score":      0,
+							"grade":      "BELUM DIEVALUASI",
+						})
+					}
+				}
+
+				if len(technicians) == 0 {
+					technicians = append(technicians, map[string]interface{}{
+						"name":      "Field Tech Lab",
+						"role":      "Teknisi Lapangan",
+						"completed": 0,
+						"optical":   "-",
+						"score":     0,
+						"grade":     "BELUM DIEVALUASI",
+					})
+				}
+				if len(salesList) == 0 {
+					salesList = append(salesList, map[string]interface{}{
+						"name":       "Sales Lab",
+						"code":       "SALES",
+						"active":     0,
+						"leads":      0,
+						"commission": 0,
+						"score":      0,
+						"grade":      "BELUM DIEVALUASI",
+					})
+				}
+
+				nowID := time.Now()
+				monthsID := map[time.Month]string{
+					time.January: "Januari", time.February: "Februari", time.March: "Maret",
+					time.April: "April", time.May: "Mei", time.June: "Juni",
+					time.July: "Juli", time.August: "Agustus", time.September: "September",
+					time.October: "Oktober", time.November: "November", time.December: "Desember",
+				}
+
+				kpiPayload := map[string]interface{}{
+					"company_name":  companyName,
+					"brand_name":    brandName,
+					"form_no":       formNo,
+					"period":        "Bulan: Oktober Tahun: 2026",
+					"eval_date":     fmt.Sprintf("%02d %s %d", nowID.Day(), monthsID[nowID.Month()], nowID.Year()),
+					"director_name": directorName,
+					"noc_name":      nocName,
+					"technicians":   technicians,
+					"sales":         salesList,
+				}
+
+				jsonBytes, _ := json.Marshal(kpiPayload)
+				tmpJSON := filepath.Join(os.TempDir(), fmt.Sprintf("kpi_%s.json", tenantSlug))
+				_ = os.WriteFile(tmpJSON, jsonBytes, 0644)
+
+				targetPDF := filepath.Join("web", fmt.Sprintf("FORM_SCORECARD_EVALUASI_KPI_BULANAN_%s.pdf", strings.ToUpper(tenantSlug)))
+				cmd := exec.Command("python3", "scripts/generate_scorecard_pdf.py", "--json", tmpJSON, "--out", targetPDF)
+				if err := cmd.Run(); err == nil {
+					w.Header().Set("Content-Type", "application/pdf")
+					w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%q", fmt.Sprintf("FORM_SCORECARD_EVALUASI_KPI_BULANAN_%s.pdf", strings.ToUpper(tenantSlug))))
+					w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+					http.ServeFile(w, r, targetPDF)
+					return
+				}
+			}
+		}
+
 		candidates := []string{
 			filepath.Join("web", cleanName+".pdf"),
 		}
@@ -287,7 +419,7 @@ func main() {
 			if fi, err := os.Stat(candidate); err == nil && !fi.IsDir() {
 				w.Header().Set("Content-Type", "application/pdf")
 				w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%q", cleanName+".pdf"))
-				w.Header().Set("Cache-Control", "public, max-age=3600")
+				w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 				http.ServeFile(w, r, candidate)
 				return
 			}

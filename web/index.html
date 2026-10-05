@@ -3965,9 +3965,13 @@
               <p class="text-xs text-slate-500 font-sans mt-0.5">Monitoring metrik kinerja teknisi lapangan, tim sales, dan efektivitas operasional berbasis data PostgreSQL.</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-              <button type="button" onclick="openKPIScorecardModal()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-mono text-xs font-bold rounded-md border border-slate-200 flex items-center gap-1.5 transition shadow-xs" title="Buka & Unduh Form Scorecard KPI Resmi Sesuai Data Tenant">
-                <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <a href="/FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" target="_blank" download="FORM_SCORECARD_EVALUASI_KPI_BULANAN.pdf" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs font-bold rounded-md shadow-xs flex items-center gap-1.5 transition" title="Unduh Form Scorecard Terisi Otomatis (PDF)">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>Unduh Form PDF</span>
+              </a>
+              <button type="button" onclick="openKPIScorecardModal()" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-mono text-xs font-bold rounded-md border border-slate-200 flex items-center gap-1.5 transition shadow-xs" title="Lihat Formulir Scorecard di Layar">
+                <i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <span>Preview Formulir</span>
               </button>
               <button onclick="loadStaffKPIData()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold rounded-md shadow-xs flex items-center gap-1.5 transition">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
