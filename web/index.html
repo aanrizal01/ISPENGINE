@@ -469,11 +469,12 @@
         z-index: auto !important;
       }
 
-      /* Tampilkan modal BAST, Invoice Pelanggan, Invoice Jartaplok, & Scorecard KPI aktif mengalir normal (static) */
+      /* Tampilkan modal BAST, Invoice Pelanggan, Invoice Jartaplok, Scorecard KPI, & Laporan Eksekutif aktif mengalir normal (static) */
       #modal-view-bast:not(.hidden),
       #modal-cust-invoice-print:not(.hidden),
       #modal-jartaplok-invoice:not(.hidden),
-      #modal-kpi-scorecard:not(.hidden) {
+      #modal-kpi-scorecard:not(.hidden),
+      #modal-executive-report:not(.hidden) {
         display: block !important;
         position: static !important;
         inset: auto !important;
@@ -489,12 +490,13 @@
         z-index: auto !important;
       }
 
-      /* Kartu putih dalam modal kontrak, BAST, invoice pelanggan, invoice Jartaplok, dan Scorecard KPI */
+      /* Kartu putih dalam modal kontrak, BAST, invoice pelanggan, invoice Jartaplok, Scorecard KPI, dan Laporan Eksekutif */
       #modal-digital-contract > div,
       #modal-view-bast > div,
       #modal-cust-invoice-print > div,
       #modal-jartaplok-invoice > div,
-      #modal-kpi-scorecard > div {
+      #modal-kpi-scorecard > div,
+      #modal-executive-report > div {
         display: block !important;
         position: static !important;
         width: 100% !important;
@@ -510,11 +512,13 @@
         background: #ffffff !important;
       }
 
-      /* Lembar isi dokumen kontrak, BAST, invoice pelanggan, dan invoice Jartaplok */
+      /* Lembar isi dokumen kontrak, BAST, invoice pelanggan, invoice Jartaplok, Scorecard KPI, dan Laporan Eksekutif */
       #print-contract-sheet,
       #print-bast-sheet,
       #print-cust-invoice-sheet,
-      #print-jartaplok-sheet {
+      #print-jartaplok-sheet,
+      #scorecard-printable-area,
+      #exec-printable-area {
         display: block !important;
         position: static !important;
         width: 100% !important;
@@ -3622,7 +3626,7 @@
               </p>
             </div>
             <div class="flex items-center gap-2 self-start lg:self-auto shrink-0">
-              <button onclick="window.print()" type="button" class="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-mono font-bold flex items-center gap-1.5 transition shadow-xs">
+              <button onclick="openExecutiveReportModal()" type="button" class="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-mono font-bold flex items-center gap-1.5 transition shadow-xs">
                 <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-500"></i>
                 <span>Cetak Laporan</span>
               </button>
@@ -8376,6 +8380,245 @@
       <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 no-print shrink-0">
         <span class="text-[11px] text-slate-500 font-mono">Gunakan tombol Cetak untuk menyimpan dokumen PDF resmi A4.</span>
         <button type="button" onclick="closeKPIScorecardModal()" class="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODAL LAPORAN ANALITIK FINANSIAL JARINGAN & ODP (PRINT/PDF)-->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div id="modal-executive-report" class="fixed inset-0 z-[9999] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden overflow-y-auto">
+    <div class="bg-white max-w-4xl w-full rounded-xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <!-- Header Kontrol (No Print) -->
+      <div class="p-4 bg-slate-900 text-white flex items-center justify-between no-print shrink-0 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold font-mono text-white">LAPORAN KINERJA FINANSIAL JARINGAN &amp; ODP</h3>
+            <span class="text-[11px] text-slate-400 font-sans">Dokumen Eksekutif Resmi Sesuai Data Aktif Tenant ISP</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="window.print()" class="px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm" title="Cetak atau Simpan sebagai PDF">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Cetak / Unduh PDF</span>
+          </button>
+          <button type="button" onclick="closeExecutiveReportModal()" class="w-8 h-8 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Isi Dokumen Cetak / Preview -->
+      <div class="p-6 sm:p-10 overflow-y-auto space-y-6 text-slate-800 bg-white" id="exec-printable-area">
+        <!-- Header Dokumen Cetak -->
+        <div class="border-b-2 border-slate-900 pb-4">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-mono font-bold tracking-wider uppercase text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">EXECUTIVE NETWORK &amp; FINANCIAL REPORT</span>
+              <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight font-sans mt-1">LAPORAN KONSOLIDASI FINANSIAL JARINGAN &amp; UTILISASI ODP</h1>
+              <p class="text-xs text-slate-600 font-sans mt-0.5">ANALISIS ARPU, MARJIN KONTRIBUSI, SEWA WHOLESALE &amp; MONETISASI ASSET <strong id="exec-report-company-name">PT. MITRA USAHA DATA</strong></p>
+            </div>
+            <div class="text-right font-mono text-[11px] text-slate-600 space-y-0.5">
+              <div>Nomor Dokumen: <strong class="text-slate-900" id="exec-report-doc-no">ISPMU/EXEC-FIN/REP/2026/10</strong></div>
+              <div>Tanggal Terbit: <strong class="text-slate-900" id="exec-report-doc-date">05 Oktober 2026</strong></div>
+              <div>Wilayah / Scope: <span class="font-bold text-slate-900" id="exec-report-branch-name">Nasional</span></div>
+              <div>Klasifikasi: <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold">CONFIDENTIAL</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seksi 1: Ringkasan Eksekutif (Scorecard Grid 4 Cards) -->
+        <div>
+          <h2 class="text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+            <i data-lucide="gauge" class="w-3.5 h-3.5 text-cyan-600"></i>
+            I. RINGKASAN METRIK FINANSIAL &amp; OPERASIONAL UTAMA
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">Omset Berulang (MRR)</span>
+              <div class="text-base sm:text-lg font-mono font-black text-slate-900 mt-0.5" id="exec-rep-mrr">Rp 0</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-1">ARR: <span id="exec-rep-arr" class="font-bold text-slate-700">Rp 0</span></div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">HPP Wholesale (Jartaplok)</span>
+              <div class="text-base sm:text-lg font-mono font-black text-rose-600 mt-0.5" id="exec-rep-jartaplok">Rp 0</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-1">Rasio COGS: <span id="exec-rep-cogs-pct" class="font-bold text-rose-700">0.0%</span></div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">Gross Margin &amp; Net Kontribusi</span>
+              <div class="text-base sm:text-lg font-mono font-black text-emerald-600 mt-0.5" id="exec-rep-net-margin">Rp 0</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-1">Net Margin: <span id="exec-rep-margin-pct" class="font-bold text-emerald-700">0.0%</span></div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-mono font-bold text-slate-500 uppercase block">Pelanggan Aktif &amp; ARPU</span>
+              <div class="text-base sm:text-lg font-mono font-black text-blue-600 mt-0.5" id="exec-rep-active-cust">0</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-1">ARPU: <span id="exec-rep-arpu" class="font-bold text-blue-700">Rp 0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seksi 2: Rincian Arus Kas & Marjin Kontribusi -->
+        <div>
+          <h2 class="text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-600"></i>
+            II. BREAKDOWN STRUKTUR PENDAPATAN &amp; BEBAN POKOK JARINGAN
+          </h2>
+          <table class="w-full text-xs text-left border-collapse border border-slate-200">
+            <thead class="bg-slate-100 text-slate-700 font-mono text-[11px]">
+              <tr>
+                <th class="p-2 border border-slate-200">Komponen Finansial</th>
+                <th class="p-2 border border-slate-200 text-right">Nilai Nominal (Rp)</th>
+                <th class="p-2 border border-slate-200 text-right">% Terhadap MRR</th>
+                <th class="p-2 border border-slate-200">Keterangan / Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 font-sans">
+              <tr>
+                <td class="p-2 font-medium">Total Monthly Recurring Revenue (MRR)</td>
+                <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-table-mrr">Rp 0</td>
+                <td class="p-2 font-mono text-right text-slate-600">100.0%</td>
+                <td class="p-2 text-slate-600">Akumulasi tagihan pelanggan aktif bulan berjalan</td>
+              </tr>
+              <tr>
+                <td class="p-2 font-medium text-rose-700">(-) Beban Pokok Sewa Jartaplok / Bitstream</td>
+                <td class="p-2 font-mono text-right font-bold text-rose-600" id="exec-rep-table-jartaplok">Rp 0</td>
+                <td class="p-2 font-mono text-right text-rose-600" id="exec-rep-table-cogs-pct">0.0%</td>
+                <td class="p-2 text-slate-600">HPP sewa port wholesale pihak ketiga / rekanan FO</td>
+              </tr>
+              <tr class="bg-slate-50">
+                <td class="p-2 font-bold text-slate-900">(=) Gross Profit Jaringan (Laba Kotor)</td>
+                <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-table-gross-profit">Rp 0</td>
+                <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-table-margin-pct">0.0%</td>
+                <td class="p-2 text-slate-600">Selisih MRR dikurangi HPP Wholesale</td>
+              </tr>
+              <tr>
+                <td class="p-2 font-medium text-amber-700">(-) Beban Komisi Tim Sales &amp; Referral</td>
+                <td class="p-2 font-mono text-right font-bold text-amber-600" id="exec-rep-table-commission">Rp 0</td>
+                <td class="p-2 font-mono text-right text-amber-600" id="exec-rep-table-commission-pct">0.0%</td>
+                <td class="p-2 text-slate-600">Beban retensi komisi akuisisi pelanggan</td>
+              </tr>
+              <tr class="bg-emerald-50/60">
+                <td class="p-2 font-black text-emerald-900">(=) Net Contribution Margin (Laba Bersih Operasional)</td>
+                <td class="p-2 font-mono text-right font-black text-emerald-700" id="exec-rep-table-net-contrib">Rp 0</td>
+                <td class="p-2 font-mono text-right font-bold text-emerald-800" id="exec-rep-table-net-contrib-pct">0.0%</td>
+                <td class="p-2 font-semibold text-emerald-800">Margin kontribusi bersih sebelum OPEX umum</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Seksi 3: Utilisasi Infrastruktur ODP & Headroom Monetisasi -->
+        <div>
+          <h2 class="text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+            <i data-lucide="network" class="w-3.5 h-3.5 text-cyan-600"></i>
+            III. UTILISASI ASET PORT ODP &amp; POTENSI REVENUE HEADROOM
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <table class="w-full text-xs text-left border-collapse border border-slate-200">
+              <thead class="bg-slate-100 text-slate-700 font-mono text-[11px]">
+                <tr>
+                  <th class="p-2 border border-slate-200" colspan="2">Parameter Utilisasi Kapasitas ODP</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Total Titik Tiang ODP</td>
+                  <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-odp-count">0 Titik</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Kapasitas Port Terpasang</td>
+                  <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-total-ports">0 Port</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Port Terisi (Active Subscribers)</td>
+                  <td class="p-2 font-mono text-right font-bold text-blue-700" id="exec-rep-used-ports">0 Port</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Port Idle / Tersedia</td>
+                  <td class="p-2 font-mono text-right font-bold text-emerald-700" id="exec-rep-avail-ports">0 Port</td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="p-2 text-slate-900 font-bold">Rasio Utilisasi Port ODP</td>
+                  <td class="p-2 font-mono text-right font-black text-cyan-700" id="exec-rep-port-pct">0%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table class="w-full text-xs text-left border-collapse border border-slate-200">
+              <thead class="bg-slate-100 text-slate-700 font-mono text-[11px]">
+                <tr>
+                  <th class="p-2 border border-slate-200" colspan="2">Potensi Headroom &amp; Layanan Pelanggan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">ARPU Rata-rata per Pelanggan</td>
+                  <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-side-arpu">Rp 0</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Potensi Tambahan MRR (Port Idle)</td>
+                  <td class="p-2 font-mono text-right font-bold text-emerald-600" id="exec-rep-headroom-mrr">+Rp 0</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">Pelanggan Suspended / Isolir</td>
+                  <td class="p-2 font-mono text-right font-bold text-amber-600" id="exec-rep-suspended-cust">0 Pelanggan</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-600 font-medium">SPK Teknis Selesai Bulan Ini</td>
+                  <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-spk-completed">0 SPK</td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <td class="p-2 text-slate-900 font-bold">SPK Teknis Dalam Antrean / On-Progress</td>
+                  <td class="p-2 font-mono text-right font-bold text-slate-900" id="exec-rep-spk-pending">0 SPK</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Kolom Tanda Tangan Resmi Pengesahan Dokumen (3 Pihak) -->
+        <div class="pt-4 border-t border-slate-200">
+          <div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-2">Pengesahan Dokumen Kinerja Finansial:</div>
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Disusun Oleh:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block" id="exec-sign-finance">Staf Keuangan &amp; Akuntansi</strong>
+                <span class="text-[10px] text-slate-500">Finance &amp; Billing Dept</span>
+              </div>
+            </div>
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Diverifikasi Oleh:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block" id="exec-sign-noc">Kepala Divisi NOC / Jaringan</strong>
+                <span class="text-[10px] text-slate-500">Network Operations Center</span>
+              </div>
+            </div>
+            <div class="p-3 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between min-h-[120px]">
+              <span class="text-[10px] text-slate-500 font-mono">Disetujui &amp; Disahkan:</span>
+              <div class="my-6 text-slate-300 font-mono">____________________</div>
+              <div>
+                <strong class="text-xs font-bold text-slate-900 block" id="exec-sign-director">Direktur Utama / Owner</strong>
+                <span class="text-[10px] text-slate-500" id="exec-sign-company">PT. Mitra Usaha Data</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Modal (No Print) -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 no-print shrink-0">
+        <span class="text-[11px] text-slate-500 font-mono">Gunakan tombol Cetak untuk menyimpan dokumen PDF resmi A4 tanpa elemen antarmuka.</span>
+        <button type="button" onclick="closeExecutiveReportModal()" class="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 transition">
           Tutup
         </button>
       </div>
@@ -19263,6 +19506,7 @@
         const json = await res.json();
         if (json.success && json.data) {
           const d = json.data;
+          window.latestExecutiveOverviewData = d;
           const elMRR = document.getElementById('exec-mrr');
           const elARR = document.getElementById('exec-arr');
           const elActiveCust = document.getElementById('exec-active-cust');
@@ -19352,6 +19596,108 @@
       } catch (err) {
         console.error('Failed to load superuser overview:', err);
       }
+    }
+
+    async function openExecutiveReportModal() {
+      try {
+        if (!window.latestExecutiveOverviewData) {
+          await loadSuperUserOverview();
+        }
+        const d = window.latestExecutiveOverviewData || {};
+        const tenant = window.__ISPSYNC_TENANT__ || {};
+        const companyName = tenant.company_name || 'PT. Mitra Usaha Data';
+        const brandName = tenant.brand_name || 'ISPMU';
+        const branch = localStorage.getItem('selected_branch_filter') || 'ALL';
+        const branchName = d.branch_name || (branch === 'ALL' ? 'Nasional' : branch);
+
+        // Date & Document Number
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+        const monthNum = String(now.getMonth() + 1).padStart(2, '0');
+        const yearNum = now.getFullYear();
+        const docNo = `${brandName.toUpperCase()}/EXEC-FIN/REP/${yearNum}/${monthNum}`;
+
+        const setElemText = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = val;
+        };
+
+        setElemText('exec-report-company-name', companyName);
+        setElemText('exec-report-doc-no', docNo);
+        setElemText('exec-report-doc-date', dateStr);
+        setElemText('exec-report-branch-name', branchName + (d.branch_code ? ` [${d.branch_code}]` : ''));
+        setElemText('exec-sign-company', companyName);
+
+        // Financial values
+        const mrr = Number(d.estimated_mrr || 0);
+        const arr = Number(d.annual_run_rate || (mrr * 12));
+        const jartaplokCost = Number(d.total_jartaplok_cost || 0);
+        const netMargin = Number(d.net_gross_margin || 0);
+        const commission = Number(d.total_sales_commission || 0);
+        const netContrib = Number(d.net_contribution_margin || (netMargin - commission));
+        const activeCust = Number(d.total_active_customers || 0);
+        const totalCust = Number(d.total_registered_customers || 0);
+        const suspendedCust = Number(d.total_suspended_customers || 0);
+        const arpu = Number(d.arpu || (activeCust > 0 ? Math.round(mrr / activeCust) : 0));
+        const usedPorts = Number(d.used_odp_ports || 0);
+        const totalPorts = Number(d.total_odp_ports || 0);
+        const availPorts = Number(d.available_odp_ports || Math.max(0, totalPorts - usedPorts));
+        const headroomMRR = Number(d.potential_headroom_mrr || (availPorts * arpu));
+        const cogsPct = Number(d.cogs_pct || (mrr > 0 ? (jartaplokCost / mrr) * 100 : 0));
+        const marginPct = Number(d.jartaplok_margin_pct || (mrr > 0 ? (netMargin / mrr) * 100 : 0));
+        const commPct = mrr > 0 ? (commission / mrr) * 100 : 0;
+        const netContribPct = mrr > 0 ? (netContrib / mrr) * 100 : 0;
+        const portPct = totalPorts > 0 ? Math.min(100, Math.round((usedPorts / totalPorts) * 100)) : 0;
+
+        // Section 1: Cards
+        setElemText('exec-rep-mrr', `Rp ${mrr.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-arr', `Rp ${arr.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-jartaplok', `Rp ${jartaplokCost.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-cogs-pct', `${cogsPct.toFixed(1)}%`);
+        setElemText('exec-rep-net-margin', `Rp ${netMargin.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-margin-pct', `${marginPct.toFixed(1)}%`);
+        setElemText('exec-rep-active-cust', `${activeCust.toLocaleString('id-ID')} / ${totalCust.toLocaleString('id-ID')} Total`);
+        setElemText('exec-rep-arpu', `Rp ${arpu.toLocaleString('id-ID')}`);
+
+        // Section 2: Table
+        setElemText('exec-rep-table-mrr', `Rp ${mrr.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-table-jartaplok', `Rp ${jartaplokCost.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-table-cogs-pct', `${cogsPct.toFixed(1)}%`);
+        setElemText('exec-rep-table-gross-profit', `Rp ${netMargin.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-table-margin-pct', `${marginPct.toFixed(1)}%`);
+        setElemText('exec-rep-table-commission', `Rp ${commission.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-table-commission-pct', `${commPct.toFixed(1)}%`);
+        setElemText('exec-rep-table-net-contrib', `Rp ${netContrib.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-table-net-contrib-pct', `${netContribPct.toFixed(1)}%`);
+
+        // Section 3: ODP & Headroom
+        setElemText('exec-rep-odp-count', `${(d.total_odps || 0).toLocaleString('id-ID')} Titik`);
+        setElemText('exec-rep-total-ports', `${totalPorts.toLocaleString('id-ID')} Port`);
+        setElemText('exec-rep-used-ports', `${usedPorts.toLocaleString('id-ID')} Port`);
+        setElemText('exec-rep-avail-ports', `${availPorts.toLocaleString('id-ID')} Port`);
+        setElemText('exec-rep-port-pct', `${portPct}%`);
+
+        setElemText('exec-rep-side-arpu', `Rp ${arpu.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-headroom-mrr', `+Rp ${headroomMRR.toLocaleString('id-ID')}`);
+        setElemText('exec-rep-suspended-cust', `${suspendedCust.toLocaleString('id-ID')} Pelanggan`);
+        setElemText('exec-rep-spk-completed', `${(d.completed_work_orders || 0).toLocaleString('id-ID')} SPK`);
+        setElemText('exec-rep-spk-pending', `${(d.pending_work_orders || 0).toLocaleString('id-ID')} SPK`);
+
+        const modal = document.getElementById('modal-executive-report');
+        if (modal) {
+          modal.classList.remove('hidden');
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (err) {
+        console.error('Error opening executive report modal:', err);
+      }
+    }
+
+    function closeExecutiveReportModal() {
+      const modal = document.getElementById('modal-executive-report');
+      if (modal) modal.classList.add('hidden');
     }
 
     let superUserStaffList = [];
