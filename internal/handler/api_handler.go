@@ -193,9 +193,9 @@ func (h *APIHandler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 3. Generate SubscriberNo mandiri dengan prefix tenant
+	// 3. Generate SubscriberNo mandiri dengan prefix REG
 	subID := uuid.New().String()
-	subNo := fmt.Sprintf("%s-%s-%04d", t.PrefixID, time.Now().Format("2006"), time.Now().Unix()%9000+1000)
+	subNo := fmt.Sprintf("REG-%s-%04d", time.Now().Format("2006"), time.Now().Unix()%9000+1000)
 
 	sub := &domain.Subscriber{
 		ID:               subID,
@@ -819,7 +819,7 @@ func (h *APIHandler) PublicRegister(w http.ResponseWriter, r *http.Request) {
 		odpID = odp.ID
 	}
 
-	subNo := fmt.Sprintf("%s-2026-%04d", t.PrefixID, time.Now().UnixNano()%10000)
+	subNo := fmt.Sprintf("REG-%s-%04d", time.Now().Format("2006"), time.Now().UnixNano()%9000+1000)
 	subID := uuid.New().String()
 	sub := &domain.Subscriber{
 		ID:               subID,
