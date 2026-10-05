@@ -17,6 +17,7 @@ import (
 	"ispsync/internal/auth"
 	"ispsync/internal/handler"
 	"ispsync/internal/middleware"
+	"ispsync/internal/notification"
 	"ispsync/internal/repository"
 
 	"github.com/go-chi/chi/v5"
@@ -97,6 +98,23 @@ func main() {
 	// 2. Inisialisasi Handlers
 	sessionSecret := auth.LoadSecret()
 	apiH := handler.NewAPIHandler(store, sessionSecret)
+
+	// Inisialisasi WhatsApp Gateway & Notification Engine dari Ledger
+	billingDBURL := os.Getenv("BILLING_DATABASE_URL")
+	if billingDBURL == "" {
+		if dbURL != "" {
+			billingDBURL = strings.Replace(dbURL, "/ispsync?", "/isp_billing?", 1)
+			if !strings.Contains(billingDBURL, "isp_billing") {
+				billingDBURL = strings.Replace(dbURL, "/ispsync", "/isp_billing", 1)
+			}
+		} else {
+			billingDBURL = "postgres://isp_admin:IspsyncPgPass2026!Sec@127.0.0.1:5432/isp_billing?sslmode=disable"
+		}
+	}
+	notifSvc := notification.NewNotificationService(billingDBURL)
+	apiH.SetNotificationService(notifSvc)
+	log.Printf("[ISPSYNC CORE] WhatsApp Notification Engine connected to Ledger database")
+
 	pageH := handler.NewPageHandler(store)
 
 	// 3. Router Setup

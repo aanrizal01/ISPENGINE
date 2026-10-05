@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"ispsync/internal/domain"
 	"ispsync/internal/fibergrid"
 	"ispsync/internal/middleware"
+	"ispsync/internal/notification"
 	"ispsync/internal/repository"
 
 	"github.com/go-chi/chi/v5"
@@ -36,6 +38,11 @@ type APIHandler struct {
 	authSecret []byte
 	throttle   *loginThrottle
 	fg         *fibergrid.Client
+	notif      *notification.NotificationService
+}
+
+func (h *APIHandler) SetNotificationService(notif *notification.NotificationService) {
+	h.notif = notif
 }
 
 func NewAPIHandler(store repository.Storage, authSecret []byte) *APIHandler {
@@ -861,6 +868,23 @@ func (h *APIHandler) PublicRegister(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:       time.Now(),
 	}
 	_ = h.store.CreateWorkOrder(r.Context(), wo)
+
+	// Kirim Notifikasi WhatsApp Otomatis melalui Gateway Ledger (WABLAS / FONNTE)
+	if h.notif != nil {
+		go func(tName, tSlug, cName, cPhone, cAddr, rNo, pName, oCode string, dDist float64) {
+			h.notif.SendRegistrationNotification(context.Background(), notification.RegistrationNotifData{
+				TenantName:   tName,
+				TenantSlug:   tSlug,
+				CustomerName: cName,
+				Phone:        cPhone,
+				Address:      cAddr,
+				RegNo:        rNo,
+				PlanName:     pName,
+				ODPCode:      oCode,
+				Distance:     dDist,
+			})
+		}(t.Name, t.Slug, sub.FullName, sub.Phone, sub.Address, sub.SubscriberNo, planName, odpCode, dist)
+	}
 
 	h.successResponse(w, "Pendaftaran berhasil dikirim. Tim kami akan segera memproses verifikasi dan survei lokasi.", map[string]interface{}{
 		"id":                     sub.ID,
